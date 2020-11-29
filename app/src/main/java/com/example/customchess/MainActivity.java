@@ -5,9 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.example.customchess.engine.movements.Position;
+
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements RecyclerAdapter.OnItemSelected {
+public class MainActivity extends AppCompatActivity implements CageAdapter.OnItemSelected {
 
 
     @Override
@@ -19,7 +21,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerAdapter.O
     }
 
     @Override
-    public void onItemClicked(int position) {
-        Toast.makeText(this, Integer.toString(position), Toast.LENGTH_SHORT).show();
+    public void onItemClicked(Position position) {
+        Toast.makeText(this, position.toString(), Toast.LENGTH_SHORT).show();
     }
 }

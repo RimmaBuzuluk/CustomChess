@@ -7,12 +7,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.customchess.engine.movements.Position;
+import com.example.customchess.engine.movements.Verticals;
 
 import java.util.ArrayList;
 
@@ -23,11 +25,10 @@ public class ChessBoardFragment extends Fragment {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter recyclerAdapter;
     private RecyclerView.LayoutManager recyclerManager;
-    private ArrayList<Integer> colorList;
-
+    private ArrayList<Cage> cageList;
 
     public ChessBoardFragment() {
-
+        // requires empty constructor
     }
 
     @Override
@@ -53,7 +54,7 @@ public class ChessBoardFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
-        recyclerAdapter = new RecyclerAdapter(this.getContext(), colorList);
+        recyclerAdapter = new CageAdapter(this.getContext(), cageList);
         recyclerView.setAdapter(recyclerAdapter);
 
         recyclerManager = new GridLayoutManager(this.getContext(), 8, GridLayoutManager.HORIZONTAL, false);
@@ -61,31 +62,53 @@ public class ChessBoardFragment extends Fragment {
         recyclerView.setLayoutManager(recyclerManager);
     }
 
-    public void cagesInit() {
+    private void cagesInit() {
         int brown = getResources().getColor(R.color.brown);
         int beige = getResources().getColor(R.color.beige);
 
-        colorList = new ArrayList<>(64);
+        cageList = new ArrayList<>(64);
 
         for (int j = 0; j < 8; j++) {
             if (j % 2 == 0) {
                 for (int i = 0; i < 8; i++) {
                     if (i % 2 == 1) {
-                        colorList.add(brown);
+                        cageList.add(new Cage(brown));
                     } else {
-                        colorList.add(beige);
+                        cageList.add(new Cage(beige));
                     }
                 }
             } else {
-                for (int i = 8; i < 16; i++) {
+                for (int i = 0; i < 8; i++) {
                     if (i % 2 == 0) {
-                        colorList.add(brown);
+                        cageList.add(new Cage(brown));
                     } else {
-                        colorList.add(beige);
+                        cageList.add(new Cage(beige));
                     }
                 }
             }
         }
+
+        Verticals [] verticals = Verticals.values();
+        int currentVerticalInteger = 0;
+        Verticals currentVertical = verticals[currentVerticalInteger];
+        int count = 1;
+
+        for (Cage cage : cageList) {
+            cage.setPosition(new Position(currentVertical, count));
+
+            if (count == 8) {
+                count = 1;
+                currentVerticalInteger++;
+                try {
+                    currentVertical = verticals[currentVerticalInteger];
+                } catch (IndexOutOfBoundsException ignored) {
+
+                }
+            } else {
+                count++;
+            }
+        }
+
     }
 
 }
