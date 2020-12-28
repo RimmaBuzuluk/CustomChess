@@ -1,7 +1,6 @@
 package com.example.customchess;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +27,7 @@ public class CageAdapter extends RecyclerView.Adapter<CageAdapter.ViewHolder> {
         try {
             this.activity = (OnItemSelected) context;
         } catch (ClassCastException exception) {
-            throw new ClassCastException(exception.getMessage() + " invalid typecast wrong");
+            throw new ClassCastException(exception.getMessage() + " invalid typecast");
         }
     }
 

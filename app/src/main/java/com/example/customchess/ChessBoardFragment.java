@@ -13,7 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.customchess.engine.movements.Position;
+import com.example.customchess.engine.movements.BoardPosition;
 import com.example.customchess.engine.movements.Verticals;
 
 import java.util.ArrayList;
@@ -94,7 +94,7 @@ public class ChessBoardFragment extends Fragment {
         int count = 1;
 
         for (Cage cage : cageList) {
-            cage.setPosition(new Position(currentVertical, count));
+            cage.setPosition(new BoardPosition(currentVertical, count));
 
             if (count == 8) {
                 count = 1;

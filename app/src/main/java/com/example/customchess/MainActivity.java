@@ -5,9 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.example.customchess.engine.movements.BoardPosition;
 import com.example.customchess.engine.movements.Position;
-
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements CageAdapter.OnItemSelected {
 
