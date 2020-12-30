@@ -8,7 +8,7 @@ import android.widget.Toast;
 import com.example.customchess.engine.movements.BoardPosition;
 import com.example.customchess.engine.movements.Position;
 
-public class MainActivity extends AppCompatActivity implements CageAdapter.OnItemSelected {
+public class MainActivity extends AppCompatActivity {
 
 
     @Override
@@ -19,8 +19,4 @@ public class MainActivity extends AppCompatActivity implements CageAdapter.OnIte
 
     }
 
-    @Override
-    public void onItemClicked(Position position) {
-        Toast.makeText(this, position.toString(), Toast.LENGTH_SHORT).show();
-    }
 }

@@ -21,6 +21,19 @@ public class BoardPosition implements Position {
     }
 
     @Override
+    public boolean equals(Object object) {
+        if (object instanceof BoardPosition) {
+            if (object == this) {
+                return true;
+            }
+            return ((BoardPosition) object).horizontal.equals(this.horizontal)
+                    && ((BoardPosition) object).vertical.equals(this.vertical);
+        }
+
+        return false;
+    }
+
+    @Override
     public String toString() {
         return vertical + horizontal;
     }
