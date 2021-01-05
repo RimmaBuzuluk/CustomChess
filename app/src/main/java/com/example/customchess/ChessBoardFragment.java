@@ -9,20 +9,17 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.example.customchess.engine.movements.BoardPosition;
 import com.example.customchess.engine.movements.Movable;
-import com.example.customchess.engine.movements.Move;
+import com.example.customchess.engine.movements.Movement;
 import com.example.customchess.engine.movements.Position;
 import com.example.customchess.engine.movements.Verticals;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 
@@ -58,7 +55,7 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
             return;
         }
 
-        move = new Move(start, position);
+        move = new Movement(start, position);
 
         CageAdapter.ViewHolder startHolder = (CageAdapter.ViewHolder)
                 recyclerView.findViewHolderForAdapterPosition(startIndex);

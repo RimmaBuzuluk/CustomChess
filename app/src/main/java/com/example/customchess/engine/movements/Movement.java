@@ -1,11 +1,11 @@
 package com.example.customchess.engine.movements;
 
-public class Move implements Movable {
+public class Movement implements Movable {
 
     private Position start;
     private Position destination;
 
-    public Move(Position start, Position destination) {
+    public Movement(Position start, Position destination) {
         this.start = start;
         this.destination = destination;
     }
