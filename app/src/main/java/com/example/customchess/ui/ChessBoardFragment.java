@@ -24,6 +24,8 @@ import com.example.customchess.engine.movements.Movement;
 import com.example.customchess.engine.movements.Position;
 import com.example.customchess.engine.misc.Verticals;
 import com.example.customchess.ui.figures.Figure;
+import com.example.customchess.ui.playerautomata.PlayerMoveHandler;
+import com.example.customchess.ui.playerautomata.WhitePlayer;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -37,10 +39,7 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
     private CageAdapter recyclerAdapter;
     private RecyclerView.LayoutManager recyclerManager;
     private OneDeviceGame game;
-
-    private Position start;
-    private int      startIndex;
-    private int      imageResource;
+    private PlayerMoveHandler moveHandler;
 
     public ChessBoardFragment() {
         // requires empty constructor
@@ -53,47 +52,11 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
 
     @Override
     public void onItemClicked(final Position position, final int index, final int imageResourceId) {
-        Movable move;
+        moveHandler.clickHandler(position, index, imageResourceId);
+    }
 
-        if (start == null) {
-            start = position;
-            startIndex = index;
-            imageResource = imageResourceId;
-            return;
-        }
-
-        move = new Movement(start, position);
-
-        CageAdapter.ViewHolder startHolder = (CageAdapter.ViewHolder)
-                recyclerView.findViewHolderForAdapterPosition(startIndex);
-        CageAdapter.ViewHolder destinationHolder = (CageAdapter.ViewHolder)
-                recyclerView.findViewHolderForAdapterPosition(index);
-        if (startHolder != null && destinationHolder != null) {
-            // move this logic to chess engine, because of opportunity 'castling'
-            if (startHolder.getFigure().isWhite(imageResourceId)) {
-                start = position;
-                startIndex = index;
-                imageResource = imageResourceId;
-                return;
-            }
-            else if (startHolder.getFigure().isBlack(imageResourceId)) {
-                start = position;
-                startIndex = index;
-                imageResource = imageResourceId;
-                return;
-            }
-            try {
-                game.canMakeMovement(move);
-                startHolder.hide();
-                destinationHolder.draw(imageResource);
-
-            } catch (ChessException e) {
-                e.printStackTrace();
-                Toast.makeText(this.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        }
-
-        start = null;  // it looks disgusting
+    public void setMoveHandler(PlayerMoveHandler moveHandler) {
+        this.moveHandler = moveHandler;
     }
 
     @Override
@@ -108,7 +71,6 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
         super.onActivityCreated(savedInstanceState);
 
         ArrayList<Cage> cageList = cagesInit();
-        start = null;  // am I idiot ?
         game  = new OneDeviceGame();
 
         recyclerView = view.findViewById(R.id.chess_recycler);
@@ -121,6 +83,7 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
         recyclerManager = new GridLayoutManager(this.getContext(), 8, GridLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(recyclerManager);
 
+        moveHandler = new WhitePlayer(this, recyclerView, game);
     }
 
     // maybe rewrite it
