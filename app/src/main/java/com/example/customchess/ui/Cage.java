@@ -1,8 +1,6 @@
-package com.example.customchess;
+package com.example.customchess.ui;
 
 import com.example.customchess.engine.movements.Position;
-
-import java.util.Objects;
 
 public class Cage {
 

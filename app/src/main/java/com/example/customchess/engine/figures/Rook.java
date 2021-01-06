@@ -4,9 +4,9 @@ import com.example.customchess.engine.exceptions.ChessException;
 import com.example.customchess.engine.misc.Color;
 import com.example.customchess.engine.movements.Movable;
 
-public class Pawn extends Piece {
+public class Rook extends Piece {
 
-    public Pawn(Color color) {
+    public Rook(Color color) {
         super(color);
     }
 

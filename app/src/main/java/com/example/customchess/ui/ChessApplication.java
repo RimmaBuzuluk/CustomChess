@@ -1,4 +1,4 @@
-package com.example.customchess;
+package com.example.customchess.ui;
 
 import android.app.Application;
 

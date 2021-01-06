@@ -1,6 +1,6 @@
 package com.example.customchess.engine;
 
-public enum Color {
+public interface Game {
 
-    Black, White
+
 }

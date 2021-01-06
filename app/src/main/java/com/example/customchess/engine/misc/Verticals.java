@@ -1,4 +1,4 @@
-package com.example.customchess.engine.movements;
+package com.example.customchess.engine.misc;
 
 public enum Verticals {
 

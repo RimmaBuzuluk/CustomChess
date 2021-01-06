@@ -29,7 +29,7 @@ public class Movement implements Movable {
             builder.append("start ").append(start.toString());
         }
         if (destination != null) {
-            builder.append("\n dest ").append(destination.toString());
+            builder.append(" dest ").append(destination.toString());
         }
         return new String(builder);
     }

@@ -1,6 +1,9 @@
 package com.example.customchess.engine.movements;
 
 
+import com.example.customchess.engine.misc.Verticals;
+
+
 public class BoardPosition implements Position {
 
     private Verticals vertical;

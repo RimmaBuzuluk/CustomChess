@@ -1,4 +1,4 @@
-package com.example.customchess;
+package com.example.customchess.ui;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,10 +8,11 @@ import android.widget.ImageButton;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.customchess.R;
 import com.example.customchess.engine.movements.Position;
+import com.example.customchess.ui.figures.Figure;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Hashtable;
 
 public class CageAdapter extends RecyclerView.Adapter<CageAdapter.ViewHolder> {
@@ -22,9 +23,9 @@ public class CageAdapter extends RecyclerView.Adapter<CageAdapter.ViewHolder> {
 
     private OnItemSelected  activity;
     private ArrayList<Cage> cageList;
-    private Hashtable<Integer, Integer> teamsImages;
+    private Hashtable<Integer, Figure> teamsImages;
 
-    public CageAdapter(OnItemSelected context, Hashtable<Integer, Integer> teamsImages, ArrayList<Cage> list) {
+    public CageAdapter(OnItemSelected context, Hashtable<Integer, Figure> teamsImages, ArrayList<Cage> list) {
         cageList = list;
         this.teamsImages = teamsImages;
         try {
@@ -42,6 +43,11 @@ public class CageAdapter extends RecyclerView.Adapter<CageAdapter.ViewHolder> {
         public void hide() {
             imageResource = 0;
             piece.setImageResource(imageResource);
+        }
+
+        public Figure getFigure() {
+            Figure check = new Figure(this.imageResource);
+            return check;
         }
 
         public void draw(int imageId) {
@@ -81,25 +87,14 @@ public class CageAdapter extends RecyclerView.Adapter<CageAdapter.ViewHolder> {
         holder.position = cageList.get(position).getPosition();
 
         if (teamsImages.containsKey(position)) {
-            int imageId = teamsImages.get(position);
+            int imageId = teamsImages.get(position).color;
             holder.piece.setImageResource(imageId);
             holder.imageResource = imageId;
-//            holder.piece.setTag(imageId);
         }
-
-//        for (int i = 0; i < 8; i++) {
-//            if (position == (1 + i * 8)) {
-//                holder.piece.setImageResource(R.drawable.white_pawn);
-//            } else if (position == (6 + i * 8)) {
-//                holder.piece.setImageResource(R.drawable.black_pawn);
-//            }
-//        }
-
     }
 
     @Override
     public int getItemCount() {
         return cageList.size();
     }
-
 }
