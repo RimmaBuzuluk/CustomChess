@@ -6,13 +6,18 @@ import com.example.customchess.engine.movements.Movable;
 
 public abstract class Piece {
 
-    private Color color;
+    public final Color color;
 
     public Piece(Color color) {
         this.color = color;
     }
 
-    public abstract boolean isTrajectoryCorrect(Movable movement) throws ChessException;
+    @Override
+    public String toString() {
+        return "Piece";
+    }
+
+    public abstract boolean isTrajectoryValid(Movable movement) throws ChessException;
 
     public boolean isWhite() {
         return color.equals(Color.White);

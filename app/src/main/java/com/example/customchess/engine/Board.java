@@ -29,7 +29,7 @@ public class Board {
 
         Piece figure = findBy(start);
 
-        if (figure.isTrajectoryCorrect(movement)) {
+        if (figure.isTrajectoryValid(movement)) {
             swapFigures(start, destination);
         } else {
             throw new InvalidMoveException("Invalid move\n" + start + " - " + destination);
@@ -51,13 +51,14 @@ public class Board {
     private void LOG() {
         for (Integer i = 0; i < 8; i++) {
             for (Integer j = 0; j < 8; j++) {
-                if (matrix[i][j] instanceof Knight) {
+                if (matrix[i][j] != null) {
                     Verticals[] fuck = Verticals.values();
                     Position position = new BoardPosition(fuck[j], i + 1);
-                    Log.d("move", "Knight on position " + position);
+                    Log.d("move", matrix[i][j] + " on position " + position + "\n");
                 }
             }
         }
+        Log.d("move", "------------------------------------------------------------------------------+-+");
     }
 
     private void swapFigures(Position start, Position destination) {
@@ -70,7 +71,7 @@ public class Board {
 
         matrix[startHorizontal][startVertical] = matrix[destHorizontal][destVertical];
         matrix[destHorizontal][destVertical] = figure;
-        LOG();
+//        LOG();
     }
 
     private boolean isCageEmpty(Piece figure) {

@@ -13,7 +13,12 @@ public class Knight extends Piece {
     }
 
     @Override
-    public boolean isTrajectoryCorrect(Movable movement) throws ChessException {
+    public String toString() {
+        return "Knight";
+    }
+
+    @Override
+    public boolean isTrajectoryValid(Movable movement) throws ChessException {
         Position start = movement.getStart();
         Position destination = movement.getDestination();
 

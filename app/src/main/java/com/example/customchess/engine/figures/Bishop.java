@@ -1,8 +1,10 @@
 package com.example.customchess.engine.figures;
 
 import com.example.customchess.engine.exceptions.ChessException;
+import com.example.customchess.engine.exceptions.InvalidMoveException;
 import com.example.customchess.engine.misc.Color;
 import com.example.customchess.engine.movements.Movable;
+import com.example.customchess.engine.movements.Position;
 
 public class Bishop extends Piece {
 
@@ -11,7 +13,26 @@ public class Bishop extends Piece {
     }
 
     @Override
-    public boolean isTrajectoryCorrect(Movable movement) throws ChessException {
-        return true;
+    public boolean isTrajectoryValid(Movable movement) throws ChessException {
+        Position start = movement.getStart();
+        Position destination = movement.getDestination();
+
+        int startVertical = start.getVertical().ordinal();
+        int startHorizontal = start.getHorizontal() - 1;
+        int destVertical = destination.getVertical().ordinal();
+        int destHorizontal = destination.getHorizontal() - 1;
+
+        int verticalDiff = Math.abs(startVertical - destVertical);
+        int horizontalDiff = Math.abs(startHorizontal - destHorizontal);
+
+        if (verticalDiff == horizontalDiff) {
+            return true;
+        }
+        throw new InvalidMoveException("Invalid move\n" + start + " - " + destination);
+    }
+
+    @Override
+    public String toString() {
+        return "Bishop";
     }
 }

@@ -10,11 +10,11 @@ public class Figure {
         this.color = color;
     }
 
-    public boolean isWhite(int color) {
-        return color >= 2131099765 && color <= 2131099770;
+    public boolean areWhite(int color) {
+        return (color >= 2131099765 && color <= 2131099770) && (this.color >= 2131099765 && this.color <= 2131099770);
     }
 
-    public boolean isBlack(int color) {
-        return color >= 2131099735 && color <= 2131099740;
+    public boolean areBlack(int color) {
+        return (color >= 2131099735 && color <= 2131099740) && (this.color >= 2131099735 && this.color <= 2131099740);
     }
 }
