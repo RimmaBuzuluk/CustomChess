@@ -13,6 +13,12 @@ public class BoardPosition implements Position {
         this.vertical = vertical;
         this.horizontal = horizontal;
     }
+    // delete it at the end
+    public BoardPosition(Integer vertical, Integer horizontal) {
+        Verticals[] verticals = Verticals.values();
+        this.vertical = verticals[vertical];
+        this.horizontal = horizontal.toString();
+    }
 
     public BoardPosition(Verticals vertical, Integer horizontal) {
         this.vertical = vertical;

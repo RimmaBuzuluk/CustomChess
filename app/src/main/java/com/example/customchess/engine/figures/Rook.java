@@ -8,8 +8,11 @@ import com.example.customchess.engine.movements.Position;
 
 public class Rook extends Piece {
 
+    private boolean firstMove;
+
     public Rook(Color color) {
         super(color);
+        firstMove = true;
     }
 
     @Override
@@ -31,5 +34,19 @@ public class Rook extends Piece {
             return true;
         }
         throw new InvalidMoveException("Invalid move\n" + start + " - " + destination);
+    }
+
+    @Override
+    public boolean canBeatByTrajectory(Movable movement) throws ChessException {
+        return isTrajectoryValid(movement);
+    }
+
+    public boolean canBeCastling() {
+        return firstMove;
+    }
+
+    @Override
+    public void move() {
+        firstMove = false;
     }
 }

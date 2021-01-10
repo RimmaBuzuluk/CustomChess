@@ -32,6 +32,16 @@ public class Bishop extends Piece {
     }
 
     @Override
+    public boolean canBeatByTrajectory(Movable movement) throws ChessException {
+        return isTrajectoryValid(movement);
+    }
+
+    @Override
+    public void move() {
+
+    }
+
+    @Override
     public String toString() {
         return "Bishop";
     }

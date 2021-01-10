@@ -46,8 +46,7 @@ public class CageAdapter extends RecyclerView.Adapter<CageAdapter.ViewHolder> {
         }
 
         public Figure getFigure() {
-            Figure check = new Figure(this.imageResource);
-            return check;
+            return new Figure(this.imageResource);
         }
 
         public void draw(int imageId) {

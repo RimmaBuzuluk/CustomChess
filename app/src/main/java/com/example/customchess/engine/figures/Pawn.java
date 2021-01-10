@@ -37,7 +37,6 @@ public class Pawn extends Piece {
 
         if (startVertical == destVertical & horizontalDiff > 0) {
             if (firstMove && horizontalDiff < 3) {
-                firstMove = false;
                 return true;
             }
             if (horizontalDiff < 2) {
@@ -45,5 +44,32 @@ public class Pawn extends Piece {
             }
         }
         throw new InvalidMoveException("Invalid move\n" + start + " - " + destination);
+    }
+
+    @Override
+    public boolean canBeatByTrajectory(Movable movement) throws ChessException {
+        Position start = movement.getStart();
+        Position destination = movement.getDestination();
+
+        int startVertical = start.getVertical().ordinal();
+        int startHorizontal = start.getHorizontal() - 1;
+        int destVertical = destination.getVertical().ordinal();
+        int destHorizontal = destination.getHorizontal() - 1;
+        int horizontalDiff = startHorizontal - destHorizontal;
+        int verticalDiff = Math.abs(startVertical - destVertical);
+
+        if (this.color.equals(Color.White)) {
+            horizontalDiff = -horizontalDiff;
+        }
+
+        if (horizontalDiff == 1 & verticalDiff == 1) {
+            return true;
+        }
+        throw new InvalidMoveException("Invalid move\n" + start + " - " + destination);
+    }
+
+    @Override
+    public void move() {
+        firstMove = false;
     }
 }

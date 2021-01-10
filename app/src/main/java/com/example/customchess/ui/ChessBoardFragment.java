@@ -16,7 +16,10 @@ import android.widget.Toast;
 
 import com.example.customchess.R;
 import com.example.customchess.engine.OneDeviceGame;
+import com.example.customchess.engine.exceptions.CastlingException;
 import com.example.customchess.engine.exceptions.ChessException;
+import com.example.customchess.engine.exceptions.FigureNotChosenException;
+import com.example.customchess.engine.exceptions.OneTeamPiecesSelectedException;
 import com.example.customchess.engine.movements.BoardPosition;
 import com.example.customchess.engine.movements.Movable;
 import com.example.customchess.engine.movements.Movement;
@@ -67,23 +70,44 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
         CageAdapter.ViewHolder destinationHolder = (CageAdapter.ViewHolder)
                 recyclerView.findViewHolderForAdapterPosition(index);
         if (startHolder != null && destinationHolder != null) {
-            // move this logic to chess engine, because of opportunity 'castling'
-            if (startHolder.getFigure().areWhite(imageResourceId)) {
-                start = position;
-                startIndex = index;
-                imageResource = imageResourceId;
-                return;
-            } else if (startHolder.getFigure().areBlack(imageResourceId)) {
-                start = position;
-                startIndex = index;
-                imageResource = imageResourceId;
-                return;
-            }
             try {
                 game.canMakeMovement(move);
                 startHolder.hide();
                 destinationHolder.draw(imageResource);
 
+            } catch (CastlingException ce) {
+                int diff = Math.abs(startIndex - index);
+                CageAdapter.ViewHolder newRook;
+                CageAdapter.ViewHolder newKing;
+                if (diff == 24) {
+                    newRook = (CageAdapter.ViewHolder)
+                            recyclerView.findViewHolderForAdapterPosition(startIndex - 8);
+                    newKing = (CageAdapter.ViewHolder)
+                            recyclerView.findViewHolderForAdapterPosition(index + 8);
+                    newRook.draw(destinationHolder.getFigure().color);
+                    newKing.draw(startHolder.getFigure().color);
+                    startHolder.hide(); // old king
+                    destinationHolder.hide(); // old rook
+                } else if (diff == 32) {
+                    newRook = (CageAdapter.ViewHolder)
+                            recyclerView.findViewHolderForAdapterPosition(startIndex + 8);
+                    newKing = (CageAdapter.ViewHolder)
+                            recyclerView.findViewHolderForAdapterPosition(index - 16);
+                    newRook.draw(destinationHolder.getFigure().color);
+                    newKing.draw(startHolder.getFigure().color);
+                    startHolder.hide(); // old king
+                    destinationHolder.hide(); // old rook
+                }
+            } catch (OneTeamPiecesSelectedException otp) {
+                start = position;
+                startIndex = index;
+                imageResource = imageResourceId;
+                return;
+            } catch (FigureNotChosenException fnc) {
+                start = position;
+                startIndex = index;
+                imageResource = imageResourceId;
+                return;
             } catch (ChessException e) {
                 e.printStackTrace();
                 Toast.makeText(this.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();

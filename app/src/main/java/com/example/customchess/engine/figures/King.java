@@ -8,8 +8,11 @@ import com.example.customchess.engine.movements.Position;
 
 public class King extends Piece {
 
+    private boolean firstMove;
+
     public King(Color color) {
         super(color);
+        firstMove = true;
     }
 
     @Override
@@ -34,5 +37,19 @@ public class King extends Piece {
             return true;
         }
         throw new InvalidMoveException("Invalid move\n" + start + " - " + destination);
+    }
+
+    public boolean canBeCastling() {
+        return firstMove;
+    }
+
+    @Override
+    public boolean canBeatByTrajectory(Movable movement) throws ChessException {
+        return isTrajectoryValid(movement);
+    }
+
+    @Override
+    public void move() {
+        firstMove = false;
     }
 }

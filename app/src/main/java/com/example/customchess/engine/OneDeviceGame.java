@@ -2,7 +2,9 @@ package com.example.customchess.engine;
 
 import android.util.Log;
 
+import com.example.customchess.engine.exceptions.CastlingException;
 import com.example.customchess.engine.exceptions.ChessException;
+import com.example.customchess.engine.exceptions.FigureNotChosenException;
 import com.example.customchess.engine.movements.Movable;
 
 
@@ -25,21 +27,19 @@ public class OneDeviceGame implements Game {
     public void canMakeMovement(Movable movement) throws ChessException {
 
         try {
-//            Log.d("move", movement.toString());
             if (currentPlayer.isCorrectPlayerMove(board.findBy(movement.getStart()))) {
                 if (board.tryToMove(movement)) {
-
                     currentPlayer.changePlayer();
                 }
             }
 
+        } catch (CastlingException ce) {
+            currentPlayer.changePlayer();
+            throw ce;
+        } catch (NullPointerException npe) {
+            throw new FigureNotChosenException("Figure was not chosen");
         }
-        catch (ChessException ex) {
-            throw ex;
-        }
-        catch (NullPointerException npe) {
-//            npe.printStackTrace();
-        }
+
     }
 
 

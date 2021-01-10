@@ -19,6 +19,14 @@ public abstract class Piece {
 
     public abstract boolean isTrajectoryValid(Movable movement) throws ChessException;
 
+    public abstract boolean canBeatByTrajectory(Movable movement) throws ChessException;
+
+    public abstract void move();
+
+    public boolean areSameColor(Piece figure) {
+        return this.color.equals(figure.color);
+    }
+
     public boolean isWhite() {
         return color.equals(Color.White);
     }

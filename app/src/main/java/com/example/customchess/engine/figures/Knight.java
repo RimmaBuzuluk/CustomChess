@@ -33,4 +33,14 @@ public class Knight extends Piece {
         }
         throw new InvalidMoveException("Invalid move\n" + start + " - " + destination);
     }
+
+    @Override
+    public boolean canBeatByTrajectory(Movable movement) throws ChessException {
+        return isTrajectoryValid(movement);
+    }
+
+    @Override
+    public void move() {
+
+    }
 }
