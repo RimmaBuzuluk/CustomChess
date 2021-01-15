@@ -27,115 +27,12 @@ public class Board {
 
 
     public Board() {
-        matrix = new Piece[8][8];
+        matrix = new ChessPiece[8][8];
         initTeam(Color.White);
         initTeam(Color.Black);
     }
 
-    public boolean tryToMove(Movable movement) throws ChessException {
-        Position start = movement.getStart();
-        Position destination = movement.getDestination();
-
-//        checkForCheck();
-
-        if (start.equals(destination)) {
-            throw new InvalidMoveException("You can't stand still");
-        }
-
-        Piece startFigure = findBy(start);
-        Piece destFigure  = findBy(destination);
-
-        if (startFigure == null) {
-            throw new FigureNotChosenException("Figure was not chosen");
-        }
-
-        // 1 check for a mate  -
-        // 2 check for a check -
-
-        // movement to empty cage
-        if (destFigure == null) {
-            if (startFigure.isTrajectoryValid(movement)
-                    & isDistanceFree(start, destination)) {
-                swapFigures(start, destination);
-                startFigure.move();
-            } else {
-                throw new InvalidMoveException("Invalid move\n" + start + " - " + destination);
-            }
-            return true;
-        }
-
-        if (startFigure.areSameColor(destFigure)) {
-//        castling not implemented completely
-            if (startFigure.areSameColor(destFigure)
-                    & (startFigure instanceof King && ((King) startFigure).canBeCastling())
-                    & (destFigure  instanceof Rook && ((Rook) destFigure).canBeCastling())
-                    & isDistanceFree(start, destination)) {
-                castling(start, destination);
-                startFigure.move();
-                destFigure.move();
-                throw new CastlingException("castling");
-            } else {
-                throw new OneTeamPiecesSelectedException("One team pieces are selected");
-            }
-        } else {
-            // beating
-            if (startFigure.canBeatByTrajectory(movement)
-                    & isDistanceFree(start, destination)) {
-                beatFigure(start, destination);
-                startFigure.move(); // for logic in 'Pawn'
-            } else {
-                throw new InvalidMoveException("Invalid move\n" + start + " - " + destination);
-            }
-        }
-        return true;
-    }
-
-    public void checkForCheck() throws CheckKingException {
-        checkForKingCheck(Color.White);
-        checkForKingCheck(Color.Black);
-    }
-
-    private void checkForKingCheck(Color team) throws CheckKingException {
-        Piece king = null;
-        Position kingPos = null;
-        Hashtable<Position, Piece> enemyTeam = new Hashtable<>();
-        Piece currentPiece;
-
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                currentPiece = matrix[i][j];
-                if (isCageEmpty(currentPiece)) {
-                    continue;
-                } if (currentPiece instanceof King & currentPiece.color.equals(team)) {
-                    king = currentPiece;
-                    kingPos = new BoardPosition(j, i + 1);
-                } else if (!currentPiece.color.equals(team)) {
-                    enemyTeam.put(new BoardPosition(j, i + 1), currentPiece);
-                }
-            }
-        }
-
-        Set<Position> keys = enemyTeam.keySet();
-        for (Position figure : keys) {
-            currentPiece = enemyTeam.get(figure);
-
-            try {
-                assert king != null;
-                assert currentPiece != null;
-
-                if (currentPiece.canBeatByTrajectory(new Movement(kingPos, figure))
-                        & isDistanceFree(kingPos, figure)) {
-                    throw new CheckKingException(king.color + " King under attack");
-                }
-            } catch (CheckKingException cke) {
-                throw cke;
-            } catch (ChessException e) {
-                // trajectory is incorrect
-            }
-        }
-    }
-
-    private void castling(Position start, Position destination) {
+    public void castling(Position start, Position destination) {
         int startVertical = start.getVertical().ordinal();
         int startHorizontal = start.getHorizontal() - 1;
         int destVertical = destination.getVertical().ordinal();
@@ -154,10 +51,26 @@ public class Board {
         }
         matrix[startHorizontal][startVertical] = null;
         matrix[destHorizontal][destVertical] = null;
-//        LOG();
+        LOG();
     }
 
-    private void beatFigure(Position start, Position destination) {
+    public void pawnOnThePass(Position start, Position destination) {
+        int startVertical = start.getVertical().ordinal();
+        int startHorizontal = start.getHorizontal() - 1;
+        int destVertical = destination.getVertical().ordinal();
+        int destHorizontal = destination.getHorizontal() - 1;
+
+        if (((ChessPiece) matrix[startHorizontal][startVertical]).color.equals(Color.White)) {
+            matrix[destHorizontal - 1][destVertical] = null;
+        } else {
+            matrix[destHorizontal + 1][destVertical] = null;
+        }
+        matrix[destHorizontal][destVertical] = matrix[startHorizontal][startVertical];
+        matrix[startHorizontal][startVertical] = null;
+        LOG();
+    }
+
+    public void beatFigure(Position start, Position destination) {
         int startVertical = start.getVertical().ordinal();
         int startHorizontal = start.getHorizontal() - 1;
         int destVertical = destination.getVertical().ordinal();
@@ -167,11 +80,11 @@ public class Board {
 
         matrix[startHorizontal][startVertical] = null;
         matrix[destHorizontal][destVertical] = figure;
-//        LOG();
+        LOG();
     }
 
-    private boolean isDistanceFree(Position start, Position destination) {
-        LinkedList<Piece> distance = getPiecesOnDistance(start, destination);
+    public boolean isDistanceFree(Movable movement) {
+        LinkedList<Piece> distance = getPiecesOnDistance(movement);
 
         for (int i = 0; i < distance.size(); i++) {
             if (distance.get(i) == null) {
@@ -183,7 +96,9 @@ public class Board {
         return true;
     }
 
-    private LinkedList<Piece> getPiecesOnDistance(Position start, Position destination) {
+    private LinkedList<Piece> getPiecesOnDistance(Movable movement) {
+        Position start = movement.getStart();
+        Position destination = movement.getDestination();
         int startVertical = start.getVertical().ordinal();
         int startHorizontal = start.getHorizontal() - 1;
         int destVertical = destination.getVertical().ordinal();
@@ -227,7 +142,135 @@ public class Board {
         return distance;
     }
 
-    public Piece findBy(Position position) throws FigureNotChosenException {
+    public boolean isPositionUnderAttack(Color teamColor, Position position) {
+        LinkedList<Position> cagesAround = getEmptyPositionsAround(position);
+        Hashtable<Position, ChessPiece> enemyTeam = getTeamBy(teamColor.equals(Color.White) ? Color.Black : Color.White);
+        ChessPiece currentPiece;
+        boolean answer = false;
+
+        Set<Position> keys = enemyTeam.keySet();
+        for (Position figure : keys) {
+            currentPiece = enemyTeam.get(figure);
+
+            try {
+                assert currentPiece != null;
+
+                if (currentPiece.isFightTrajectoryValid(new Movement(position, figure))
+                        & isDistanceFree(new Movement(position, figure)) // it doesn't correct in this situation
+                ) {
+                    answer = true;
+                }
+            } catch (ChessException e) {
+                // trajectory is incorrect
+            }
+        }
+
+        return answer;
+    }
+
+    public Hashtable<Position, ChessPiece> getTeamBy(Color team) {
+        Hashtable<Position, ChessPiece> enemyTeam = new Hashtable<>();
+        ChessPiece currentPiece;
+
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                currentPiece = (ChessPiece) matrix[i][j];
+                if (isCageEmpty(currentPiece)) {
+                    continue;
+                } if (currentPiece.color.equals(team)) {
+                    enemyTeam.put(new BoardPosition(j, i + 1), currentPiece);
+                }
+            }
+        }
+
+        return enemyTeam;
+    }
+
+    public void checkForKingCheck(Color team) throws CheckKingException {
+        ChessPiece king = null;
+        Position kingPos = null;
+        Hashtable<Position, Piece> enemyTeam = new Hashtable<>();
+        ChessPiece currentPiece;
+
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                currentPiece = (ChessPiece) matrix[i][j];
+                if (isCageEmpty(currentPiece)) {
+                    continue;
+                } if (currentPiece instanceof King & currentPiece.color.equals(team)) {
+                    king = currentPiece;
+                    kingPos = new BoardPosition(j, i + 1);
+                } else if (!currentPiece.color.equals(team)) {
+                    enemyTeam.put(new BoardPosition(j, i + 1), currentPiece);
+                }
+            }
+        }
+
+        Set<Position> keys = enemyTeam.keySet();
+        for (Position figure : keys) {
+            currentPiece = (ChessPiece) enemyTeam.get(figure);
+
+            try {
+                assert king != null;
+                assert currentPiece != null;
+
+                if (currentPiece.isFightTrajectoryValid(new Movement(kingPos, figure))
+                        & isDistanceFree(new Movement(kingPos, figure))) {
+                    throw new CheckKingException(king.color + " King under attack");
+                }
+            } catch (CheckKingException cke) {
+                throw cke;
+            } catch (ChessException e) {
+                // trajectory is incorrect
+            }
+        }
+    }
+
+    private LinkedList<Position> getEmptyPositionsAround(Position position) {
+        int vertical = position.getVertical().ordinal();
+        int horizontal = position.getHorizontal() - 1;
+        LinkedList<Position> freeCages = new LinkedList<>();
+
+        for (int i = horizontal - 1; i < horizontal + 2; i++) {
+            try {
+                if (isCageEmpty(matrix[i][vertical - 1])) {
+                    freeCages.add(new BoardPosition(vertical - 1, i + 1));
+                }
+            } catch (IndexOutOfBoundsException ignored) {
+
+            }
+        }
+
+        for (int i = horizontal - 1; i < horizontal + 2; i++) {
+            try {
+                if (isCageEmpty(matrix[i][vertical + 1])) {
+                    freeCages.add(new BoardPosition(vertical + 1, i + 1));
+                }
+            } catch (IndexOutOfBoundsException ignored) {
+
+            }
+        }
+
+        try {
+            if (isCageEmpty(matrix[horizontal + 1][vertical])) {
+                freeCages.add(new BoardPosition(vertical, horizontal + 2));
+            }
+        } catch (IndexOutOfBoundsException ignored) {
+
+        }
+
+        try {
+            if (isCageEmpty(matrix[horizontal - 1][vertical])) {
+                freeCages.add(new BoardPosition(vertical, horizontal));
+            }
+        } catch (IndexOutOfBoundsException ignored) {
+
+        }
+
+        return freeCages;
+    }
+
+    public Piece findBy(Position position) {
         int vertical = position.getVertical().ordinal();
         int horizontal = position.getHorizontal() - 1;
 
@@ -238,7 +281,8 @@ public class Board {
         return matrix[horizontal][vertical];
     }
 
-    private void LOG() {
+    // for debug
+    public void LOG() {
         for (Integer i = 0; i < 8; i++) {
             for (Integer j = 0; j < 8; j++) {
                 if (matrix[i][j] != null) {
@@ -251,7 +295,7 @@ public class Board {
         Log.d("move", "------------------------------------------------------------------------------+-+");
     }
 
-    private void swapFigures(Position start, Position destination) {
+    public void swapFigures(Position start, Position destination) {
         int startVertical = start.getVertical().ordinal();
         int startHorizontal = start.getHorizontal() - 1;
         int destVertical = destination.getVertical().ordinal();
@@ -261,14 +305,14 @@ public class Board {
 
         matrix[startHorizontal][startVertical] = matrix[destHorizontal][destVertical];
         matrix[destHorizontal][destVertical] = figure;
-//        LOG();
+        LOG();
     }
 
-    private boolean isCageEmpty(Piece figure) {
+    public boolean isCageEmpty(Piece figure) {
         return figure == null;
     }
 
-    private void initTeam(Color color) {
+    public void initTeam(Color color) {
         int pawnRow = 1;
         int kingRow = 0;
         if (Color.Black.equals(color)) {

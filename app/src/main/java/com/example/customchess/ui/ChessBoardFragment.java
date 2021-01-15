@@ -20,6 +20,7 @@ import com.example.customchess.engine.exceptions.CastlingException;
 import com.example.customchess.engine.exceptions.ChessException;
 import com.example.customchess.engine.exceptions.FigureNotChosenException;
 import com.example.customchess.engine.exceptions.OneTeamPiecesSelectedException;
+import com.example.customchess.engine.exceptions.PawnOnThePassException;
 import com.example.customchess.engine.movements.BoardPosition;
 import com.example.customchess.engine.movements.Movable;
 import com.example.customchess.engine.movements.Movement;
@@ -98,16 +99,13 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
                     startHolder.hide(); // old king
                     destinationHolder.hide(); // old rook
                 }
-            } catch (OneTeamPiecesSelectedException otp) {
+            } catch (OneTeamPiecesSelectedException | FigureNotChosenException otp) {
                 start = position;
                 startIndex = index;
                 imageResource = imageResourceId;
                 return;
-            } catch (FigureNotChosenException fnc) {
-                start = position;
-                startIndex = index;
-                imageResource = imageResourceId;
-                return;
+            } catch (PawnOnThePassException ppe) {
+                Toast.makeText(this.getContext(), ppe.toString(), Toast.LENGTH_SHORT).show();
             } catch (ChessException e) {
                 e.printStackTrace();
                 Toast.makeText(this.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();

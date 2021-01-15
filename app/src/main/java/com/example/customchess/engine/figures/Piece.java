@@ -1,37 +1,12 @@
 package com.example.customchess.engine.figures;
 
+import com.example.customchess.engine.Board;
+import com.example.customchess.engine.OneDeviceGame;
 import com.example.customchess.engine.exceptions.ChessException;
-import com.example.customchess.engine.misc.Color;
 import com.example.customchess.engine.movements.Movable;
 
-public abstract class Piece {
 
-    public final Color color;
+public interface Piece {
 
-    public Piece(Color color) {
-        this.color = color;
-    }
-
-    @Override
-    public String toString() {
-        return "Piece";
-    }
-
-    public abstract boolean isTrajectoryValid(Movable movement) throws ChessException;
-
-    public abstract boolean canBeatByTrajectory(Movable movement) throws ChessException;
-
-    public abstract void move();
-
-    public boolean areSameColor(Piece figure) {
-        return this.color.equals(figure.color);
-    }
-
-    public boolean isWhite() {
-        return color.equals(Color.White);
-    }
-
-    public boolean isBlack() {
-        return color.equals(Color.Black);
-    }
+    void tryToMove(Movable movement, OneDeviceGame board) throws ChessException;
 }

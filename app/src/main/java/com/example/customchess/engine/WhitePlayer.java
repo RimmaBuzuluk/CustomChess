@@ -3,7 +3,7 @@ package com.example.customchess.engine;
 import android.util.Log;
 
 import com.example.customchess.engine.exceptions.InvalidOrderMoveException;
-import com.example.customchess.engine.figures.Piece;
+import com.example.customchess.engine.figures.ChessPiece;
 
 
 public class WhitePlayer implements Player {
@@ -15,11 +15,11 @@ public class WhitePlayer implements Player {
     }
 
     @Override
-    public boolean isCorrectPlayerMove(Piece selected)  throws InvalidOrderMoveException {
+    public boolean isCorrectPlayerMove(ChessPiece selected)  throws InvalidOrderMoveException {
         if (selected.isWhite()) {
             return true;
         }
-        throw new InvalidOrderMoveException("Now the white player is moving");
+        throw new InvalidOrderMoveException("Now the move of white player");
     }
 
     @Override

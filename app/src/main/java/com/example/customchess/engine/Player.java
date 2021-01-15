@@ -1,10 +1,10 @@
 package com.example.customchess.engine;
 
 import com.example.customchess.engine.exceptions.InvalidOrderMoveException;
-import com.example.customchess.engine.figures.Piece;
+import com.example.customchess.engine.figures.ChessPiece;
 
 public interface Player {
 
-    boolean isCorrectPlayerMove(Piece selected) throws InvalidOrderMoveException;
+    boolean isCorrectPlayerMove(ChessPiece selected) throws InvalidOrderMoveException;
     void changePlayer();
 }
