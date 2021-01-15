@@ -105,7 +105,19 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
                 imageResource = imageResourceId;
                 return;
             } catch (PawnOnThePassException ppe) {
-                Toast.makeText(this.getContext(), ppe.toString(), Toast.LENGTH_SHORT).show();
+                CageAdapter.ViewHolder passedPawn = (CageAdapter.ViewHolder)
+                        recyclerView.findViewHolderForAdapterPosition(index + 1) ;
+
+                if (startIndex % 2 == 0) {
+                    passedPawn = (CageAdapter.ViewHolder)
+                            recyclerView.findViewHolderForAdapterPosition(index - 1);
+                }
+                assert passedPawn != null;
+                passedPawn.hide();
+                destinationHolder.draw(startHolder.getFigure().color);
+                startHolder.hide();
+
+                Toast.makeText(this.getContext(), ppe.getMessage(), Toast.LENGTH_SHORT).show();
             } catch (ChessException e) {
                 e.printStackTrace();
                 Toast.makeText(this.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
