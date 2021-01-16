@@ -68,10 +68,9 @@ public class Pawn extends ChessPiece {
         int verticalDiff = Math.abs(startVertical - destVertical);
 
         if (this.color.equals(Color.White)) {
-            horizontalDiff = -horizontalDiff;
-        }
+            if (horizontalDiff == -1 & verticalDiff == 1) return true;
 
-        if (horizontalDiff == 1 & verticalDiff == 1) {
+        } else if (horizontalDiff == 1 & verticalDiff == 1) {
             return true;
         }
         throw new InvalidMoveException("Invalid move\n" + start + " - " + destination);

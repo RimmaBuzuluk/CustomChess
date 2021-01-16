@@ -70,7 +70,6 @@ public class King extends ChessPiece {
         Board board = game.getBoard();
         ChessPiece startFigure = (ChessPiece) board.findBy(movement.getStart());
         ChessPiece destinationFigure = (ChessPiece) board.findBy(movement.getDestination());
-        Position destination = movement.getDestination();
         Position start = movement.getStart();
 
         if (!board.isCageEmpty(destinationFigure) && startFigure.hasSameColor(destinationFigure)) {

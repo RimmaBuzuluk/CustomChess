@@ -2,6 +2,7 @@ package com.example.customchess.engine;
 
 import com.example.customchess.engine.exceptions.BeatFigureException;
 import com.example.customchess.engine.exceptions.CastlingException;
+import com.example.customchess.engine.exceptions.CheckKingException;
 import com.example.customchess.engine.exceptions.ChessException;
 import com.example.customchess.engine.exceptions.FigureNotChosenException;
 import com.example.customchess.engine.exceptions.MoveOnEmptyCageException;
@@ -26,8 +27,8 @@ public class OneDeviceGame implements Game {
     private Stack<MovementHistory> movementStack;
 
     //  TODO
-    //  2. after try-catch (movements) make a check for a 'check'
-    //  3. implement checkmate function
+    //   3. implement checkmate function
+    //   4. implement draw checker
 
     public OneDeviceGame() {
         board = new Board();
@@ -54,6 +55,7 @@ public class OneDeviceGame implements Game {
             Position destination = movement.getDestination();
             Piece startFigure = board.findBy(movement.getStart());
             Piece destinationFigure = board.findBy(movement.getDestination());  // can be null
+            MovementHistory currentMovementHeader = new MovementHistory(movement, startFigure, destinationFigure);
 
             if (currentPlayer.isCorrectPlayerMove((ChessPiece) startFigure)) {
                 try {
@@ -66,23 +68,21 @@ public class OneDeviceGame implements Game {
                 } catch (CastlingException ce) {
                     board.castling(start, destination);
                     currentPlayer.changePlayer();
-                    movementStack.push(new MovementHistory(movement, startFigure, destinationFigure));
                     throw ce;
                 } catch (PawnOnThePassException ppe) {
                     board.pawnOnThePass(start, destination);
                     currentPlayer.changePlayer();
-                    movementStack.push(new MovementHistory(movement, startFigure, destinationFigure));
                     throw ppe;
                 } catch (PromotionException pe) {
 
                 }
 
+                if (board.isKingUnderAttack(currentPlayer.getColor())) {
+                    board.restorePreviousTurn(currentMovementHeader);
+                    throw new CheckKingException(currentPlayer.getColor() + " King under check");
+                }
                 currentPlayer.changePlayer();
-                movementStack.push(new MovementHistory(movement, startFigure, destinationFigure));
-//                board.isPositionUnderAttack(new BoardPosition(Verticals.A, 5));
-//                 if (check for a 'check')
-//                     move(firstMove = false) ?
-//                     back stack position
+                movementStack.push(currentMovementHeader);
 
             }
 

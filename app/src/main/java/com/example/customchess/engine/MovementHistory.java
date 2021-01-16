@@ -5,6 +5,7 @@ import com.example.customchess.engine.movements.Movable;
 
 public class MovementHistory {
 
+    // that's just stupid DTO
     public final Movable movement;
     public final Piece start;
     public final Piece destination;

@@ -25,7 +25,6 @@ public class Board {
 
     private Piece[][] matrix;
 
-
     public Board() {
         matrix = new ChessPiece[8][8];
         initTeam(Color.White);
@@ -142,6 +141,64 @@ public class Board {
         return distance;
     }
 
+    public boolean isKingUnderAttack(Color teamColor) {
+        ChessPiece king = null;
+        Position kingPos = null;
+        Hashtable<Position, ChessPiece> enemyTeam = getTeamBy(teamColor.equals(Color.White) ? Color.Black : Color.White);
+        ChessPiece currentPiece;
+
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                currentPiece = (ChessPiece) matrix[i][j];
+                if (isCageEmpty(currentPiece)) {
+                    continue;
+                }
+                if (currentPiece instanceof King & currentPiece.color.equals(teamColor)) {
+                    king = currentPiece;
+                    kingPos = new BoardPosition(j, i + 1);
+                    break;
+                }
+            }
+        }
+
+        Set<Position> keys = enemyTeam.keySet();
+        for (Position figure : keys) {
+            currentPiece = enemyTeam.get(figure);
+
+            try {
+                assert king != null;
+                assert currentPiece != null;
+
+                if (currentPiece.isFightTrajectoryValid(new Movement(figure, kingPos))
+                        & isDistanceFree(new Movement(kingPos, figure))) {
+                    throw new CheckKingException(king.color + " King under attack");
+                }
+            } catch (CheckKingException cke) {
+                return true;
+            } catch (ChessException e) {
+                // trajectory is incorrect
+            }
+        }
+        return false;
+    }
+
+    public void restorePreviousTurn(MovementHistory history) {
+        Position destination = history.movement.getDestination();
+        Position start       = history.movement.getStart();
+
+        int vertical;
+        int horizontal;
+        {
+            vertical = start.getVertical().ordinal();
+            horizontal = start.getHorizontal() - 1;
+            matrix[horizontal][vertical] = history.start;
+        }
+        vertical = destination.getVertical().ordinal();
+        horizontal = destination.getHorizontal() - 1;
+        matrix[horizontal][vertical] = history.destination;
+        LOG();
+    }
+
     public boolean isPositionUnderAttack(Color teamColor, Position position) {
         LinkedList<Position> cagesAround = getEmptyPositionsAround(position);
         Hashtable<Position, ChessPiece> enemyTeam = getTeamBy(teamColor.equals(Color.White) ? Color.Black : Color.White);
@@ -186,6 +243,8 @@ public class Board {
         return enemyTeam;
     }
 
+    // TODO
+    //  1. maybe delete it in the end
     public void checkForKingCheck(Color team) throws CheckKingException {
         ChessPiece king = null;
         Position kingPos = null;
