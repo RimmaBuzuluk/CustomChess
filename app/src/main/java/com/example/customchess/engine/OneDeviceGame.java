@@ -4,6 +4,7 @@ import com.example.customchess.engine.exceptions.BeatFigureException;
 import com.example.customchess.engine.exceptions.CastlingException;
 import com.example.customchess.engine.exceptions.CheckKingException;
 import com.example.customchess.engine.exceptions.ChessException;
+import com.example.customchess.engine.exceptions.DrawException;
 import com.example.customchess.engine.exceptions.FigureNotChosenException;
 import com.example.customchess.engine.exceptions.MoveOnEmptyCageException;
 import com.example.customchess.engine.exceptions.PawnOnThePassException;
@@ -57,10 +58,16 @@ public class OneDeviceGame implements Game {
             Piece destinationFigure = board.findBy(movement.getDestination());  // can be null
             MovementHistory currentMovementHeader = new MovementHistory(movement, startFigure, destinationFigure);
 
+            if (board.checkForDraw(currentPlayer.getColor().equals(Color.White) ? Color.Black : Color.White)) {
+                throw new DrawException("Draw");
+            }
+
             if (currentPlayer.isCorrectPlayerMove((ChessPiece) startFigure)) {
                 try {
                     startFigure.tryToMove(movement, this);
 
+                    // TODO
+                    //  maybe add to some catches check for 'check'
                 } catch (MoveOnEmptyCageException mec) {
                     board.swapFigures(start, destination);
                 } catch (BeatFigureException bfe) {
@@ -91,6 +98,4 @@ public class OneDeviceGame implements Game {
         }
 
     }
-
-
 }

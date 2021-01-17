@@ -77,27 +77,26 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
                 destinationHolder.draw(imageResource);
 
             } catch (CastlingException ce) {
-                int diff = Math.abs(startIndex - index);
                 CageAdapter.ViewHolder newRook;
-                CageAdapter.ViewHolder newKing;
-                if (diff == 24) {
+                CageAdapter.ViewHolder oldRook;
+                if (index < 24) {
                     newRook = (CageAdapter.ViewHolder)
                             recyclerView.findViewHolderForAdapterPosition(startIndex - 8);
-                    newKing = (CageAdapter.ViewHolder)
-                            recyclerView.findViewHolderForAdapterPosition(index + 8);
-                    newRook.draw(destinationHolder.getFigure().color);
-                    newKing.draw(startHolder.getFigure().color);
+                    oldRook = (CageAdapter.ViewHolder)
+                            recyclerView.findViewHolderForAdapterPosition(index - 8);
+                    newRook.draw(oldRook.getFigure().color);
+                    destinationHolder.draw(startHolder.getFigure().color);
                     startHolder.hide(); // old king
-                    destinationHolder.hide(); // old rook
-                } else if (diff == 32) {
+                    oldRook.hide();
+                } else if (index > 24) {
                     newRook = (CageAdapter.ViewHolder)
                             recyclerView.findViewHolderForAdapterPosition(startIndex + 8);
-                    newKing = (CageAdapter.ViewHolder)
-                            recyclerView.findViewHolderForAdapterPosition(index - 16);
-                    newRook.draw(destinationHolder.getFigure().color);
-                    newKing.draw(startHolder.getFigure().color);
-                    startHolder.hide(); // old king
-                    destinationHolder.hide(); // old rook
+                    oldRook = (CageAdapter.ViewHolder)
+                            recyclerView.findViewHolderForAdapterPosition(index + 16);
+                    newRook.draw(oldRook.getFigure().color);
+                    destinationHolder.draw(startHolder.getFigure().color);
+                    startHolder.hide();
+                    oldRook.hide();
                 }
             } catch (OneTeamPiecesSelectedException | FigureNotChosenException otp) {
                 start = position;

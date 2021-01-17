@@ -1,5 +1,7 @@
 package com.example.customchess.engine.figures;
 
+import androidx.annotation.Nullable;
+
 import com.example.customchess.engine.Board;
 import com.example.customchess.engine.OneDeviceGame;
 import com.example.customchess.engine.exceptions.BeatFigureException;
@@ -10,6 +12,8 @@ import com.example.customchess.engine.exceptions.InvalidMoveException;
 import com.example.customchess.engine.exceptions.MoveOnEmptyCageException;
 import com.example.customchess.engine.exceptions.OneTeamPiecesSelectedException;
 import com.example.customchess.engine.misc.Color;
+import com.example.customchess.engine.misc.Verticals;
+import com.example.customchess.engine.movements.BoardPosition;
 import com.example.customchess.engine.movements.Movable;
 import com.example.customchess.engine.movements.Position;
 
@@ -71,20 +75,28 @@ public class King extends ChessPiece {
         ChessPiece startFigure = (ChessPiece) board.findBy(movement.getStart());
         ChessPiece destinationFigure = (ChessPiece) board.findBy(movement.getDestination());
         Position start = movement.getStart();
+        Position destination = movement.getDestination();
 
         if (!board.isCageEmpty(destinationFigure) && startFigure.hasSameColor(destinationFigure)) {
-            if (destinationFigure instanceof Rook
-                    && (startFigure.firstMove & destinationFigure.firstMove)
-                    && board.isDistanceFree(movement)) {
-                if ( ! board.isPositionUnderAttack(color, start)) {
-                    throw new CastlingException("castling");
-                }
-                throw new CheckKingException(color + " King under attack : " + start);
-            }
             throw new OneTeamPiecesSelectedException("One team pieces are selected");
 
         } else if (board.isCageEmpty(destinationFigure)) {
-            if (isTrajectoryValid(movement)
+            ChessPiece cornerPiece = getCornerPieceOnFlank(board, destination);
+
+            if (start.getHorizontal().equals(destination.getHorizontal())
+                    && Math.abs(start.getVertical().ordinal() - destination.getVertical().ordinal()) == 2
+                    && cornerPiece instanceof Rook
+                    && (cornerPiece.firstMove & startFigure.firstMove)) {
+
+                Position middle = getMiddleBetween(start, destination);
+                if ( ! board.isPositionUnderAttack(color, start)
+                        && ! board.isPositionUnderAttack(color, destination)
+                        && ! board.isPositionUnderAttack(color, middle)) {
+                    throw new CastlingException("castling");
+                }
+                throw new CheckKingException(color + " King under attack : " + start);
+
+            } else if (isTrajectoryValid(movement)
                     & board.isDistanceFree(movement)) {
                 throw new MoveOnEmptyCageException("default move");
             }
@@ -97,5 +109,26 @@ public class King extends ChessPiece {
             }
         }
         throw new InvalidMoveException("Invalid move\n" + movement.getStart() + " - " + movement.getDestination());
+    }
+
+    private ChessPiece getCornerPieceOnFlank(Board board, Position onFlank) {
+        Verticals vertical;
+        if (onFlank.getVertical().ordinal() > 3) { // queen's flank
+            vertical = Verticals.A;
+        } else {
+            vertical = Verticals.H;
+        }
+
+        return (ChessPiece) board.findBy(new BoardPosition(vertical, onFlank.getHorizontal()));
+    }
+
+    private Position getMiddleBetween(Position start, Position destination) {
+        Verticals vertical = Verticals.F;
+        int diffVertical = start.getVertical().ordinal() - destination.getVertical().ordinal();
+        if (diffVertical == -2) {
+            vertical = Verticals.D;
+        }
+
+        return new BoardPosition(vertical, start.getHorizontal());
     }
 }

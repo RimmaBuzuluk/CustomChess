@@ -5,6 +5,7 @@ import android.util.Log;
 import com.example.customchess.engine.exceptions.CastlingException;
 import com.example.customchess.engine.exceptions.CheckKingException;
 import com.example.customchess.engine.exceptions.ChessException;
+import com.example.customchess.engine.exceptions.DrawException;
 import com.example.customchess.engine.exceptions.FigureNotChosenException;
 import com.example.customchess.engine.exceptions.InvalidMoveException;
 import com.example.customchess.engine.exceptions.OneTeamPiecesSelectedException;
@@ -33,23 +34,24 @@ public class Board {
 
     public void castling(Position start, Position destination) {
         int startVertical = start.getVertical().ordinal();
-        int startHorizontal = start.getHorizontal() - 1;
+        int horizontal = start.getHorizontal() - 1;
         int destVertical = destination.getVertical().ordinal();
-        int destHorizontal = destination.getHorizontal() - 1;
 
         Piece temp;
-        int diff = Math.abs(destVertical - startVertical);
-        if (diff == 3) {
-            temp = matrix[destHorizontal][destVertical];
-            matrix[destHorizontal][destVertical + 1] = matrix[startHorizontal][startVertical];
-            matrix[startHorizontal][startVertical - 1] = temp;
-        } else if (diff == 4) {
-            temp = matrix[destHorizontal][destVertical];
-            matrix[destHorizontal][destVertical - 2] = matrix[startHorizontal][startVertical];
-            matrix[startHorizontal][startVertical + 1] = temp;
+
+        if (destination.getVertical().equals(Verticals.C)) {
+            temp = matrix[horizontal][7]; // rook on queen's flank
+            matrix[horizontal][destVertical] = matrix[horizontal][startVertical];
+            matrix[horizontal][startVertical + 1] = temp;
+            matrix[horizontal][7] = null;
+
+        } else if (destination.getVertical().equals(Verticals.G)) {
+            temp = matrix[horizontal][destVertical - 1];
+            matrix[horizontal][destVertical] = matrix[horizontal][startVertical];
+            matrix[horizontal][destVertical + 1] = temp;
+            matrix[horizontal][0] = null;
         }
-        matrix[startHorizontal][startVertical] = null;
-        matrix[destHorizontal][destVertical] = null;
+        matrix[horizontal][startVertical] = null;
         LOG();
     }
 
@@ -200,7 +202,6 @@ public class Board {
     }
 
     public boolean isPositionUnderAttack(Color teamColor, Position position) {
-        LinkedList<Position> cagesAround = getEmptyPositionsAround(position);
         Hashtable<Position, ChessPiece> enemyTeam = getTeamBy(teamColor.equals(Color.White) ? Color.Black : Color.White);
         ChessPiece currentPiece;
         boolean answer = false;
@@ -241,6 +242,39 @@ public class Board {
         }
 
         return enemyTeam;
+    }
+
+    public boolean checkForDraw(Color enemyColor) {
+        Hashtable<Position, ChessPiece> enemyTeam = getTeamBy(enemyColor);
+        LinkedList<Position> cagesAround;
+        int figuresCannotMove = 0;
+        ChessPiece currentPiece;
+
+        // fixme
+        //  1. add check for a fight trajectory
+        //  2. add check for a not check
+
+        Set<Position> keys = enemyTeam.keySet();
+        for (Position figure : keys) {
+            currentPiece = enemyTeam.get(figure);
+            cagesAround = getEmptyPositionsAround(figure);
+
+            try {
+                assert currentPiece != null;
+
+                for (Position cageAround : cagesAround) {
+                    if (currentPiece.isTrajectoryValid(new Movement(figure, cageAround))
+                            & isDistanceFree(new Movement(cageAround, figure))) {
+                        throw new DrawException("Draw");
+                    }
+                }
+            } catch (DrawException de) {
+                figuresCannotMove++;
+            } catch (ChessException e) {
+                // trajectory is incorrect
+            }
+        }
+        return figuresCannotMove == enemyTeam.size();
     }
 
     // TODO
