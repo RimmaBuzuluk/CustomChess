@@ -270,21 +270,23 @@ public class Board {
         assert kingPos != null;
         LinkedList<Position> cagesAroundKing = getEmptyPositionsAround(kingPos);
         if (attackingFigures > 1) {
+
             int underAttack = 0;
             for (Position position : cagesAroundKing) {
                 if (isPositionUnderAttack(king.color, position)) {
                     underAttack++;
                 }
             }
-            if (underAttack == attackingFigures) {
+            if (underAttack == cagesAroundKing.size()) {
                 answer = true;
             }
         }
+        // TODO: 20.01.21
+        //  add case of one attacking figure
 
         return answer;
     }
 
-    // TODO: 19.01.21 create unit test for this method
     public boolean isPositionUnderAttack(Color teamColor, Position position) {
         Hashtable<Position, ChessPiece> enemyTeam = getTeamBy(teamColor.equals(Color.White) ? Color.Black : Color.White);
         ChessPiece currentPiece;
