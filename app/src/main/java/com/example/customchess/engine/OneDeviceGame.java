@@ -3,6 +3,7 @@ package com.example.customchess.engine;
 import com.example.customchess.engine.exceptions.BeatFigureException;
 import com.example.customchess.engine.exceptions.CastlingException;
 import com.example.customchess.engine.exceptions.CheckKingException;
+import com.example.customchess.engine.exceptions.CheckMateException;
 import com.example.customchess.engine.exceptions.ChessException;
 import com.example.customchess.engine.exceptions.DrawException;
 import com.example.customchess.engine.exceptions.FigureNotChosenException;
@@ -12,12 +13,9 @@ import com.example.customchess.engine.exceptions.PromotionException;
 import com.example.customchess.engine.figures.ChessPiece;
 import com.example.customchess.engine.figures.Piece;
 import com.example.customchess.engine.misc.Color;
-import com.example.customchess.engine.misc.Verticals;
-import com.example.customchess.engine.movements.BoardPosition;
 import com.example.customchess.engine.movements.Movable;
 import com.example.customchess.engine.movements.Position;
 
-import java.util.EmptyStackException;
 import java.util.Stack;
 
 
@@ -83,6 +81,11 @@ public class OneDeviceGame implements Game {
                 } catch (PromotionException pe) {
 
                 }
+
+                // it should be in a method
+//                if (board.isCheckMate(currentPlayer.getColor())) {
+//                    throw new CheckMateException("Mate on the board");
+//                }
 
                 if (board.isKingUnderAttack(currentPlayer.getColor())) {
                     board.restorePreviousTurn(currentMovementHeader);

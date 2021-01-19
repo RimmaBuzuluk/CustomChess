@@ -2,13 +2,10 @@ package com.example.customchess.engine;
 
 import android.util.Log;
 
-import com.example.customchess.engine.exceptions.CastlingException;
 import com.example.customchess.engine.exceptions.CheckKingException;
+import com.example.customchess.engine.exceptions.CheckMateException;
 import com.example.customchess.engine.exceptions.ChessException;
 import com.example.customchess.engine.exceptions.DrawException;
-import com.example.customchess.engine.exceptions.FigureNotChosenException;
-import com.example.customchess.engine.exceptions.InvalidMoveException;
-import com.example.customchess.engine.exceptions.OneTeamPiecesSelectedException;
 import com.example.customchess.engine.figures.*;
 import com.example.customchess.engine.misc.Color;
 import com.example.customchess.engine.misc.Verticals;
@@ -17,6 +14,7 @@ import com.example.customchess.engine.movements.Movable;
 import com.example.customchess.engine.movements.Movement;
 import com.example.customchess.engine.movements.Position;
 
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Set;
@@ -25,6 +23,36 @@ import java.util.Set;
 public class Board {
 
     private Piece[][] matrix;
+
+    // for unit tests
+    public Board(Piece[][] matrix) {
+        this.matrix = matrix;
+    }
+
+    // for unit tests
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Board board = (Board) o;
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if ((matrix[i][j] == null & board.matrix[i][j] != null)
+                        | (matrix[i][j] != null & board.matrix[i][j] == null)) {
+                    return false;
+                } else if (matrix[i][j] != null & board.matrix[i][j] != null) {
+                    if (matrix[i][j].getClass() != board.matrix[i][j].getClass()) {
+                        return false;
+                    }
+                    if (matrix[i][j].getClass() == board.matrix[i][j].getClass()
+                            & ((ChessPiece) matrix[i][j]).color != ((ChessPiece) board.matrix[i][j]).color) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
 
     public Board() {
         matrix = new ChessPiece[8][8];
@@ -52,7 +80,7 @@ public class Board {
             matrix[horizontal][0] = null;
         }
         matrix[horizontal][startVertical] = null;
-        LOG();
+//        LOG();
     }
 
     public void pawnOnThePass(Position start, Position destination) {
@@ -68,7 +96,7 @@ public class Board {
         }
         matrix[destHorizontal][destVertical] = matrix[startHorizontal][startVertical];
         matrix[startHorizontal][startVertical] = null;
-        LOG();
+//        LOG();
     }
 
     public void beatFigure(Position start, Position destination) {
@@ -81,7 +109,7 @@ public class Board {
 
         matrix[startHorizontal][startVertical] = null;
         matrix[destHorizontal][destVertical] = figure;
-        LOG();
+//        LOG();
     }
 
     public boolean isDistanceFree(Movable movement) {
@@ -201,6 +229,62 @@ public class Board {
         LOG();
     }
 
+    public boolean isCheckMate(Color teamColor) {
+        Hashtable<Position, ChessPiece> enemyTeam = getTeamBy(teamColor.equals(Color.White) ? Color.Black : Color.White);
+        ChessPiece currentPiece;
+        boolean answer = false;
+        int attackingFigures = 0;
+        ChessPiece king = null;
+        Position kingPos = null;
+
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                currentPiece = (ChessPiece) matrix[i][j];
+                if (isCageEmpty(currentPiece)) {
+                    continue;
+                } if (currentPiece instanceof King & currentPiece.color.equals(teamColor)) {
+                    king = currentPiece;
+                    kingPos = new BoardPosition(j, i + 1);
+                    break;
+                }
+            }
+        }
+
+        Set<Position> keys = enemyTeam.keySet();
+        for (Position figure : keys) {
+            currentPiece = enemyTeam.get(figure);
+
+            try {
+                assert currentPiece != null;
+
+                if (currentPiece.isFightTrajectoryValid(new Movement(figure, kingPos))
+                        & isDistanceFree(new Movement(figure, kingPos))
+                ) {
+                    attackingFigures++;
+                }
+            } catch (ChessException e) {
+                // trajectory is incorrect
+            }
+        }
+
+        assert kingPos != null;
+        LinkedList<Position> cagesAroundKing = getEmptyPositionsAround(kingPos);
+        if (attackingFigures > 1) {
+            int underAttack = 0;
+            for (Position position : cagesAroundKing) {
+                if (isPositionUnderAttack(king.color, position)) {
+                    underAttack++;
+                }
+            }
+            if (underAttack == attackingFigures) {
+                answer = true;
+            }
+        }
+
+        return answer;
+    }
+
+    // TODO: 19.01.21 create unit test for this method
     public boolean isPositionUnderAttack(Color teamColor, Position position) {
         Hashtable<Position, ChessPiece> enemyTeam = getTeamBy(teamColor.equals(Color.White) ? Color.Black : Color.White);
         ChessPiece currentPiece;
@@ -398,7 +482,7 @@ public class Board {
 
         matrix[startHorizontal][startVertical] = matrix[destHorizontal][destVertical];
         matrix[destHorizontal][destVertical] = figure;
-        LOG();
+//        LOG();
     }
 
     public boolean isCageEmpty(Piece figure) {

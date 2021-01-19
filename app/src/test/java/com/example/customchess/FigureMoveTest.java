@@ -28,5 +28,13 @@ public class FigureMoveTest {
     Position h4 = new BoardPosition(Verticals.H, 4);
     Position h3 = new BoardPosition(Verticals.H, 3);
     Position g2 = new BoardPosition(Verticals.G, 2);
+    Position d2 = new BoardPosition(Verticals.D, 2);
+    Position e5 = new BoardPosition(Verticals.E, 5);
+    Position e4 = new BoardPosition(Verticals.E, 4);
+    Position e6 = new BoardPosition(Verticals.E, 6);
+    Position e1 = new BoardPosition(Verticals.E, 1);
+    Position e2 = new BoardPosition(Verticals.E, 2);
+    Position e8 = new BoardPosition(Verticals.E, 8);
+    Position e3 = new BoardPosition(Verticals.E, 3);
 
 }
