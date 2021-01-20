@@ -47,6 +47,15 @@ public class OneDeviceGame implements Game {
         return movementStack.peek();
     }
 
+    public void checkForCheckMate() throws CheckMateException {
+        if (board.isCheckMate(Color.Black)) {
+            throw new CheckMateException("Mate on the board\n" + Color.Black + " is fucked");
+        }
+        if (board.isCheckMate(Color.White)) {
+            throw new CheckMateException("Mate on the board\n" + Color.White + " is fucked");
+        }
+    }
+
     public void canMakeMovement(Movable movement) throws ChessException {
 
         try {
@@ -64,8 +73,6 @@ public class OneDeviceGame implements Game {
                 try {
                     startFigure.tryToMove(movement, this);
 
-                    // TODO
-                    //  maybe add to some catches check for 'check'
                 } catch (MoveOnEmptyCageException mec) {
                     board.swapFigures(start, destination);
                 } catch (BeatFigureException bfe) {
@@ -83,9 +90,6 @@ public class OneDeviceGame implements Game {
                 }
 
                 // it should be in a method
-//                if (board.isCheckMate(currentPlayer.getColor())) {
-//                    throw new CheckMateException("Mate on the board");
-//                }
 
                 if (board.isKingUnderAttack(currentPlayer.getColor())) {
                     board.restorePreviousTurn(currentMovementHeader);
@@ -99,6 +103,5 @@ public class OneDeviceGame implements Game {
         } catch (NullPointerException npe) {
             throw new FigureNotChosenException("Figure was not chosen");
         }
-
     }
 }

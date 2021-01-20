@@ -171,6 +171,52 @@ public class Board {
         return distance;
     }
 
+    private LinkedList<Position> getPositionsOnDistance(Movable movement) {
+        Position start = movement.getStart();
+        Position destination = movement.getDestination();
+        int startVertical = start.getVertical().ordinal();
+        int startHorizontal = start.getHorizontal() - 1;
+        int destVertical = destination.getVertical().ordinal();
+        int destHorizontal = destination.getHorizontal() - 1;
+        LinkedList<Position> distance = new LinkedList<>();
+
+        if (startVertical > destVertical) {
+            int temp = startVertical;
+            startVertical = destVertical;
+            destVertical = temp;
+        }
+        if (startHorizontal > destHorizontal) {
+            int temp = startHorizontal;
+            startHorizontal = destHorizontal;
+            destHorizontal = temp;
+        }
+
+        if (startHorizontal - destHorizontal == 0) {
+            for (int i = startVertical + 1; i < destVertical; i++) {
+                distance.add(new BoardPosition(i, startHorizontal + 1));
+            }
+        } else if (startVertical - destVertical == 0) {
+            for (int i = startHorizontal + 1; i < destHorizontal; i++) {
+                distance.add(new BoardPosition(startVertical, i));
+            }
+        } else if (Math.abs(startHorizontal - destHorizontal) == Math.abs(startVertical - destVertical)) {
+            if ((start.getVertical().ordinal() < destination.getVertical().ordinal() && start.getHorizontal() < destination.getHorizontal())
+                    || (start.getVertical().ordinal() > destination.getVertical().ordinal() && start.getHorizontal() > destination.getHorizontal())) {
+                for (int i = 1; (startVertical + i) < destVertical; i++) {
+                    Position fuck = new BoardPosition(startVertical + i, startHorizontal + i + 1);
+                    distance.add(fuck);
+                }
+            } else {
+                for (int i = 1; (startVertical + i) < destVertical; i++) {
+                    Position fuck = new BoardPosition(startVertical + i, destHorizontal - i + 1);
+                    distance.add(fuck);
+                }
+            }
+        }
+
+        return distance;
+    }
+
     public boolean isKingUnderAttack(Color teamColor) {
         ChessPiece king = null;
         Position kingPos = null;
@@ -226,14 +272,15 @@ public class Board {
         vertical = destination.getVertical().ordinal();
         horizontal = destination.getHorizontal() - 1;
         matrix[horizontal][vertical] = history.destination;
-        LOG();
+//        LOG();
     }
 
     public boolean isCheckMate(Color teamColor) {
         Hashtable<Position, ChessPiece> enemyTeam = getTeamBy(teamColor.equals(Color.White) ? Color.Black : Color.White);
         ChessPiece currentPiece;
         boolean answer = false;
-        int attackingFigures = 0;
+        int attackingFiguresAmount = 0;
+        LinkedList<Position> attackingFigures = new LinkedList<>();
         ChessPiece king = null;
         Position kingPos = null;
 
@@ -260,7 +307,8 @@ public class Board {
                 if (currentPiece.isFightTrajectoryValid(new Movement(figure, kingPos))
                         & isDistanceFree(new Movement(figure, kingPos))
                 ) {
-                    attackingFigures++;
+                    attackingFigures.add(figure);
+                    attackingFiguresAmount++;
                 }
             } catch (ChessException e) {
                 // trajectory is incorrect
@@ -269,20 +317,87 @@ public class Board {
 
         assert kingPos != null;
         LinkedList<Position> cagesAroundKing = getEmptyPositionsAround(kingPos);
-        if (attackingFigures > 1) {
-
-            int underAttack = 0;
-            for (Position position : cagesAroundKing) {
-                if (isPositionUnderAttack(king.color, position)) {
-                    underAttack++;
-                }
+        int cagesUnderAttack = 0;
+        for (Position position : cagesAroundKing) {
+            if (isPositionUnderAttack(king.color, position)) {
+                cagesUnderAttack++;
             }
-            if (underAttack == cagesAroundKing.size()) {
+        }
+
+        if (attackingFiguresAmount > 1) {
+            if (cagesUnderAttack == cagesAroundKing.size()) {
+                answer = true;
+            }
+        } else if (attackingFiguresAmount == 1) {
+            if (cagesUnderAttack == cagesAroundKing.size()
+                    & ! hasNoFigureToSaveKingFromCheck(teamColor, kingPos, attackingFigures.get(0))) {
                 answer = true;
             }
         }
-        // TODO: 20.01.21
-        //  add case of one attacking figure
+
+        return answer;
+    }
+
+    private boolean hasNoFigureToSaveKingFromCheck(Color kingColor, Position kingPosition, Position attackingPiece) {
+        Hashtable<Position, ChessPiece> ourTeam = getTeamBy(kingColor);
+        MovementHistory backUpMove;
+        Movement currentMovement;
+        ChessPiece currentPiece;
+        boolean answer = false;
+
+        Set<Position> keys = ourTeam.keySet();
+        for (Position piece : keys) {
+            currentPiece = ourTeam.get(piece);
+            // beat attacking figure case
+            try {
+                assert currentPiece != null;
+
+                currentMovement = new Movement(piece, attackingPiece);
+                if (currentPiece.isFightTrajectoryValid(currentMovement)
+                        && isDistanceFree(currentMovement)) {
+                    backUpMove = new MovementHistory(currentMovement, findBy(piece), findBy(attackingPiece));
+                    beatFigure(piece, attackingPiece);
+                    if ( ! isKingUnderAttack(kingColor)) {
+                        answer = true;
+                        restorePreviousTurn(backUpMove);
+                        break;
+                    }
+                    restorePreviousTurn(backUpMove);
+                }
+            } catch (ChessException e) {
+                // trajectory is incorrect
+            }
+        }
+
+        if ( ! answer) {
+
+            LinkedList<Position> distance = getPositionsOnDistance(new Movement(kingPosition, attackingPiece));
+            for (Position piece : keys) {
+                currentPiece = ourTeam.get(piece);
+                // cover attacking figure case
+
+                for (Position cage : distance) {
+                    try {
+                        assert currentPiece != null;
+                        currentMovement = new Movement(piece, cage);
+
+                        if (currentPiece.isTrajectoryValid(currentMovement)
+                                && isDistanceFree(currentMovement)) {
+                            backUpMove = new MovementHistory(currentMovement, findBy(piece), findBy(cage));
+                            swapFigures(piece, cage);
+                            if ( ! isKingUnderAttack(kingColor)) {
+                                answer = true;
+                                restorePreviousTurn(backUpMove);
+                                break;
+                            }
+                            restorePreviousTurn(backUpMove);
+                        }
+                    } catch (ChessException e) {
+                        // trajectory is incorrect
+                    }
+                }
+            }
+        }
 
         return answer;
     }

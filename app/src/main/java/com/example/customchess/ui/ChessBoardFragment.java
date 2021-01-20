@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.example.customchess.R;
 import com.example.customchess.engine.OneDeviceGame;
 import com.example.customchess.engine.exceptions.CastlingException;
+import com.example.customchess.engine.exceptions.CheckMateException;
 import com.example.customchess.engine.exceptions.ChessException;
 import com.example.customchess.engine.exceptions.FigureNotChosenException;
 import com.example.customchess.engine.exceptions.OneTeamPiecesSelectedException;
@@ -121,6 +122,12 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
                 e.printStackTrace();
                 Toast.makeText(this.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
             }
+        }
+
+        try {
+            game.checkForCheckMate();
+        } catch (CheckMateException e) {
+            Toast.makeText(this.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
         start = null;  // it looks disgusting
