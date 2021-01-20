@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:orientation="vertical"
+    android:layout_height="wrap_content">
+
+    <TextView style="@style/vertical_board_layout"
+        android:text="⇂"/>
+
+    <TextView style="@style/vertical_board_layout"
+        android:text="ᘔ"/>
+
+    <TextView style="@style/vertical_board_layout"
+        android:text="Ɛ"/>
+
+    <TextView style="@style/vertical_board_layout"
+        android:text="߈"/>
+
+    <TextView style="@style/vertical_board_layout"
+        android:text="ϛ"/>
+
+    <TextView style="@style/vertical_board_layout"
+        android:text="9"/>
+
+    <TextView style="@style/vertical_board_layout"
+        android:text="ㄥ"/>
+
+    <TextView style="@style/vertical_board_layout"
+        android:text="8"/>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

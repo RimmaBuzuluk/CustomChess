@@ -26,7 +26,6 @@ public class OneDeviceGame implements Game {
     private Stack<MovementHistory> movementStack;
 
     //  TODO
-    //   3. implement checkmate function
     //   4. implement draw checker
 
     public OneDeviceGame() {
@@ -48,11 +47,8 @@ public class OneDeviceGame implements Game {
     }
 
     public void checkForCheckMate() throws CheckMateException {
-        if (board.isCheckMate(Color.Black)) {
-            throw new CheckMateException("Mate on the board\n" + Color.Black + " is fucked");
-        }
-        if (board.isCheckMate(Color.White)) {
-            throw new CheckMateException("Mate on the board\n" + Color.White + " is fucked");
+        if (board.isCheckMate(currentPlayer.getColor())) {
+            throw new CheckMateException("Mate on the board\n" + currentPlayer.getColor() + " is fucked");
         }
     }
 
@@ -64,10 +60,6 @@ public class OneDeviceGame implements Game {
             Piece startFigure = board.findBy(movement.getStart());
             Piece destinationFigure = board.findBy(movement.getDestination());  // can be null
             MovementHistory currentMovementHeader = new MovementHistory(movement, startFigure, destinationFigure);
-
-            if (board.checkForDraw(currentPlayer.getColor().equals(Color.White) ? Color.Black : Color.White)) {
-                throw new DrawException("Draw");
-            }
 
             if (currentPlayer.isCorrectPlayerMove((ChessPiece) startFigure)) {
                 try {

@@ -197,7 +197,7 @@ public class Board {
             }
         } else if (startVertical - destVertical == 0) {
             for (int i = startHorizontal + 1; i < destHorizontal; i++) {
-                distance.add(new BoardPosition(startVertical, i));
+                distance.add(new BoardPosition(startVertical, i + 1));
             }
         } else if (Math.abs(startHorizontal - destHorizontal) == Math.abs(startVertical - destVertical)) {
             if ((start.getVertical().ordinal() < destination.getVertical().ordinal() && start.getHorizontal() < destination.getHorizontal())
@@ -329,9 +329,83 @@ public class Board {
                 answer = true;
             }
         } else if (attackingFiguresAmount == 1) {
+            boolean toBeat = hasNoFigureToSaveKingFromCheck(teamColor, kingPos, attackingFigures.get(0));
+            boolean toCover = hasNoFigureToCoverKingFromCheck(teamColor, kingPos, attackingFigures.get(0));
+            boolean toMoveAway = hasNoCagesToMoveAway(cagesAroundKing, kingPos);
             if (cagesUnderAttack == cagesAroundKing.size()
-                    & ! hasNoFigureToSaveKingFromCheck(teamColor, kingPos, attackingFigures.get(0))) {
+                    & (! toBeat & ! toCover)) {
                 answer = true;
+            } else if (cagesAroundKing.size() - cagesUnderAttack > 0
+                    & ! toMoveAway) {
+                answer = true;
+            }
+        }
+
+        return answer;
+    }
+
+    private boolean hasNoCagesToMoveAway(LinkedList<Position> emptyCagesAroundKing, Position kingPosition) {
+        MovementHistory backUpMove;
+        Movement currentMovement;
+        ChessPiece king = (ChessPiece) findBy(kingPosition);
+        boolean answer = false;
+
+        for (Position cage : emptyCagesAroundKing) {
+             try {
+                 assert king != null;
+                 currentMovement = new Movement(kingPosition, cage);
+
+                 if (king.isTrajectoryValid(currentMovement)
+                         && isDistanceFree(currentMovement)) {
+                     backUpMove = new MovementHistory(currentMovement, king, findBy(cage));
+                     swapFigures(kingPosition, cage);
+                     if ( ! isKingUnderAttack(king.color)) {
+                         answer = true;
+                         restorePreviousTurn(backUpMove);
+                         break;
+                     }
+                     restorePreviousTurn(backUpMove);
+                 }
+             } catch (ChessException ignored) {
+
+             }
+        }
+
+        return answer;
+    }
+
+    private boolean hasNoFigureToCoverKingFromCheck(Color kingColor, Position kingPosition, Position attackingPiece) {
+        Hashtable<Position, ChessPiece> ourTeam = getTeamBy(kingColor);
+        MovementHistory backUpMove;
+        Movement currentMovement;
+        ChessPiece currentPiece;
+        boolean answer = false;
+
+        Set<Position> keys = ourTeam.keySet();
+        LinkedList<Position> distance = getPositionsOnDistance(new Movement(kingPosition, attackingPiece));
+        for (Position piece : keys) {
+            currentPiece = ourTeam.get(piece);
+            // cover attacking figure case
+
+            for (Position cage : distance) {
+                try {
+                    assert currentPiece != null;
+                    currentMovement = new Movement(piece, cage);
+
+                    if (currentPiece.isTrajectoryValid(currentMovement)
+                            && isDistanceFree(currentMovement)) {
+                        backUpMove = new MovementHistory(currentMovement, findBy(piece), findBy(cage));
+                        swapFigures(piece, cage);
+                        if ( ! isKingUnderAttack(kingColor)) {
+                            answer = true;
+                            restorePreviousTurn(backUpMove);
+                            break;
+                        }
+                        restorePreviousTurn(backUpMove);
+                    }
+                } catch (ChessException e) {
+                    // trajectory is incorrect
+                }
             }
         }
 
@@ -366,36 +440,6 @@ public class Board {
                 }
             } catch (ChessException e) {
                 // trajectory is incorrect
-            }
-        }
-
-        if ( ! answer) {
-
-            LinkedList<Position> distance = getPositionsOnDistance(new Movement(kingPosition, attackingPiece));
-            for (Position piece : keys) {
-                currentPiece = ourTeam.get(piece);
-                // cover attacking figure case
-
-                for (Position cage : distance) {
-                    try {
-                        assert currentPiece != null;
-                        currentMovement = new Movement(piece, cage);
-
-                        if (currentPiece.isTrajectoryValid(currentMovement)
-                                && isDistanceFree(currentMovement)) {
-                            backUpMove = new MovementHistory(currentMovement, findBy(piece), findBy(cage));
-                            swapFigures(piece, cage);
-                            if ( ! isKingUnderAttack(kingColor)) {
-                                answer = true;
-                                restorePreviousTurn(backUpMove);
-                                break;
-                            }
-                            restorePreviousTurn(backUpMove);
-                        }
-                    } catch (ChessException e) {
-                        // trajectory is incorrect
-                    }
-                }
             }
         }
 

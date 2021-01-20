@@ -127,7 +127,7 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
         try {
             game.checkForCheckMate();
         } catch (CheckMateException e) {
-            Toast.makeText(this.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
         }
 
         start = null;  // it looks disgusting

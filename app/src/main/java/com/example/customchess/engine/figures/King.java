@@ -104,7 +104,8 @@ public class King extends ChessPiece {
         } else {
             if (isFightTrajectoryValid(movement)
                     & board.isDistanceFree(movement)
-                    & ! board.isPositionUnderAttack(color, start)) {
+                  /*  & ! board.isPositionUnderAttack(color, start)  */
+            ) {
                 throw new BeatFigureException("beat figure move");
             }
         }

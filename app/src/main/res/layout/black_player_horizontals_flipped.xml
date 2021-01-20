@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <TextView style="@style/horizontal_board_layout"
+        android:text="H"/>
+
+    <TextView style="@style/horizontal_board_layout"
+        android:text="ꓨ"/>
+
+    <TextView style="@style/horizontal_board_layout"
+        android:text="ꓞ"/>
+
+
+    <TextView style="@style/horizontal_board_layout"
+        android:text="Ǝ"/>
+
+
+    <TextView style="@style/horizontal_board_layout"
+        android:text="ꓷ"/>
+
+
+    <TextView style="@style/horizontal_board_layout"
+        android:text="ꓛ"/>
+
+
+    <TextView style="@style/horizontal_board_layout"
+        android:text="ꓭ"/>
+
+    <TextView style="@style/horizontal_board_layout"
+        android:text="Ɐ"/>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

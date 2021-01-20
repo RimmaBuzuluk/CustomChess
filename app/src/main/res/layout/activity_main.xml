@@ -23,7 +23,7 @@
             <include
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                layout="@layout/black_player_horizontals" />
+                layout="@layout/black_player_horizontals_flipped" />
         </TableRow>
 
         <LinearLayout
@@ -47,9 +47,9 @@
                 tools:layout="@layout/fragment_chess_board" />
 
             <include
-                android:layout_width="wrap_content"
+                android:layout_width="12sp"
                 android:layout_height="wrap_content"
-                layout="@layout/black_player_verticals"
+                layout="@layout/black_player_verticals_flipped"
                 android:layout_marginStart="1dp"
                 android:layout_marginLeft="1dp" />
         </LinearLayout>

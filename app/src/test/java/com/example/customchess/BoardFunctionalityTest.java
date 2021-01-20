@@ -56,7 +56,7 @@ public class BoardFunctionalityTest extends FigureMoveTest {
     };
     Piece[][] matrix5 = new Piece[][] {
             new Piece[] { new Rook(Color.White), new Knight(Color.White), new Bishop(Color.White), new King(Color.White), new Queen(Color.White), new Bishop(Color.White), new Knight(Color.White), new Rook(Color.White)},
-            new Piece[] { new Pawn(Color.White), new Pawn(Color.White),   new Pawn(Color.White),   new Pawn(Color.White), new Pawn(Color.White)                  , new Pawn(Color.White),new Pawn(Color.White),new Pawn(Color.White)},
+            new Piece[] { new Pawn(Color.White), new Pawn(Color.White),   new Pawn(Color.White),   new Pawn(Color.White), new Pawn(Color.White) , new Pawn(Color.White),new Pawn(Color.White),new Pawn(Color.White)},
             new Piece[] { null, null, new Knight(Color.Black), null, null, null, null, null },
             new Piece[] { null, null, null, null, null, null, null, null },
             new Piece[] { null, null, null, new Queen(Color.Black), null, null, null, new Bishop(Color.Black) },
@@ -245,6 +245,82 @@ public class BoardFunctionalityTest extends FigureMoveTest {
             new Piece[] { new Pawn(Color.Black), new Queen(Color.White), new Pawn(Color.Black), null, null, null, null, null },
             new Piece[] { null, new King(Color.Black), null, null, new Rook(Color.Black), null, null, new Rook(Color.Black) }
     };
+    Piece[][] matrix24 = new Piece[][] {
+            new Piece[] { new Rook(Color.White), new Knight(Color.White), new Bishop(Color.White), null, null, new Bishop(Color.White), new Knight(Color.White), new Rook(Color.White) },
+            new Piece[] { null, null, new Pawn(Color.White), null, null, null, new Pawn(Color.White), null },
+            new Piece[] { new Pawn(Color.White), null, null, new Rook(Color.Black), null, new Pawn(Color.White), null, new Pawn(Color.White) },
+            new Piece[] { null, new Pawn(Color.White), null, null, null, null, null, null },
+
+            new Piece[] { new King(Color.White), null, new Knight(Color.Black), null, null, null, null, null },
+            new Piece[] { new Pawn(Color.Black), new Pawn(Color.Black), null, null, null, new Bishop(Color.Black), null, null },
+            new Piece[] { null, null, new Pawn(Color.Black), null, null, new Pawn(Color.Black), new Pawn(Color.Black), new Pawn(Color.Black) },
+            new Piece[] { null, null, null, null, null, null, null, null }
+    };
+    Piece[][] matrix25 = new Piece[][] {
+            new Piece[] { null, null, null, null, null, null, null, null },
+            new Piece[] { null, null, null, null, null, null, null, null },
+            new Piece[] { null, null, null, null, null, null, null, null },
+            new Piece[] { null, new Pawn(Color.White), null, null, null, null, null, null },
+
+            new Piece[] { new King(Color.White), null, new Knight(Color.Black), null, null, null, null, null },
+            new Piece[] { new Pawn(Color.Black), new Pawn(Color.Black), null, null, null, null, null, null },
+            new Piece[] { null, null, new Pawn(Color.Black), null, null, null, null, null },
+            new Piece[] { null, new King(Color.Black), null, null, null, null, null, null }
+    };
+    Piece[][] matrix26 = new Piece[][] {
+            new Piece[] { new Rook(Color.White), new Knight(Color.White), new Bishop(Color.White), new King(Color.White), null, null, new Knight(Color.White), new Rook(Color.White)},
+            new Piece[] { new Pawn(Color.White), new Pawn(Color.White),new Pawn(Color.White),new Pawn(Color.White),new Pawn(Color.White),new Pawn(Color.White),new Pawn(Color.White),new Pawn(Color.White)},
+            new Piece[] { null, null, null, null, null, null, null, null },
+            new Piece[] { null, null, null, null, null, null, null, null },
+            new Piece[] { null, null, null, null, null, null, null, null },
+            new Piece[] { null, null, null, null, null, null, null, null },
+            new Piece[] { new Pawn(Color.Black), new Pawn(Color.Black),new Pawn(Color.Black),new Pawn(Color.Black),new Pawn(Color.Black),new Pawn(Color.Black),new Pawn(Color.Black),new Pawn(Color.Black)},
+            new Piece[] { new Rook(Color.Black), new Knight(Color.Black), new Bishop(Color.Black), new King(Color.Black), new Queen(Color.Black), new Bishop(Color.Black), new Knight(Color.Black), new Rook(Color.Black)}
+    };
+    Piece[][] matrix27 = new Piece[][] {
+            new Piece[] { null, null, null, new King(Color.White), null, null, new Rook(Color.Black), null },
+            new Piece[] { null, null, null, null, null, null, null, null },
+            new Piece[] { null, null, null, new King(Color.Black), null, null, null, null },
+            new Piece[] { null, null, null, null, null, null, null, null },
+
+            new Piece[] { null, null, null, null, null, null, null, null },
+            new Piece[] { null, null, null, null, null, null, null, null },
+            new Piece[] { null, null, null, null, null, null, null, null },
+            new Piece[] { null, null, null, null, null, null, null, null }
+    };
+    Piece[][] matrix28 = new Piece[][] {
+            new Piece[] { null, null, new King(Color.White), null, new Queen(Color.Black), null, null, null },
+            new Piece[] { null, null, null, null, null, null, new Rook(Color.Black), null },
+            new Piece[] { null, null, null, new King(Color.Black), null, null, null, null },
+            new Piece[] { null, null, null, null, null, null, null, null },
+
+            new Piece[] { null, null, null, null, null, null, null, null },
+            new Piece[] { null, null, null, null, null, null, null, null },
+            new Piece[] { null, null, null, null, null, null, null, null },
+            new Piece[] { null, null, null, null, null, null, null, null }
+    };
+    Piece[][] matrix29 = new Piece[][] {
+            new Piece[] { null, null, new Queen(Color.Black), null, null, null, new King(Color.White), null },
+            new Piece[] { null, null, null, null, null, new Pawn(Color.White), new Pawn(Color.White), new Pawn(Color.White) },
+            new Piece[] { null, null, null, null, null, null, new Bishop(Color.White), null },
+            new Piece[] { null, null, null, null, null, null, null, null },
+
+            new Piece[] { null, new Pawn(Color.White), null, null, null, null, null, null },
+            new Piece[] { null, new Pawn(Color.Black), new Pawn(Color.White), null, null, null, null, null },
+            new Piece[] { new Pawn(Color.Black), null, null, new King(Color.Black), null, null, null, null },
+            new Piece[] { null, null, null, null, null, null, null, null }
+    };
+    Piece[][] matrix30 = new Piece[][] {
+            new Piece[] { null, null, null, null, null, null, new Rook(Color.White), new King(Color.White) },
+            new Piece[] { null, null, null, null, null, new Knight(Color.Black), new Pawn(Color.White), null },
+            new Piece[] { null, null, null, null, null, null, null, null },
+            new Piece[] { null, null, null, null, null, null, null, null },
+
+            new Piece[] { null, new Pawn(Color.White), null, null, null, null, null, null },
+            new Piece[] { null, new Pawn(Color.Black), null, new Bishop(Color.Black), null, null, null, null },
+            new Piece[] { new Pawn(Color.Black), null, null, new King(Color.Black), null, null, null, null },
+            new Piece[] { null, null, null, null, null, null, null, null }
+    };
     Board board1 = new Board();
     Board board2 = new Board(matrix);
     Board board3 = new Board(matrix1);
@@ -267,6 +343,12 @@ public class BoardFunctionalityTest extends FigureMoveTest {
     Board board21 = new Board(matrix21);
     Board board22 = new Board(matrix22);
     Board board23 = new Board(matrix23);
+    Board board24 = new Board(matrix24);
+    Board board25 = new Board(matrix25);
+    Board board27 = new Board(matrix27);
+    Board board28 = new Board(matrix28);
+    Board board29 = new Board(matrix29);
+    Board board30 = new Board(matrix30);
 
 
     public void equalBoards(Board b1, Board b2) {
@@ -297,9 +379,9 @@ public class BoardFunctionalityTest extends FigureMoveTest {
         assertFalse(board4.isCheckMate(Color.White));
     }
 
-//    @Test
+    @Test
     public void t6() {
-        assertTrue(board5.isCheckMate(Color.White));
+        assertFalse(board5.isCheckMate(Color.White));
     }
 
     @Test
@@ -385,6 +467,36 @@ public class BoardFunctionalityTest extends FigureMoveTest {
     @Test
     public void t23() {
         assertTrue(board23.isCheckMate(Color.Black));
+    }
+
+    @Test
+    public void t24() {
+        assertTrue(board24.isCheckMate(Color.White));
+    }
+
+    @Test
+    public void t25() {
+        assertTrue(board25.isCheckMate(Color.White));
+    }
+
+    @Test
+    public void t27() {
+        assertTrue(board27.isCheckMate(Color.White));
+    }
+
+    @Test
+    public void t28() {
+        assertTrue(board28.isCheckMate(Color.White));
+    }
+
+    @Test
+    public void t29() {
+        assertTrue(board29.isCheckMate(Color.White));
+    }
+
+    @Test
+    public void t30() {
+        assertTrue(board30.isCheckMate(Color.White));
     }
 
 
