@@ -47,7 +47,7 @@
                 tools:layout="@layout/fragment_chess_board" />
 
             <include
-                android:layout_width="12sp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 layout="@layout/black_player_verticals_flipped"
                 android:layout_marginStart="1dp"
@@ -66,6 +66,43 @@
         </TableRow>
 
     </TableLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/promotion_figures"
+        android:visibility="invisible"
+        app:layout_constraintVertical_bias="0.9"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/white_bishop"
+            android:id="@+id/bishop"/>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/black_queen"
+            android:id="@+id/queen"/>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/white_rook"
+            android:id="@+id/rook"/>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/black_knight"
+            android:id="@+id/knight"/>
+
+    </LinearLayout>
 
 
 

@@ -5,6 +5,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.customchess.R;
@@ -22,6 +26,8 @@ import com.example.customchess.engine.exceptions.ChessException;
 import com.example.customchess.engine.exceptions.FigureNotChosenException;
 import com.example.customchess.engine.exceptions.OneTeamPiecesSelectedException;
 import com.example.customchess.engine.exceptions.PawnOnThePassException;
+import com.example.customchess.engine.exceptions.PromotionException;
+import com.example.customchess.engine.misc.Color;
 import com.example.customchess.engine.movements.BoardPosition;
 import com.example.customchess.engine.movements.Movable;
 import com.example.customchess.engine.movements.Movement;
@@ -29,6 +35,7 @@ import com.example.customchess.engine.movements.Position;
 import com.example.customchess.engine.misc.Verticals;
 import com.example.customchess.ui.figures.Figure;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 
@@ -41,6 +48,9 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
     private RecyclerView.LayoutManager recyclerManager;
     private OneDeviceGame game;
 
+
+    // TODO: 21.01.21
+    //  move it to a class
     private Position start;
     private int      startIndex;
     private int      imageResource;
@@ -85,8 +95,8 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
                             recyclerView.findViewHolderForAdapterPosition(startIndex - 8);
                     oldRook = (CageAdapter.ViewHolder)
                             recyclerView.findViewHolderForAdapterPosition(index - 8);
-                    newRook.draw(oldRook.getFigure().color);
-                    destinationHolder.draw(startHolder.getFigure().color);
+                    newRook.draw(oldRook.getImageResource());
+                    destinationHolder.draw(startHolder.getImageResource());
                     startHolder.hide(); // old king
                     oldRook.hide();
                 } else if (index > 24) {
@@ -94,8 +104,8 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
                             recyclerView.findViewHolderForAdapterPosition(startIndex + 8);
                     oldRook = (CageAdapter.ViewHolder)
                             recyclerView.findViewHolderForAdapterPosition(index + 16);
-                    newRook.draw(oldRook.getFigure().color);
-                    destinationHolder.draw(startHolder.getFigure().color);
+                    newRook.draw(oldRook.getImageResource());
+                    destinationHolder.draw(startHolder.getImageResource());
                     startHolder.hide();
                     oldRook.hide();
                 }
@@ -114,10 +124,15 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
                 }
                 assert passedPawn != null;
                 passedPawn.hide();
-                destinationHolder.draw(startHolder.getFigure().color);
+                destinationHolder.draw(startHolder.getImageResource());
                 startHolder.hide();
 
                 Toast.makeText(this.getContext(), ppe.getMessage(), Toast.LENGTH_SHORT).show();
+            } catch (PromotionException pe) {
+                startHolder.hide();
+                destinationHolder.draw(new Figure.Queen(Color.Black).getImageId());
+                Toast.makeText(this.getContext(), pe.getMessage(), Toast.LENGTH_SHORT).show();
+                game.promotion("Queen");
             } catch (ChessException e) {
                 e.printStackTrace();
                 Toast.makeText(this.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
@@ -161,18 +176,18 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
     // maybe rewrite it
     private Hashtable<Integer, Figure> getTeamImagesMap() {
         Hashtable<Integer, Figure> teamImages = new Hashtable<>(32);
-        Figure whitePawn = new Figure(R.drawable.white_pawn);
-        Figure blackPawn = new Figure(R.drawable.black_pawn);
-        Figure whiteRook = new Figure(R.drawable.white_rook);
-        Figure blackRook = new Figure(R.drawable.black_rook);
-        Figure whiteKnight = new Figure(R.drawable.white_knight);
-        Figure blackKnight = new Figure(R.drawable.black_knight);
-        Figure whiteBishop = new Figure(R.drawable.white_bishop);
-        Figure blackBishop = new Figure(R.drawable.black_bishop);
-        Figure whiteKing = new Figure(R.drawable.white_king);
-        Figure whiteQueen = new Figure(R.drawable.white_queen);
-        Figure blackKing = new Figure(R.drawable.black_king);
-        Figure blackQueen = new Figure(R.drawable.black_queen);
+        Figure whitePawn = new Figure.Pawn(Color.White);
+        Figure blackPawn = new Figure.Pawn(Color.Black);
+        Figure whiteRook = new Figure.Rook(Color.White);
+        Figure blackRook = new Figure.Rook(Color.Black);
+        Figure whiteKnight = new Figure.Knight(Color.White);
+        Figure blackKnight = new Figure.Knight(Color.Black);
+        Figure whiteBishop = new Figure.Bishop(Color.White);
+        Figure blackBishop = new Figure.Bishop(Color.Black);
+        Figure whiteKing = new Figure.King(Color.White);
+        Figure whiteQueen = new Figure.Queen(Color.White);
+        Figure blackKing = new Figure.King(Color.Black);
+        Figure blackQueen = new Figure.Queen(Color.Black);
 
         teamImages.put(0,  whiteRook);
         teamImages.put(56, whiteRook);

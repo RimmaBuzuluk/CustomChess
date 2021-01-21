@@ -45,8 +45,8 @@ public class CageAdapter extends RecyclerView.Adapter<CageAdapter.ViewHolder> {
             piece.setImageResource(imageResource);
         }
 
-        public Figure getFigure() {
-            return new Figure(this.imageResource);
+        public int getImageResource() {
+            return imageResource;
         }
 
         public void draw(int imageId) {
@@ -86,7 +86,7 @@ public class CageAdapter extends RecyclerView.Adapter<CageAdapter.ViewHolder> {
         holder.position = cageList.get(position).getPosition();
 
         if (teamsImages.containsKey(position)) {
-            int imageId = teamsImages.get(position).color;
+            int imageId = teamsImages.get(position).getImageId();
             holder.piece.setImageResource(imageId);
             holder.imageResource = imageId;
         }

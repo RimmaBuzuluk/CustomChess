@@ -332,16 +332,21 @@ public class Board {
             boolean toBeat = hasNoFigureToSaveKingFromCheck(teamColor, kingPos, attackingFigures.get(0));
             boolean toCover = hasNoFigureToCoverKingFromCheck(teamColor, kingPos, attackingFigures.get(0));
             boolean toMoveAway = hasNoCagesToMoveAway(cagesAroundKing, kingPos);
-            if (cagesUnderAttack == cagesAroundKing.size()
-                    & (! toBeat & ! toCover)) {
-                answer = true;
-            } else if (cagesAroundKing.size() - cagesUnderAttack > 0
-                    & ! toMoveAway) {
+            if ( ! toBeat
+                    & ! toMoveAway
+                    & ! toCover) {
                 answer = true;
             }
         }
 
         return answer;
+    }
+
+    public void promoteTo(Position position, ChessPiece promotion) {
+        int vertical = position.getVertical().ordinal();
+        int horizontal = position.getHorizontal() - 1;
+
+        matrix[horizontal][vertical] = promotion;
     }
 
     private boolean hasNoCagesToMoveAway(LinkedList<Position> emptyCagesAroundKing, Position kingPosition) {
@@ -520,6 +525,14 @@ public class Board {
             }
         }
         return figuresCannotMove == enemyTeam.size();
+    }
+
+    public void promotion(Position start, Position destination) {
+        if (findBy(destination) != null) {
+            beatFigure(start, destination);
+        } else {
+            swapFigures(start, destination);
+        }
     }
 
     // TODO

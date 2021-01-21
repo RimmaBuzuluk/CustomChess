@@ -10,8 +10,13 @@ import com.example.customchess.engine.exceptions.FigureNotChosenException;
 import com.example.customchess.engine.exceptions.MoveOnEmptyCageException;
 import com.example.customchess.engine.exceptions.PawnOnThePassException;
 import com.example.customchess.engine.exceptions.PromotionException;
+import com.example.customchess.engine.figures.Bishop;
 import com.example.customchess.engine.figures.ChessPiece;
+import com.example.customchess.engine.figures.Knight;
+import com.example.customchess.engine.figures.Pawn;
 import com.example.customchess.engine.figures.Piece;
+import com.example.customchess.engine.figures.Queen;
+import com.example.customchess.engine.figures.Rook;
 import com.example.customchess.engine.misc.Color;
 import com.example.customchess.engine.movements.Movable;
 import com.example.customchess.engine.movements.Position;
@@ -52,6 +57,28 @@ public class OneDeviceGame implements Game {
         }
     }
 
+    public void promotion(String choice) {
+        ChessPiece piece;
+        Color team = ((ChessPiece) movementStack.peek().start).color;
+
+        switch (choice) {
+            case "Queen":
+                piece = new Queen(team);
+                break;
+            case "Bishop":
+                piece = new Bishop(team);
+                break;
+            case "Rook":
+                piece = new Rook(team);
+                break;
+            default:
+                piece = new Knight(team);
+                break;
+        }
+
+        board.promoteTo(movementStack.peek().movement.getDestination(), piece);
+    }
+
     public void canMakeMovement(Movable movement) throws ChessException {
 
         try {
@@ -72,16 +99,19 @@ public class OneDeviceGame implements Game {
                 } catch (CastlingException ce) {
                     board.castling(start, destination);
                     currentPlayer.changePlayer();
+                    movementStack.push(currentMovementHeader);
                     throw ce;
                 } catch (PawnOnThePassException ppe) {
                     board.pawnOnThePass(start, destination);
                     currentPlayer.changePlayer();
+                    movementStack.push(currentMovementHeader);
                     throw ppe;
                 } catch (PromotionException pe) {
-
+                    board.promotion(start, destination);
+                    currentPlayer.changePlayer();
+                    movementStack.push(currentMovementHeader);
+                    throw pe;
                 }
-
-                // it should be in a method
 
                 if (board.isKingUnderAttack(currentPlayer.getColor())) {
                     board.restorePreviousTurn(currentMovementHeader);
@@ -89,7 +119,6 @@ public class OneDeviceGame implements Game {
                 }
                 currentPlayer.changePlayer();
                 movementStack.push(currentMovementHeader);
-
             }
 
         } catch (NullPointerException npe) {

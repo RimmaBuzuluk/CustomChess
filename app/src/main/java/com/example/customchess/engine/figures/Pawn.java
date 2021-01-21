@@ -13,6 +13,7 @@ import com.example.customchess.engine.exceptions.PawnOnThePassException;
 import com.example.customchess.engine.exceptions.PromotionException;
 import com.example.customchess.engine.misc.Color;
 import com.example.customchess.engine.movements.Movable;
+import com.example.customchess.engine.movements.Movement;
 import com.example.customchess.engine.movements.Position;
 
 import java.util.EmptyStackException;
@@ -108,16 +109,27 @@ public class Pawn extends ChessPiece {
                 throw new PawnOnThePassException("Pawn on the pass");
 
             } else if (isTrajectoryValid(movement) & board.isDistanceFree(movement)) {
+                if (promotionCheck(movement)) {
+                    throw new PromotionException("Promotion");
+                }
                 throw new MoveOnEmptyCageException("default move");
             }
-            // TODO
-            // implement promotion
         } else {
             if (isFightTrajectoryValid(movement) & board.isDistanceFree(movement)) {
+                if (promotionCheck(movement)) {
+                    throw new PromotionException("Promotion");
+                }
                 throw new BeatFigureException("beat figure move");
             }
         }
         throw new InvalidMoveException("Invalid move\n" + movement.getStart() + " - " + movement.getDestination());
+    }
+
+    private boolean promotionCheck(Movable movement) {
+        int horizontal = movement.getDestination().getHorizontal();
+
+        return (color.equals(Color.White) && horizontal == 8)
+                | (color.equals(Color.Black) && horizontal == 1);
     }
 
     private boolean isTwoCagesMove(final Movable movement) {

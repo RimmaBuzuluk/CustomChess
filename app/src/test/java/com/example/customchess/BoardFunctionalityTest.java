@@ -321,6 +321,17 @@ public class BoardFunctionalityTest extends FigureMoveTest {
             new Piece[] { new Pawn(Color.Black), null, null, new King(Color.Black), null, null, null, null },
             new Piece[] { null, null, null, null, null, null, null, null }
     };
+    Piece[][] matrix31 = new Piece[][] {
+            new Piece[] { new Rook(Color.White), new King(Color.White), new Bishop(Color.White), null, null, null, null, null },
+            new Piece[] { new Pawn(Color.White), null, null, new Pawn(Color.White), null, null, null, null },
+            new Piece[] { null, null, new Pawn(Color.Black), null, null, null, null, null },
+            new Piece[] { new Bishop(Color.Black), new Bishop(Color.Black), null, null, new Queen(Color.Black), null, null, null },
+
+            new Piece[] { null, null, null, null, null, null, null, null },
+            new Piece[] { null, null, null, null, null, null, null, null },
+            new Piece[] { null, null, null, new King(Color.Black), null, null, null, null },
+            new Piece[] { null, null, null, null, null, null, null, null }
+    };
     Board board1 = new Board();
     Board board2 = new Board(matrix);
     Board board3 = new Board(matrix1);
@@ -349,6 +360,7 @@ public class BoardFunctionalityTest extends FigureMoveTest {
     Board board28 = new Board(matrix28);
     Board board29 = new Board(matrix29);
     Board board30 = new Board(matrix30);
+    Board board31 = new Board(matrix31);
 
 
     public void equalBoards(Board b1, Board b2) {
@@ -497,6 +509,11 @@ public class BoardFunctionalityTest extends FigureMoveTest {
     @Test
     public void t30() {
         assertTrue(board30.isCheckMate(Color.White));
+    }
+
+    @Test
+    public void t31() {
+        assertFalse(board31.isCheckMate(Color.White));
     }
 
 
