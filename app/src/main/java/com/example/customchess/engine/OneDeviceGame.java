@@ -66,23 +66,24 @@ public class OneDeviceGame implements Game {
     public void promotion(String choice) {
         ChessPiece piece;
         Color team = ((ChessPiece) movementStack.peek().start).color;
+        Position destination = movementStack.peek().movement.getDestination();
 
         switch (choice) {
             case "Queen":
-                piece = new Queen(team);
+                piece = new Queen(team, destination);
                 break;
             case "Bishop":
-                piece = new Bishop(team);
+                piece = new Bishop(team, destination);
                 break;
             case "Rook":
-                piece = new Rook(team);
+                piece = new Rook(team, destination);
                 break;
             default:
-                piece = new Knight(team);
+                piece = new Knight(team, destination);
                 break;
         }
 
-        board.promoteTo(movementStack.peek().movement.getDestination(), piece);
+        board.promoteTo(destination, piece);
     }
 
     public void canMakeMovement(Movable movement) throws ChessException {

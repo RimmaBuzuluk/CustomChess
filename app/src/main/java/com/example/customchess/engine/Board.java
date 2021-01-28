@@ -1,15 +1,7 @@
 package com.example.customchess.engine;
 
-import android.util.Log;
-
-import com.example.customchess.engine.exceptions.BeatFigureException;
 import com.example.customchess.engine.exceptions.CheckKingException;
-import com.example.customchess.engine.exceptions.CheckMateException;
 import com.example.customchess.engine.exceptions.ChessException;
-import com.example.customchess.engine.exceptions.DrawException;
-import com.example.customchess.engine.exceptions.InvalidMoveException;
-import com.example.customchess.engine.exceptions.MoveOnEmptyCageException;
-import com.example.customchess.engine.exceptions.OneTeamPiecesSelectedException;
 import com.example.customchess.engine.figures.*;
 import com.example.customchess.engine.misc.Color;
 import com.example.customchess.engine.misc.Verticals;
@@ -18,7 +10,6 @@ import com.example.customchess.engine.movements.Movable;
 import com.example.customchess.engine.movements.Movement;
 import com.example.customchess.engine.movements.Position;
 
-import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Set;
@@ -28,34 +19,8 @@ public class Board {
 
     private Piece[][] matrix;
 
-    // for unit tests
     public Board(Piece[][] matrix) {
         this.matrix = matrix;
-    }
-
-    // for unit tests
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Board board = (Board) o;
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                if ((matrix[i][j] == null & board.matrix[i][j] != null)
-                        | (matrix[i][j] != null & board.matrix[i][j] == null)) {
-                    return false;
-                } else if (matrix[i][j] != null & board.matrix[i][j] != null) {
-                    if (matrix[i][j].getClass() != board.matrix[i][j].getClass()) {
-                        return false;
-                    }
-                    if (matrix[i][j].getClass() == board.matrix[i][j].getClass()
-                            & ((ChessPiece) matrix[i][j]).color != ((ChessPiece) board.matrix[i][j]).color) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
     }
 
     public Board() {
@@ -65,116 +30,80 @@ public class Board {
     }
 
     public void castling(Position start, Position destination) {
+        int horizontal = start.getHorizontal();
         int startVertical = start.getVertical().ordinal();
-        int horizontal = start.getHorizontal() - 1;
-        int destVertical = destination.getVertical().ordinal();
 
-        Piece temp;
+        //  short-scheme castling
+        Position oldRookPlace;
+        Position newRookPlace;
 
-        if (destination.getVertical().equals(Verticals.C)) {
-            temp = matrix[horizontal][7]; // rook on queen's flank
-            matrix[horizontal][destVertical] = matrix[horizontal][startVertical];
-            matrix[horizontal][startVertical + 1] = temp;
-            matrix[horizontal][7] = null;
+        if ( BoardPosition.isShortSchemeCastling(destination) ) {
+            oldRookPlace = new BoardPosition(Verticals.H, horizontal);
+            newRookPlace = new BoardPosition(startVertical - 1, horizontal);
 
-        } else if (destination.getVertical().equals(Verticals.G)) {
-            temp = matrix[horizontal][destVertical - 1];
-            matrix[horizontal][destVertical] = matrix[horizontal][startVertical];
-            matrix[horizontal][destVertical + 1] = temp;
-            matrix[horizontal][0] = null;
+        } else {
+            oldRookPlace = new BoardPosition(Verticals.A, horizontal);
+            newRookPlace = new BoardPosition(startVertical + 1, horizontal);
         }
-        matrix[horizontal][startVertical] = null;
-//        LOG();
+        put(destination, findBy(start));
+        put(newRookPlace, findBy(oldRookPlace));
+        hide(oldRookPlace);
+        hide(start);
     }
 
     public void pawnOnThePass(Position start, Position destination) {
-        int startVertical = start.getVertical().ordinal();
-        int startHorizontal = start.getHorizontal() - 1;
-        int destVertical = destination.getVertical().ordinal();
-        int destHorizontal = destination.getHorizontal() - 1;
+        Position oldAttackedPawn;
 
-        if (((ChessPiece) matrix[startHorizontal][startVertical]).color.equals(Color.White)) {
-            matrix[destHorizontal - 1][destVertical] = null;
+        if (((ChessPiece) findBy(start)).color.equals(Color.White)) {
+            oldAttackedPawn = new BoardPosition(destination.getVertical().ordinal(),
+                    destination.getHorizontal() - 1);
         } else {
-            matrix[destHorizontal + 1][destVertical] = null;
+            oldAttackedPawn = new BoardPosition(destination.getVertical().ordinal(),
+                    destination.getHorizontal() + 1);
         }
-        matrix[destHorizontal][destVertical] = matrix[startHorizontal][startVertical];
-        matrix[startHorizontal][startVertical] = null;
-//        LOG();
+        put(destination, findBy(start));
+        hide(start);
+        hide(oldAttackedPawn);
     }
 
     public void beatFigure(Position start, Position destination) {
-        int startVertical = start.getVertical().ordinal();
-        int startHorizontal = start.getHorizontal() - 1;
-        int destVertical = destination.getVertical().ordinal();
-        int destHorizontal = destination.getHorizontal() - 1;
+        put(destination, findBy(start));
+        hide(start);
+    }
 
-        Piece figure = matrix[startHorizontal][startVertical];
+    private void hide(Position position) {
+        put(position, null);
+    }
 
-        matrix[startHorizontal][startVertical] = null;
-        matrix[destHorizontal][destVertical] = figure;
-//        LOG();
+    private void put(Position position, Piece piece) {
+        int vertical = position.getVertical().ordinal();
+        int horizontal = position.getHorizontal() - 1;
+
+        matrix[horizontal][vertical] = piece;
+    }
+
+    public void swapFigures(Position start, Position destination) {
+        Piece startFigure = findBy(start);
+        Piece destinationFigure = findBy(destination);
+
+        put(start, destinationFigure);
+        put(destination, startFigure);
     }
 
     public boolean isDistanceFree(Movable movement) {
-        LinkedList<Piece> distance = getPiecesOnDistance(movement);
+        LinkedList<Position> path = getPositionsOnDistance(movement);
 
-        for (int i = 0; i < distance.size(); i++) {
-            if (distance.get(i) == null) {
-                continue;
+        for (int i = 0; i < path.size(); i++) {
+            if ( ! isCageEmpty(
+                    findBy(path.get(i))) ) {
+                return false;
             }
-            return false;
         }
 
         return true;
     }
 
-    private LinkedList<Piece> getPiecesOnDistance(Movable movement) {
-        Position start = movement.getStart();
-        Position destination = movement.getDestination();
-        int startVertical = start.getVertical().ordinal();
-        int startHorizontal = start.getHorizontal() - 1;
-        int destVertical = destination.getVertical().ordinal();
-        int destHorizontal = destination.getHorizontal() - 1;
-        LinkedList<Piece> distance = new LinkedList<>();
-
-        if (startVertical > destVertical) {
-            int temp = startVertical;
-            startVertical = destVertical;
-            destVertical = temp;
-        }
-        if (startHorizontal > destHorizontal) {
-            int temp = startHorizontal;
-            startHorizontal = destHorizontal;
-            destHorizontal = temp;
-        }
-
-        if (startHorizontal - destHorizontal == 0) {
-            for (int i = startVertical + 1; i < destVertical; i++) {
-                distance.add(matrix[startHorizontal][i]);
-            }
-        } else if (startVertical - destVertical == 0) {
-            for (int i = startHorizontal + 1; i < destHorizontal; i++) {
-                distance.add(matrix[i][startVertical]);
-            }
-        } else if (Math.abs(startHorizontal - destHorizontal) == Math.abs(startVertical - destVertical)) {
-            if ((start.getVertical().ordinal() < destination.getVertical().ordinal() && start.getHorizontal() < destination.getHorizontal())
-                    || (start.getVertical().ordinal() > destination.getVertical().ordinal() && start.getHorizontal() > destination.getHorizontal())) {
-                for (int i = 1; (startVertical + i) < destVertical; i++) {
-                    Position fuck = new BoardPosition(startVertical + i, startHorizontal + i + 1);
-                    distance.add(matrix[startHorizontal + i][startVertical + i]);
-                }
-            } else {
-                for (int i = 1; (startVertical + i) < destVertical; i++) {
-                    Position fuck = new BoardPosition(startVertical + i, destHorizontal - i + 1);
-                    distance.add(matrix[destHorizontal - i][startVertical + i]);
-                }
-            }
-        }
-
-        return distance;
-    }
-
+    //  TODO try to refactor this piece of garbage code
     private LinkedList<Position> getPositionsOnDistance(Movable movement) {
         Position start = movement.getStart();
         Position destination = movement.getDestination();
@@ -224,7 +153,7 @@ public class Board {
     public boolean isKingUnderAttack(Color teamColor) {
         ChessPiece king = null;
         Position kingPos = null;
-        Hashtable<Position, ChessPiece> enemyTeam = getTeamBy(teamColor.equals(Color.White) ? Color.Black : Color.White);
+        Hashtable<Position, ChessPiece> enemyTeam = getTeamBy(Color.getOppositeColor(teamColor));
         ChessPiece currentPiece;
 
         for (int i = 0; i < matrix.length; i++) {
@@ -266,21 +195,12 @@ public class Board {
         Position destination = history.movement.getDestination();
         Position start       = history.movement.getStart();
 
-        int vertical;
-        int horizontal;
-        {
-            vertical = start.getVertical().ordinal();
-            horizontal = start.getHorizontal() - 1;
-            matrix[horizontal][vertical] = history.start;
-        }
-        vertical = destination.getVertical().ordinal();
-        horizontal = destination.getHorizontal() - 1;
-        matrix[horizontal][vertical] = history.destination;
-//        LOG();
+        put(start, history.start);
+        put(destination, history.destination);
     }
 
     public boolean isCheckMate(Color teamColor) {
-        Hashtable<Position, ChessPiece> enemyTeam = getTeamBy(teamColor.equals(Color.White) ? Color.Black : Color.White);
+        Hashtable<Position, ChessPiece> enemyTeam = getTeamBy(Color.getOppositeColor(teamColor));
         ChessPiece currentPiece;
         boolean answer = false;
         int attackingFiguresAmount = 0;
@@ -347,10 +267,7 @@ public class Board {
     }
 
     public void promoteTo(Position position, ChessPiece promotion) {
-        int vertical = position.getVertical().ordinal();
-        int horizontal = position.getHorizontal() - 1;
-
-        matrix[horizontal][vertical] = promotion;
+        put(position, promotion);
     }
 
     private boolean hasNoCagesToMoveAway(LinkedList<Position> emptyCagesAroundKing, Position kingPosition) {
@@ -360,24 +277,24 @@ public class Board {
         boolean answer = false;
 
         for (Position cage : emptyCagesAroundKing) {
-             try {
-                 assert king != null;
-                 currentMovement = new Movement(kingPosition, cage);
+            try {
+                assert king != null;
+                currentMovement = new Movement(kingPosition, cage);
 
-                 if (king.isTrajectoryValid(currentMovement)
-                         && isDistanceFree(currentMovement)) {
-                     backUpMove = new MovementHistory(currentMovement, king, findBy(cage));
-                     swapFigures(kingPosition, cage);
-                     if ( ! isKingUnderAttack(king.color)) {
-                         answer = true;
-                         restorePreviousTurn(backUpMove);
-                         break;
-                     }
-                     restorePreviousTurn(backUpMove);
-                 }
-             } catch (ChessException ignored) {
+                if (king.isTrajectoryValid(currentMovement)
+                        && isDistanceFree(currentMovement)) {
+                    backUpMove = new MovementHistory(currentMovement, king, findBy(cage));
+                    swapFigures(kingPosition, cage);
+                    if ( ! isKingUnderAttack(king.color)) {
+                        answer = true;
+                        restorePreviousTurn(backUpMove);
+                        break;
+                    }
+                    restorePreviousTurn(backUpMove);
+                }
+            } catch (ChessException ignored) {
 
-             }
+            }
         }
 
         return answer;
@@ -456,7 +373,7 @@ public class Board {
     }
 
     public boolean isPositionUnderAttack(Color teamColor, Position position) {
-        Hashtable<Position, ChessPiece> enemyTeam = getTeamBy(teamColor.equals(Color.White) ? Color.Black : Color.White);
+        Hashtable<Position, ChessPiece> enemyTeam = getTeamBy( Color.getOppositeColor(teamColor) );
         ChessPiece currentPiece;
         boolean answer = false;
 
@@ -523,10 +440,8 @@ public class Board {
         return figuresCannotMove == team.size() && ! isKingUnderAttack(teamColor);
     }
 
-
-
     public void promotion(Position start, Position destination) {
-        if (findBy(destination) != null) {
+        if ( ! isCageEmpty(findBy(destination)) ) {
             beatFigure(start, destination);
         } else {
             swapFigures(start, destination);
@@ -588,33 +503,6 @@ public class Board {
         return matrix[horizontal][vertical];
     }
 
-    // for debug
-    public void LOG() {
-        for (Integer i = 0; i < 8; i++) {
-            for (Integer j = 0; j < 8; j++) {
-                if (matrix[i][j] != null) {
-                    Verticals[] fuck = Verticals.values();
-                    Position position = new BoardPosition(fuck[j], i + 1);
-                    Log.d("move", matrix[i][j] + " on position " + position + "\n");
-                }
-            }
-        }
-        Log.d("move", "------------------------------------------------------------------------------+-+");
-    }
-
-    public void swapFigures(Position start, Position destination) {
-        int startVertical = start.getVertical().ordinal();
-        int startHorizontal = start.getHorizontal() - 1;
-        int destVertical = destination.getVertical().ordinal();
-        int destHorizontal = destination.getHorizontal() - 1;
-
-        Piece figure = matrix[startHorizontal][startVertical];
-
-        matrix[startHorizontal][startVertical] = matrix[destHorizontal][destVertical];
-        matrix[destHorizontal][destVertical] = figure;
-//        LOG();
-    }
-
     public boolean isCageEmpty(Piece figure) {
         return figure == null;
     }
@@ -626,16 +514,16 @@ public class Board {
             pawnRow = 6;
             kingRow = 7;
         }
-        matrix[kingRow][0] = new Rook(color);
-        matrix[kingRow][7] = new Rook(color);
-        matrix[kingRow][1] = new Knight(color);
-        matrix[kingRow][6] = new Knight(color);
-        matrix[kingRow][2] = new Bishop(color);
-        matrix[kingRow][5] = new Bishop(color);
-        matrix[kingRow][3] = new King(color);
-        matrix[kingRow][4] = new Queen(color);
-        for (int i = 0; i < 8; i++) {
-            matrix[pawnRow][i] = new Pawn(color);
+        matrix[kingRow][0] = new Rook(color, new BoardPosition(Verticals.H, kingRow + 1));
+        matrix[kingRow][7] = new Rook(color, new BoardPosition(Verticals.A, kingRow + 1));
+        matrix[kingRow][1] = new Knight(color, new BoardPosition(Verticals.G, kingRow + 1));
+        matrix[kingRow][6] = new Knight(color, new BoardPosition(Verticals.B, kingRow + 1));
+        matrix[kingRow][2] = new Bishop(color, new BoardPosition(Verticals.C, kingRow + 1));
+        matrix[kingRow][5] = new Bishop(color, new BoardPosition(Verticals.F, kingRow + 1));
+        matrix[kingRow][3] = new King(color, new BoardPosition(Verticals.E, kingRow + 1));
+        matrix[kingRow][4] = new Queen(color, new BoardPosition(Verticals.D, kingRow + 1));
+        for (int vertical = 0; vertical < 8; vertical++) {
+            matrix[pawnRow][vertical] = new Pawn(color, new BoardPosition(vertical, pawnRow + 1));
         }
     }
 }

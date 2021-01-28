@@ -13,8 +13,8 @@ import com.example.customchess.engine.movements.Position;
 
 public class Rook extends ChessPiece {
 
-    public Rook(Color color) {
-        super(color, 5.0);
+    public Rook(Color color, Position position) {
+        super(color, 5.0, position);
     }
 
     @Override

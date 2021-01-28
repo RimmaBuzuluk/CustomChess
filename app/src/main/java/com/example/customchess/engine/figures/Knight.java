@@ -13,8 +13,8 @@ import com.example.customchess.engine.movements.Position;
 
 public class Knight extends ChessPiece {
 
-    public Knight(Color color) {
-        super(color, 3.0);
+    public Knight(Color color, Position position) {
+        super(color, 3.0, position);
     }
 
     @Override

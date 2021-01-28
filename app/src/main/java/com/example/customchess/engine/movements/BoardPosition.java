@@ -29,6 +29,10 @@ public class BoardPosition implements Position {
         return vertical;
     }
 
+    public static boolean isShortSchemeCastling(Position destination) {
+        return destination.getVertical().equals(Verticals.G);
+    }
+
     @Override
     public boolean equals(Object object) {
         if (object instanceof BoardPosition) {

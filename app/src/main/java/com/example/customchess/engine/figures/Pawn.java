@@ -20,9 +20,8 @@ import java.util.EmptyStackException;
 
 public class Pawn extends ChessPiece {
 
-    public Pawn(Color color) {
-        super(color, 1.0);
-        firstMove = true;
+    public Pawn(Color color, Position position) {
+        super(color, 1.0, position);
     }
 
     @Override
