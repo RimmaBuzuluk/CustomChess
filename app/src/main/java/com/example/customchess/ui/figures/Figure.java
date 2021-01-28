@@ -15,6 +15,14 @@ public abstract class Figure {
         this.team = color;
     }
 
+    protected static boolean isBlack(int image) {
+        return image >= 2131099735 & image <= 2131099740;
+    }
+
+    protected static boolean isWhite(int image) {
+        return image >= 2131099765 & image <= 2131099776;
+    }
+
     public int getImageId() {
         return imageId;
     }
@@ -43,6 +51,11 @@ public abstract class Figure {
                     color);
         }
 
+        public Rook(int color) {
+            super(Figure.isBlack(color) ? R.drawable.black_rook : R.drawable.white_rook,
+                    Figure.isBlack(color) ? Color.Black : Color.White);
+        }
+
         @Override
         public Figure flip() {
             if (team.equals(Color.White)) {
@@ -57,6 +70,11 @@ public abstract class Figure {
         public Knight(Color color) {
             super(color.equals(Color.Black) ? R.drawable.black_knight : R.drawable.white_knight,
                     color);
+        }
+
+        public Knight(int color) {
+            super(Figure.isBlack(color) ? R.drawable.black_knight : R.drawable.white_knight,
+                    Figure.isBlack(color) ? Color.Black : Color.White);
         }
 
         @Override
@@ -75,6 +93,11 @@ public abstract class Figure {
                     color);
         }
 
+        public Bishop(int color) {
+            super(Figure.isBlack(color) ? R.drawable.black_bishop : R.drawable.white_bishop,
+                    Figure.isBlack(color) ? Color.Black : Color.White);
+        }
+
         @Override
         public Figure flip() {
             if (team.equals(Color.White)) {
@@ -89,6 +112,11 @@ public abstract class Figure {
         public Queen(Color color) {
             super(color.equals(Color.Black) ? R.drawable.black_queen : R.drawable.white_queen,
                     color);
+        }
+
+        public Queen(int color) {
+            super(Figure.isBlack(color) ? R.drawable.black_queen : R.drawable.white_queen,
+                    Figure.isBlack(color) ? Color.Black : Color.White);
         }
 
         @Override

@@ -129,8 +129,9 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
 
                 Toast.makeText(this.getContext(), ppe.getMessage(), Toast.LENGTH_SHORT).show();
             } catch (PromotionException pe) {
+                // TODO     implement choice of 4 figures
                 startHolder.hide();
-                destinationHolder.draw(new Figure.Queen(Color.Black).getImageId());
+                destinationHolder.draw(new Figure.Queen(imageResource).getImageId());
                 Toast.makeText(this.getContext(), pe.getMessage(), Toast.LENGTH_SHORT).show();
                 game.promotion("Queen");
             } catch (ChessException e) {

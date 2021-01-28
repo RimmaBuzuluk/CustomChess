@@ -2,10 +2,14 @@ package com.example.customchess.engine;
 
 import android.util.Log;
 
+import com.example.customchess.engine.exceptions.BeatFigureException;
 import com.example.customchess.engine.exceptions.CheckKingException;
 import com.example.customchess.engine.exceptions.CheckMateException;
 import com.example.customchess.engine.exceptions.ChessException;
 import com.example.customchess.engine.exceptions.DrawException;
+import com.example.customchess.engine.exceptions.InvalidMoveException;
+import com.example.customchess.engine.exceptions.MoveOnEmptyCageException;
+import com.example.customchess.engine.exceptions.OneTeamPiecesSelectedException;
 import com.example.customchess.engine.figures.*;
 import com.example.customchess.engine.misc.Color;
 import com.example.customchess.engine.misc.Verticals;
@@ -329,7 +333,7 @@ public class Board {
                 answer = true;
             }
         } else if (attackingFiguresAmount == 1) {
-            boolean toBeat = hasNoFigureToSaveKingFromCheck(teamColor, kingPos, attackingFigures.get(0));
+            boolean toBeat = hasNoFigureToSaveKingFromCheck(teamColor, attackingFigures.get(0));
             boolean toCover = hasNoFigureToCoverKingFromCheck(teamColor, kingPos, attackingFigures.get(0));
             boolean toMoveAway = hasNoCagesToMoveAway(cagesAroundKing, kingPos);
             if ( ! toBeat
@@ -417,7 +421,7 @@ public class Board {
         return answer;
     }
 
-    private boolean hasNoFigureToSaveKingFromCheck(Color kingColor, Position kingPosition, Position attackingPiece) {
+    private boolean hasNoFigureToSaveKingFromCheck(Color kingColor, Position attackingPiece) {
         Hashtable<Position, ChessPiece> ourTeam = getTeamBy(kingColor);
         MovementHistory backUpMove;
         Movement currentMovement;
@@ -494,53 +498,12 @@ public class Board {
         return enemyTeam;
     }
 
-    public boolean checkForDraw(Color enemyColor) {
-        Hashtable<Position, ChessPiece> enemyTeam = getTeamBy(enemyColor);
+    public boolean checkForDraw(Color teamColor) {
+        Hashtable<Position, ChessPiece> team = getTeamBy(teamColor);
         LinkedList<Position> cagesAround;
         int figuresCannotMove = 0;
-        ChessPiece currentPiece;
-
-        // fixme
-        //  1. add check for a fight trajectory
-        //  2. add check for a not check
-
-        Set<Position> keys = enemyTeam.keySet();
-        for (Position figure : keys) {
-            currentPiece = enemyTeam.get(figure);
-            cagesAround = getEmptyPositionsAround(figure);
-
-            try {
-                assert currentPiece != null;
-
-                for (Position cageAround : cagesAround) {
-                    if (currentPiece.isTrajectoryValid(new Movement(figure, cageAround))
-                            & isDistanceFree(new Movement(cageAround, figure))) {
-                        throw new DrawException("Draw");
-                    }
-                }
-            } catch (DrawException de) {
-                figuresCannotMove++;
-            } catch (ChessException e) {
-                // trajectory is incorrect
-            }
-        }
-        return figuresCannotMove == enemyTeam.size();
-    }
-
-    public void promotion(Position start, Position destination) {
-        if (findBy(destination) != null) {
-            beatFigure(start, destination);
-        } else {
-            swapFigures(start, destination);
-        }
-    }
-
-    // TODO
-    //  1. maybe delete it in the end
-    public void checkForKingCheck(Color team) throws CheckKingException {
-        ChessPiece king = null;
         Position kingPos = null;
-        Hashtable<Position, Piece> enemyTeam = new Hashtable<>();
+        ChessPiece king = null;
         ChessPiece currentPiece;
 
         for (int i = 0; i < matrix.length; i++) {
@@ -548,32 +511,25 @@ public class Board {
                 currentPiece = (ChessPiece) matrix[i][j];
                 if (isCageEmpty(currentPiece)) {
                     continue;
-                } if (currentPiece instanceof King & currentPiece.color.equals(team)) {
+                } if (currentPiece instanceof King & currentPiece.color.equals(teamColor)) {
                     king = currentPiece;
                     kingPos = new BoardPosition(j, i + 1);
-                } else if (!currentPiece.color.equals(team)) {
-                    enemyTeam.put(new BoardPosition(j, i + 1), currentPiece);
+                    break;
                 }
             }
         }
 
-        Set<Position> keys = enemyTeam.keySet();
-        for (Position figure : keys) {
-            currentPiece = (ChessPiece) enemyTeam.get(figure);
 
-            try {
-                assert king != null;
-                assert currentPiece != null;
+        return figuresCannotMove == team.size() && ! isKingUnderAttack(teamColor);
+    }
 
-                if (currentPiece.isFightTrajectoryValid(new Movement(kingPos, figure))
-                        & isDistanceFree(new Movement(kingPos, figure))) {
-                    throw new CheckKingException(king.color + " King under attack");
-                }
-            } catch (CheckKingException cke) {
-                throw cke;
-            } catch (ChessException e) {
-                // trajectory is incorrect
-            }
+
+
+    public void promotion(Position start, Position destination) {
+        if (findBy(destination) != null) {
+            beatFigure(start, destination);
+        } else {
+            swapFigures(start, destination);
         }
     }
 

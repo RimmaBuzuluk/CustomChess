@@ -51,6 +51,12 @@ public class OneDeviceGame implements Game {
         return movementStack.peek();
     }
 
+    public void checkForPat() throws DrawException {
+        if (board.checkForDraw(currentPlayer.getColor())) {
+            throw new DrawException("Draw");
+        }
+    }
+
     public void checkForCheckMate() throws CheckMateException {
         if (board.isCheckMate(currentPlayer.getColor())) {
             throw new CheckMateException("Mate on the board\n" + currentPlayer.getColor() + " is fucked");
