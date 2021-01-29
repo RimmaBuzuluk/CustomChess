@@ -1,6 +1,7 @@
 package com.example.customchess.engine.figures;
 
 import com.example.customchess.engine.Board;
+import com.example.customchess.engine.EndGameChecker;
 import com.example.customchess.engine.OneDeviceGame;
 import com.example.customchess.engine.exceptions.BeatFigureException;
 import com.example.customchess.engine.exceptions.CastlingException;
@@ -57,20 +58,9 @@ public class King extends ChessPiece {
     }
 
     @Override
-    public void tryToMove(Movable movement, OneDeviceGame board) throws ChessException {
-        try {
-            canMakeMovement(movement, board);
-
-        } catch (MoveOnEmptyCageException
-                | BeatFigureException
-                | CastlingException cke) {
-            firstMove = false;
-            throw cke;
-        }
-    }
-
-    private void canMakeMovement(Movable movement, OneDeviceGame game) throws ChessException {
+    public void tryToMove(Movable movement, OneDeviceGame game) throws ChessException {
         Board board = game.getBoard();
+        EndGameChecker gameAnalyser = game.getGameAnalyser();
         ChessPiece startFigure = (ChessPiece) board.findBy(movement.getStart());
         ChessPiece destinationFigure = (ChessPiece) board.findBy(movement.getDestination());
         Position start = movement.getStart();
@@ -88,9 +78,9 @@ public class King extends ChessPiece {
                     && (cornerPiece.firstMove & startFigure.firstMove)) {
 
                 Position middle = getMiddleBetween(start, destination);
-                if ( ! board.isPositionUnderAttack(color, start)
-                        && ! board.isPositionUnderAttack(color, destination)
-                        && ! board.isPositionUnderAttack(color, middle)) {
+                if ( ! gameAnalyser.isPositionUnderAttack(color, start)
+                        && ! gameAnalyser.isPositionUnderAttack(color, destination)
+                        && ! gameAnalyser.isPositionUnderAttack(color, middle)) {
                     throw new CastlingException("castling");
                 }
                 throw new CheckKingException(color + " King under attack : " + start);

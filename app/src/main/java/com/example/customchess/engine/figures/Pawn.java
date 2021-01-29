@@ -79,20 +79,7 @@ public class Pawn extends ChessPiece {
     }
 
     @Override
-    public void tryToMove(Movable movement, OneDeviceGame board) throws ChessException {
-        try {
-            canMakeMovement(movement, board);
-
-        } catch (MoveOnEmptyCageException
-                | PromotionException
-                | PawnOnThePassException
-                | BeatFigureException cke) {
-            firstMove = false;
-            throw cke;
-        }
-    }
-
-    private void canMakeMovement(Movable movement, OneDeviceGame game) throws ChessException {
+    public void tryToMove(Movable movement, OneDeviceGame game) throws ChessException {
         Board board = game.getBoard();
         ChessPiece startFigure = (ChessPiece) board.findBy(movement.getStart());
         ChessPiece destinationFigure = (ChessPiece) board.findBy(movement.getDestination());

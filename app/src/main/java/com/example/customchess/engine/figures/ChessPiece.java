@@ -36,4 +36,19 @@ public abstract class ChessPiece implements Piece {
     public boolean isBlack() {
         return color.equals(Color.Black);
     }
+
+    @Override
+    public Position getCurrentPosition() {
+        return currentPosition;
+    }
+
+    @Override
+    public Color getColor() {
+        return color;
+    }
+
+    @Override
+    public void setPosition(Position newPosition) {
+        this.currentPosition = newPosition;
+    }
 }
