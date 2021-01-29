@@ -332,203 +332,178 @@ public class BoardFunctionalityTest extends FigureMoveTest {
             new Piece[] { null, null, null, new King(Color.Black), null, null, null, null },
             new Piece[] { null, null, null, null, null, null, null, null }
     };
-    Board board1 = new Board();
-    Board board2 = new Board(matrix);
-    Board board3 = new Board(matrix1);
-    Board board4 = new Board(matrix2);
-    Board board5 = new Board(matrix5);
-    Board board7 = new Board(matrix7);
-    Board board8 = new Board(matrix8);
-    Board board9 = new Board(matrix9);
-    Board board10 = new Board(matrix10);
-    Board board11 = new Board(matrix11);
-    Board board12 = new Board(matrix12);
-    Board board13 = new Board(matrix13);
-    Board board14 = new Board(matrix14);
-    Board board15 = new Board(matrix15);
-    Board board16 = new Board(matrix16);
-    Board board17 = new Board(matrix17);
-    Board board18 = new Board(matrix18);
-    Board board19 = new Board(matrix19);
-    Board board20 = new Board(matrix20);
-    Board board21 = new Board(matrix21);
-    Board board22 = new Board(matrix22);
-    Board board23 = new Board(matrix23);
-    Board board24 = new Board(matrix24);
-    Board board25 = new Board(matrix25);
-    Board board27 = new Board(matrix27);
-    Board board28 = new Board(matrix28);
-    Board board29 = new Board(matrix29);
-    Board board30 = new Board(matrix30);
-    Board board31 = new Board(matrix31);
+    BoardTest board2 = new BoardTest(matrix);
+    BoardTest board3 = new BoardTest(matrix1);
+    BoardTest board4 = new BoardTest(matrix2);
+    BoardTest board5 = new BoardTest(matrix5);
+    BoardTest board7 = new BoardTest(matrix7);
+    BoardTest board8 = new BoardTest(matrix8);
+    BoardTest board9 = new BoardTest(matrix9);
+    BoardTest board10 = new BoardTest(matrix10);
+    BoardTest board11 = new BoardTest(matrix11);
+    BoardTest board12 = new BoardTest(matrix12);
+    BoardTest board13 = new BoardTest(matrix13);
+    BoardTest board14 = new BoardTest(matrix14);
+    BoardTest board15 = new BoardTest(matrix15);
+    BoardTest board16 = new BoardTest(matrix16);
+    BoardTest board17 = new BoardTest(matrix17);
+    BoardTest board18 = new BoardTest(matrix18);
+    BoardTest board19 = new BoardTest(matrix19);
+    BoardTest board20 = new BoardTest(matrix20);
+    BoardTest board21 = new BoardTest(matrix21);
+    BoardTest board22 = new BoardTest(matrix22);
+    BoardTest board23 = new BoardTest(matrix23);
+    BoardTest board24 = new BoardTest(matrix24);
+    BoardTest board25 = new BoardTest(matrix25);
+    BoardTest board27 = new BoardTest(matrix27);
+    BoardTest board28 = new BoardTest(matrix28);
+    BoardTest board29 = new BoardTest(matrix29);
+    BoardTest board30 = new BoardTest(matrix30);
+    BoardTest board31 = new BoardTest(matrix31);
 
 
-    public void equalBoards(Board b1, Board b2) {
+    public void equalBoards(BoardTest b1, BoardTest b2) {
         assertEquals(b1, b2);
     }
 
     @Test
-    public void t2() {
-        move(d2, d4);
-        move(e7, e5);
-        beat(d4, e5);
-
-        equalBoards(board1, board2);
-    }
-
-    @Test
     public void t3() {
-        assertTrue(board3.isPositionUnderAttack(Color.White, e1));
+        assertTrue(board3.original.isPositionUnderAttack(Color.White, e1));
     }
 
     @Test
     public void t4() {
-        assertTrue(board3.isCheckMate(Color.White));
+        assertTrue(board3.original.isCheckMate(Color.White));
     }
 
     @Test
     public void t5() {
-        assertFalse(board4.isCheckMate(Color.White));
+        assertFalse(board4.original.isCheckMate(Color.White));
     }
 
     @Test
     public void t6() {
-        assertFalse(board5.isCheckMate(Color.White));
+        assertFalse(board5.original.isCheckMate(Color.White));
     }
 
     @Test
     public void t7() {
-        assertTrue(board7.isCheckMate(Color.White));
+        assertTrue(board7.original.isCheckMate(Color.White));
     }
 
     @Test
     public void t8() {
-        assertTrue(board8.isCheckMate(Color.White));
+        assertTrue(board8.original.isCheckMate(Color.White));
     }
 
     @Test
     public void t9() {
-        assertFalse(board9.isCheckMate(Color.White));
+        assertFalse(board9.original.isCheckMate(Color.White));
     }
 
     @Test
     public void t10() {
-        assertTrue(board10.isCheckMate(Color.White));
+        assertTrue(board10.original.isCheckMate(Color.White));
     }
 
     @Test
     public void t11() {
-        assertTrue(board11.isCheckMate(Color.White));
+        assertTrue(board11.original.isCheckMate(Color.White));
     }
 
     @Test
     public void t12() {
-        assertFalse(board12.isCheckMate(Color.White));
+        assertFalse(board12.original.isCheckMate(Color.White));
     }
 
     @Test
     public void t13() {
-        assertFalse(board13.isCheckMate(Color.Black));
+        assertFalse(board13.original.isCheckMate(Color.Black));
     }
 
     @Test
     public void t14() {
-        assertTrue(board14.isCheckMate(Color.Black));
+        assertTrue(board14.original.isCheckMate(Color.Black));
     }
 
     @Test
     public void t15() {
-        assertFalse(board15.isCheckMate(Color.White));
+        assertFalse(board15.original.isCheckMate(Color.White));
     }
 
     @Test
     public void t16() {
-        assertFalse(board16.isCheckMate(Color.White));
+        assertFalse(board16.original.isCheckMate(Color.White));
     }
 
     @Test
     public void t17() {
-        assertFalse(board17.isCheckMate(Color.Black));
+        assertFalse(board17.original.isCheckMate(Color.Black));
     }
 
     @Test
     public void t18() {
-        assertFalse(board18.isCheckMate(Color.Black));
+        assertFalse(board18.original.isCheckMate(Color.Black));
     }
 
     @Test
     public void t19() {
-        assertFalse(board19.isCheckMate(Color.Black));
+        assertFalse(board19.original.isCheckMate(Color.Black));
     }
 
     @Test
     public void t20() {
-        assertFalse(board20.isCheckMate(Color.Black));
+        assertFalse(board20.original.isCheckMate(Color.Black));
     }
 
     @Test
     public void t21() {
-        assertTrue(board21.isCheckMate(Color.Black));
+        assertTrue(board21.original.isCheckMate(Color.Black));
     }
 
     @Test
     public void t22() {
-        assertTrue(board22.isCheckMate(Color.Black));
+        assertTrue(board22.original.isCheckMate(Color.Black));
     }
 
     @Test
     public void t23() {
-        assertTrue(board23.isCheckMate(Color.Black));
+        assertTrue(board23.original.isCheckMate(Color.Black));
     }
 
     @Test
     public void t24() {
-        assertTrue(board24.isCheckMate(Color.White));
+        assertTrue(board24.original.isCheckMate(Color.White));
     }
 
     @Test
     public void t25() {
-        assertTrue(board25.isCheckMate(Color.White));
+        assertTrue(board25.original.isCheckMate(Color.White));
     }
 
     @Test
     public void t27() {
-        assertTrue(board27.isCheckMate(Color.White));
+        assertTrue(board27.original.isCheckMate(Color.White));
     }
 
     @Test
     public void t28() {
-        assertTrue(board28.isCheckMate(Color.White));
+        assertTrue(board28.original.isCheckMate(Color.White));
     }
 
     @Test
     public void t29() {
-        assertTrue(board29.isCheckMate(Color.White));
+        assertTrue(board29.original.isCheckMate(Color.White));
     }
 
     @Test
     public void t30() {
-        assertTrue(board30.isCheckMate(Color.White));
+        assertTrue(board30.original.isCheckMate(Color.White));
     }
 
     @Test
     public void t31() {
-        assertFalse(board31.isCheckMate(Color.White));
+        assertFalse(board31.original.isCheckMate(Color.White));
     }
 
-
-    private void move(Position start, Position destination) {
-        board1.swapFigures(start, destination);
-        board2.swapFigures(start, destination);
-    }
-
-    private void beat(Position start, Position destination) {
-        board1.beatFigure(start, destination);
-        board2.beatFigure(start, destination);
-    }
-
-    private void castle(Position start, Position destination) {
-        board1.castling(start, destination);
-        board2.castling(start, destination);
-    }
 }

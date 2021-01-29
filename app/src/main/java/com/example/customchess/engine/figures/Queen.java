@@ -7,8 +7,6 @@ import com.example.customchess.engine.exceptions.ChessException;
 import com.example.customchess.engine.exceptions.InvalidMoveException;
 import com.example.customchess.engine.exceptions.MoveOnEmptyCageException;
 import com.example.customchess.engine.exceptions.OneTeamPiecesSelectedException;
-import com.example.customchess.engine.exceptions.PawnOnThePassException;
-import com.example.customchess.engine.exceptions.PromotionException;
 import com.example.customchess.engine.misc.Color;
 import com.example.customchess.engine.movements.Movable;
 import com.example.customchess.engine.movements.Position;
@@ -16,7 +14,7 @@ import com.example.customchess.engine.movements.Position;
 public class Queen extends ChessPiece {
 
     public Queen(Color color, Position position) {
-        super(color, 9.0, position);
+        super(position, 9.0, color);
     }
 
     @Override
@@ -50,8 +48,9 @@ public class Queen extends ChessPiece {
     }
 
     @Override
-    public void move() {
+    public void move(Position newPosition) {
         firstMove = false;
+        currentPosition = newPosition;
     }
 
     @Override

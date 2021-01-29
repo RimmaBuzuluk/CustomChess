@@ -13,7 +13,7 @@ public abstract class ChessPiece implements Piece {
     protected double   weight;
 
 
-    public ChessPiece(Color color, double weight, Position position) {
+    public ChessPiece(Position position, double weight, Color color) {
         this.color = color;
         this.firstMove = true;
         this.weight = weight;
@@ -24,12 +24,6 @@ public abstract class ChessPiece implements Piece {
     public String toString() {
         return "Piece";
     }
-
-    public abstract boolean isTrajectoryValid(Movable movement) throws ChessException;
-
-    public abstract boolean isFightTrajectoryValid(Movable movement) throws ChessException;
-
-    public abstract void move();
 
     public boolean hasSameColor(ChessPiece figure) {
         return this.color.equals(figure.color);

@@ -1,7 +1,5 @@
 package com.example.customchess.engine.figures;
 
-import androidx.annotation.Nullable;
-
 import com.example.customchess.engine.Board;
 import com.example.customchess.engine.OneDeviceGame;
 import com.example.customchess.engine.exceptions.BeatFigureException;
@@ -20,7 +18,7 @@ import com.example.customchess.engine.movements.Position;
 public class King extends ChessPiece {
 
     public King(Color color, Position position) {
-        super(color, 0.0, position);
+        super(position, 0.0, color);
     }
 
     @Override
@@ -53,8 +51,9 @@ public class King extends ChessPiece {
     }
 
     @Override
-    public void move() {
+    public void move(Position newPosition) {
         firstMove = false;
+        currentPosition = newPosition;
     }
 
     @Override
@@ -103,9 +102,7 @@ public class King extends ChessPiece {
 
         } else {
             if (isFightTrajectoryValid(movement)
-                    & board.isDistanceFree(movement)
-                  /*  & ! board.isPositionUnderAttack(color, start)  */
-            ) {
+                    & board.isDistanceFree(movement)) {
                 throw new BeatFigureException("beat figure move");
             }
         }

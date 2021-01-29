@@ -13,7 +13,6 @@ import com.example.customchess.engine.exceptions.PromotionException;
 import com.example.customchess.engine.figures.Bishop;
 import com.example.customchess.engine.figures.ChessPiece;
 import com.example.customchess.engine.figures.Knight;
-import com.example.customchess.engine.figures.Pawn;
 import com.example.customchess.engine.figures.Piece;
 import com.example.customchess.engine.figures.Queen;
 import com.example.customchess.engine.figures.Rook;
@@ -73,7 +72,7 @@ public class OneDeviceGame implements Game {
                 piece = new Queen(team, destination);
                 break;
             case "Bishop":
-                piece = new Bishop(team, destination);
+                piece = new Bishop(destination, team);
                 break;
             case "Rook":
                 piece = new Rook(team, destination);

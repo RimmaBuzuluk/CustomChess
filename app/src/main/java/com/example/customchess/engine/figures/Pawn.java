@@ -4,7 +4,6 @@ import com.example.customchess.engine.Board;
 import com.example.customchess.engine.MovementHistory;
 import com.example.customchess.engine.OneDeviceGame;
 import com.example.customchess.engine.exceptions.BeatFigureException;
-import com.example.customchess.engine.exceptions.CheckKingException;
 import com.example.customchess.engine.exceptions.ChessException;
 import com.example.customchess.engine.exceptions.InvalidMoveException;
 import com.example.customchess.engine.exceptions.MoveOnEmptyCageException;
@@ -13,15 +12,12 @@ import com.example.customchess.engine.exceptions.PawnOnThePassException;
 import com.example.customchess.engine.exceptions.PromotionException;
 import com.example.customchess.engine.misc.Color;
 import com.example.customchess.engine.movements.Movable;
-import com.example.customchess.engine.movements.Movement;
 import com.example.customchess.engine.movements.Position;
-
-import java.util.EmptyStackException;
 
 public class Pawn extends ChessPiece {
 
     public Pawn(Color color, Position position) {
-        super(color, 1.0, position);
+        super(position, 1.0, color);
     }
 
     @Override
@@ -77,8 +73,9 @@ public class Pawn extends ChessPiece {
     }
 
     @Override
-    public void move() {
+    public void move(Position newPosition) {
         firstMove = false;
+        currentPosition = newPosition;
     }
 
     @Override
@@ -108,14 +105,14 @@ public class Pawn extends ChessPiece {
                 throw new PawnOnThePassException("Pawn on the pass");
 
             } else if (isTrajectoryValid(movement) & board.isDistanceFree(movement)) {
-                if (promotionCheck(movement)) {
+                if (isPromotionMove(movement)) {
                     throw new PromotionException("Promotion");
                 }
                 throw new MoveOnEmptyCageException("default move");
             }
         } else {
             if (isFightTrajectoryValid(movement) & board.isDistanceFree(movement)) {
-                if (promotionCheck(movement)) {
+                if (isPromotionMove(movement)) {
                     throw new PromotionException("Promotion");
                 }
                 throw new BeatFigureException("beat figure move");
@@ -124,7 +121,7 @@ public class Pawn extends ChessPiece {
         throw new InvalidMoveException("Invalid move\n" + movement.getStart() + " - " + movement.getDestination());
     }
 
-    private boolean promotionCheck(Movable movement) {
+    private boolean isPromotionMove(Movable movement) {
         int horizontal = movement.getDestination().getHorizontal();
 
         return (color.equals(Color.White) && horizontal == 8)
@@ -148,15 +145,15 @@ public class Pawn extends ChessPiece {
 
         assert lastMove != null;
         ChessPiece piece = (ChessPiece) lastMove.start;
-        boolean sameVertical = lastMove.movement.getDestination().getVertical().equals(movement.getDestination().getVertical());
-        boolean sameHorizontal = lastMove.movement.getDestination().getHorizontal().equals(movement.getStart().getHorizontal());
+        boolean isSameVertical = lastMove.movement.getDestination().getVertical().equals(movement.getDestination().getVertical());
+        boolean isSameHorizontal = lastMove.movement.getDestination().getHorizontal().equals(movement.getStart().getHorizontal());
         boolean answer = false;
 
         try {
             if (isFightTrajectoryValid(movement)
                     && piece instanceof Pawn
-                    && sameVertical
-                    && sameHorizontal
+                    && isSameVertical
+                    && isSameHorizontal
                     && isTwoCagesMove(lastMove.movement)) {
                 answer = true;
             }

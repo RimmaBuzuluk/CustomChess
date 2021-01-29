@@ -14,7 +14,7 @@ import com.example.customchess.engine.movements.Position;
 public class Rook extends ChessPiece {
 
     public Rook(Color color, Position position) {
-        super(color, 5.0, position);
+        super(position, 5.0, color);
     }
 
     @Override
@@ -44,8 +44,9 @@ public class Rook extends ChessPiece {
     }
 
     @Override
-    public void move() {
+    public void move(Position newPosition) {
         firstMove = false;
+        currentPosition = newPosition;
     }
 
     @Override
