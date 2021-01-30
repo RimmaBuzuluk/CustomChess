@@ -63,8 +63,8 @@ public class OneDeviceGame implements Game {
         team.add(new Rook(color, new BoardPosition(Verticals.A, kingRow + 1)));
         team.add(new Knight(color, new BoardPosition(Verticals.G, kingRow + 1)));
         team.add(new Knight(color, new BoardPosition(Verticals.B, kingRow + 1)));
-        team.add(new Bishop(new BoardPosition(Verticals.C, kingRow + 1), color));
-        team.add(new Bishop(new BoardPosition(Verticals.F, kingRow + 1), color));
+        team.add(new Bishop(color, new BoardPosition(Verticals.C, kingRow + 1)));
+        team.add(new Bishop(color, new BoardPosition(Verticals.F, kingRow + 1)));
         team.add(new King(color, new BoardPosition(Verticals.E, kingRow + 1)));
         team.add(new Queen(color, new BoardPosition(Verticals.D, kingRow + 1)));
         for (int vertical = 0; vertical < 8; vertical++) {
@@ -110,7 +110,7 @@ public class OneDeviceGame implements Game {
                 piece = new Queen(team, destination);
                 break;
             case "Bishop":
-                piece = new Bishop(destination, team);
+                piece = new Bishop(team, destination);
                 break;
             case "Rook":
                 piece = new Rook(team, destination);
@@ -167,7 +167,7 @@ public class OneDeviceGame implements Game {
                     throw pe;
                 }
             }
-
+// TODO: 30.01.21 maybe create MoveException
         } catch (MoveOnEmptyCageException
                 | BeatFigureException
                 | CastlingException
@@ -183,5 +183,6 @@ public class OneDeviceGame implements Game {
             throw new FigureNotChosenException("Figure was not chosen");
         }
     }
+
 
 }

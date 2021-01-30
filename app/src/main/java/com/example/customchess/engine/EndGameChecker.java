@@ -31,25 +31,10 @@ public class EndGameChecker {
         assert king != null;
         Position kingPos = king.getCurrentPosition();
         boolean answer = false;
-        Position currentPosition;
-        int attackingFiguresAmount = 0;
+        List<Position> attackingFigures = getAttackingFigures(enemyTeam, kingPos);
+        int attackingFiguresAmount = attackingFigures.size();
         int cagesAroundKingUnderAttack = 0;
         List<Position> emptyCagesAroundKing = getEmptyPositionsAround(kingPos);
-        List<Position> attackingFigures = new LinkedList<>();
-
-        for (Piece figure : enemyTeam) {
-            currentPosition = figure.getCurrentPosition();
-
-            try {
-                if (figure.isFightTrajectoryValid(new Movement(currentPosition, kingPos))
-                        & board.isDistanceFree(new Movement(currentPosition, kingPos))) {
-                    attackingFigures.add(currentPosition);
-                    attackingFiguresAmount++;
-                }
-            } catch (ChessException e) {
-                // trajectory is incorrect
-            }
-        }
 
         for (Position position : emptyCagesAroundKing) {
             if (isPositionUnderAttack(king.getColor(), position)) {
@@ -62,10 +47,9 @@ public class EndGameChecker {
                 answer = true;
             }
         } else if (attackingFiguresAmount == 1) {
-            // TODO: 29.01.21 fix these 1 method !!!
-            boolean canBeat = isNoFigureToBeatAttackingPiece(teamColor, attackingFigures.get(0)); // fixed
+            boolean canBeat = isNoFigureToBeatAttackingPiece(teamColor, attackingFigures.get(0));
             boolean canCover = isNoPieceToCoverKingFromCheck(teamColor, kingPos, attackingFigures.get(0));
-            boolean canMoveAway = isNoCageToMoveKingAway(emptyCagesAroundKing, kingPos); // fixed
+            boolean canMoveAway = isNoCageToMoveKingAway(emptyCagesAroundKing, kingPos);
             if ( ! canBeat
                     & ! canMoveAway
                     & ! canCover) {
@@ -74,6 +58,26 @@ public class EndGameChecker {
         }
 
         return answer;
+    }
+
+    private List<Position> getAttackingFigures(List<Piece> enemyTeam, Position attackedPosition) {
+        List<Position> attackingFigures = new LinkedList<>();
+        Position currentPosition;
+
+        for (Piece figure : enemyTeam) {
+            currentPosition = figure.getCurrentPosition();
+
+            try {
+                if (figure.isFightTrajectoryValid(new Movement(currentPosition, attackedPosition))
+                        & board.isDistanceFree(new Movement(currentPosition, attackedPosition))) {
+                    attackingFigures.add(currentPosition);
+                }
+            } catch (ChessException e) {
+                // trajectory is incorrect
+            }
+        }
+
+        return attackingFigures;
     }
 
     private Piece getKingBy(Color teamColor) {
@@ -117,7 +121,6 @@ public class EndGameChecker {
         return answer;
     }
 
-//  --------- todo refactor this at the end --------------------------------------------------------
     public boolean isNoCageToMoveKingAway(List<Position> emptyCagesAroundKing, Position kingPosition) {
         MovementHistory backUpMove;
         Movement currentMovement;
@@ -153,7 +156,6 @@ public class EndGameChecker {
 
     public boolean isNoPieceToCoverKingFromCheck(Color kingColor, Position kingPosition, Position attackingPiece) {
         List<Piece> ourTeam = getTeamBy(kingColor);
-        List<Piece> enemyTeam = getTeamBy(Color.getOppositeColor(kingColor));
         MovementHistory backUpMove;
         Movement currentMovement;
         Position currentPosition;
@@ -231,7 +233,6 @@ public class EndGameChecker {
 
         return answer;
     }
-//  ------------------------------------------------------------------------------------------------
 
     public List<Piece> getTeamBy(Color teamColor) {
         return teamColor.equals(Color.White) ? whiteTeam : blackTeam;
