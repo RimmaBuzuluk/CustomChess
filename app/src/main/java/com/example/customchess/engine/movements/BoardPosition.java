@@ -1,5 +1,6 @@
 package com.example.customchess.engine.movements;
 
+import com.example.customchess.engine.misc.Color;
 import com.example.customchess.engine.misc.Verticals;
 
 import java.util.ArrayList;
@@ -88,5 +89,18 @@ public class BoardPosition implements Position {
         }
 
         return cagesAround;
+    }
+
+    @Override
+    public Position getPawnBeatenOnPassPosition(Color attacking) {
+        int originalHorizontal = getHorizontal();
+        Position beaten;
+
+        if (attacking.equals(Color.White)) {
+            beaten = new BoardPosition(vertical, originalHorizontal - 1);
+        } else {
+            beaten = new BoardPosition(vertical, originalHorizontal + 1);
+        }
+        return beaten;
     }
 }

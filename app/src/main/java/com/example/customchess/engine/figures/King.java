@@ -78,9 +78,9 @@ public class King extends ChessPiece {
                     && (cornerPiece.firstMove & startFigure.firstMove)) {
 
                 Position middle = getMiddleBetween(start, destination);
-                if ( ! gameAnalyser.isPositionUnderAttack(color, start)
-                        && ! gameAnalyser.isPositionUnderAttack(color, destination)
-                        && ! gameAnalyser.isPositionUnderAttack(color, middle)) {
+                if ( ! gameAnalyser.isPositionUnderAttackByEnemyTeam(color, start)
+                        && ! gameAnalyser.isPositionUnderAttackByEnemyTeam(color, destination)
+                        && ! gameAnalyser.isPositionUnderAttackByEnemyTeam(color, middle)) {
                     throw new CastlingException("castling");
                 }
                 throw new CheckKingException(color + " King under attack : " + start);

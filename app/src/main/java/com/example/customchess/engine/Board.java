@@ -41,6 +41,8 @@ public class Board {
             oldRookPlace = new BoardPosition(Verticals.A, horizontal);
             newRookPlace = new BoardPosition(startVertical + 1, horizontal);
         }
+        findBy(oldRookPlace).setPosition(newRookPlace);
+        findBy(start).setPosition(destination);
         put(destination, findBy(start));
         put(newRookPlace, findBy(oldRookPlace));
         hide(oldRookPlace);
@@ -57,21 +59,24 @@ public class Board {
             oldAttackedPawn = new BoardPosition(destination.getVertical().ordinal(),
                     destination.getHorizontal() + 1);
         }
+        findBy(start).setPosition(destination);
         put(destination, findBy(start));
         hide(start);
         hide(oldAttackedPawn);
     }
 
     public void beatFigure(Position start, Position destination) {
+        Piece startPiece = findBy(start);
+        startPiece.setPosition(destination);
         put(destination, findBy(start));
         hide(start);
     }
 
-    public void hide(Position position) {
+    private void hide(Position position) {
         put(position, null);
     }
 
-    public void put(Position position, Piece piece) {
+    private void put(Position position, Piece piece) {
         int vertical = position.getVertical().ordinal();
         int horizontal = position.getHorizontal() - 1;
 
@@ -81,6 +86,7 @@ public class Board {
     public void swapFigures(Position start, Position destination) {
         Piece startFigure = findBy(start);
         Piece destinationFigure = findBy(destination);
+        startFigure.setPosition(destination);
 
         put(start, destinationFigure);
         put(destination, startFigure);
@@ -100,11 +106,23 @@ public class Board {
     }
 
     public void restorePreviousTurn(MovementHistory history) {
-        put(history.movement.getStart(), history.start);
-        put(history.movement.getDestination(), history.destination);
+        Position start = history.movement.getStart();
+        Position destination = history.movement.getDestination();
+        if ( findBy(destination) != null ) {
+            findBy(destination).setPosition(start);
+        }
+        if ( findBy(start) != null ) {
+            findBy(start).setPosition(destination);
+        }
+        put(start, history.start);
+        put(destination, history.destination);
     }
 
-    public void promoteTo(Position position, ChessPiece promotion) {
+    public void restoreRemovedFigure(Piece piece) {
+        put(piece.getCurrentPosition(), piece);
+    }
+
+    public void promoteTo(Position position, Piece promotion) {
         put(position, promotion);
     }
 
@@ -138,4 +156,5 @@ public class Board {
             put(currentPiece.getCurrentPosition(), currentPiece);
         }
     }
+
 }

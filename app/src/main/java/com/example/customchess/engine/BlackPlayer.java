@@ -27,7 +27,7 @@ public class BlackPlayer implements Player {
 
     @Override
     public void changePlayer() {
-        Log.d("move", "white's move");
+//        Log.d("move", "white's move");
         game.setCurrentPlayer(new WhitePlayer(game));
     }
 

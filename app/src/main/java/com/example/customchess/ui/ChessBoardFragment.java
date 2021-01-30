@@ -20,10 +20,12 @@ import android.widget.Toast;
 
 import com.example.customchess.R;
 import com.example.customchess.engine.OneDeviceGame;
+import com.example.customchess.engine.exceptions.BeatFigureException;
 import com.example.customchess.engine.exceptions.CastlingException;
 import com.example.customchess.engine.exceptions.CheckMateException;
 import com.example.customchess.engine.exceptions.ChessException;
 import com.example.customchess.engine.exceptions.FigureNotChosenException;
+import com.example.customchess.engine.exceptions.MoveOnEmptyCageException;
 import com.example.customchess.engine.exceptions.OneTeamPiecesSelectedException;
 import com.example.customchess.engine.exceptions.PawnOnThePassException;
 import com.example.customchess.engine.exceptions.PromotionException;
@@ -84,9 +86,11 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
         if (startHolder != null && destinationHolder != null) {
             try {
                 game.canMakeMovement(move);
+
+            } catch (MoveOnEmptyCageException
+                    | BeatFigureException mee) {
                 startHolder.hide();
                 destinationHolder.draw(imageResource);
-
             } catch (CastlingException ce) {
                 CageAdapter.ViewHolder newRook;
                 CageAdapter.ViewHolder oldRook;

@@ -10,7 +10,6 @@ import com.example.customchess.engine.figures.Piece;
 import com.example.customchess.engine.figures.Queen;
 import com.example.customchess.engine.figures.Rook;
 import com.example.customchess.engine.misc.Color;
-import com.example.customchess.engine.movements.Movement;
 import com.example.customchess.engine.movements.Position;
 
 import org.junit.Test;
@@ -62,14 +61,6 @@ public class EndGameCheckerTest extends FigureMoveTest {
         gameChecker = new EndGameChecker(board, whiteTeam, blackTeam);
     }
 
-    public void init5() {
-        whiteTeam.add(new King(Color.White, h1));
-        whiteTeam.add(new Rook(Color.White, g2));
-        blackTeam.add(new Queen(Color.Black, e1));
-        board = new Board(blackTeam, whiteTeam);
-        gameChecker = new EndGameChecker(board, whiteTeam, blackTeam);
-    }
-
     public void init6() {
         whiteTeam.add(new King(Color.White, h1));
         whiteTeam.add(new Rook(Color.White, g2));
@@ -83,7 +74,7 @@ public class EndGameCheckerTest extends FigureMoveTest {
     public void t1() {
         init1();
         List<Position> cagesAroundKing = gameChecker.getEmptyPositionsAround(h8);
-        boolean fuck = gameChecker.isNoCageToMoveKingAway(cagesAroundKing, h8);
+        boolean fuck = gameChecker.isCageToMoveKingAway(cagesAroundKing, h8);
         assertTrue(fuck);
     }
 
@@ -91,7 +82,7 @@ public class EndGameCheckerTest extends FigureMoveTest {
     public void t2() {
         init2();
         List<Position> cagesAroundKing = gameChecker.getEmptyPositionsAround(h8);
-        boolean fuck = gameChecker.isNoCageToMoveKingAway(cagesAroundKing, h8);
+        boolean fuck = gameChecker.isCageToMoveKingAway(cagesAroundKing, h8);
         assertTrue(fuck);
     }
 
@@ -99,29 +90,111 @@ public class EndGameCheckerTest extends FigureMoveTest {
     public void t3() {
         init3();
         List<Position> cagesAroundKing = gameChecker.getEmptyPositionsAround(g7);
-        boolean fuck = gameChecker.isNoCageToMoveKingAway(cagesAroundKing, g7);
+        boolean fuck = gameChecker.isCageToMoveKingAway(cagesAroundKing, g7);
         assertTrue(fuck);
     }
 
     @Test
     public void t4() {
         init1();
-        boolean fuck = gameChecker.isNoFigureToBeatAttackingPiece(Color.White, g6);
+        boolean fuck = gameChecker.isFigureToBeatAttackingPiece(Color.White, g6);
         assertTrue(fuck);
     }
 
     @Test
     public void t5() {
         init4();
-        boolean fuck = gameChecker.isNoFigureToBeatAttackingPiece(Color.White, g1);
+        boolean fuck = gameChecker.isFigureToBeatAttackingPiece(Color.White, g1);
         assertTrue(fuck);
     }
 
     @Test
     public void t6() {
         init6();
-        boolean fuck = gameChecker.isNoPieceToCoverKingFromCheck(Color.White, h1, e1);
+        boolean fuck = gameChecker.isPieceToCoverKingFromCheck(Color.White, h1, e1);
         assertFalse(fuck);
+    }
+
+
+    public void init5() {
+        whiteTeam.add(new King(Color.White, h1));
+        whiteTeam.add(new Rook(Color.White, g2));
+
+        blackTeam.add(new Queen(Color.Black, e1));
+
+        board = new Board(blackTeam, whiteTeam);
+        gameChecker = new EndGameChecker(board, whiteTeam, blackTeam);
+    }
+
+    @Test
+    public void tIsFigureToCover1() {
+        init5();
+        assertTrue(gameChecker.isPieceToCoverKingFromCheck(Color.White, h1, e1));
+    }
+
+    public void init27() {
+        whiteTeam.add(new King(Color.White, f6));
+        whiteTeam.add(new Pawn(Color.White, e6));
+
+        blackTeam.add(new Bishop(Color.Black, d8));
+
+        board = new Board(blackTeam, whiteTeam);
+        gameChecker = new EndGameChecker(board, whiteTeam, blackTeam);
+    }
+
+    @Test
+    public void t27() {
+        init27();
+        assertTrue(gameChecker.isPieceToCoverKingFromCheck(Color.White, f6, d8));
+    }
+
+    public void init28() {
+        whiteTeam.add(new King(Color.White, f6));
+        whiteTeam.add(new Pawn(Color.White, e6));
+
+        blackTeam.add(new Knight(Color.Black, g8));
+
+        board = new Board(blackTeam, whiteTeam);
+        gameChecker = new EndGameChecker(board, whiteTeam, blackTeam);
+    }
+
+    @Test
+    public void t28() {
+        init28();
+        assertFalse(gameChecker.isPieceToCoverKingFromCheck(Color.White, f6, g8));
+    }
+
+    public void init29() {
+        whiteTeam.add(new King(Color.White, f6));
+        whiteTeam.add(new Knight(Color.White, f5));
+
+        blackTeam.add(new Pawn(Color.Black, e7));
+
+        board = new Board(blackTeam, whiteTeam);
+        gameChecker = new EndGameChecker(board, whiteTeam, blackTeam);
+    }
+
+    @Test
+    public void t29() {
+        init29();
+        assertTrue(gameChecker.isFigureToBeatAttackingPiece(Color.White, e7));
+    }
+
+    public void init30() {
+        whiteTeam.add(new King(Color.White, d1));
+        whiteTeam.add(new Bishop(Color.White, g1));
+
+        blackTeam.add(new Rook(Color.Black, h1));
+        blackTeam.add(new Queen(Color.Black, d4));
+
+        board = new Board(blackTeam, whiteTeam);
+        gameChecker = new EndGameChecker(board, whiteTeam, blackTeam);
+    }
+
+    @Test
+    public void t30() {
+        init30();
+        assertFalse(gameChecker.isFigureToBeatAttackingPiece(Color.White, d4));
     }
 
 //  ----------- checkmate tests --------------------------------------------------------------------
@@ -297,7 +370,8 @@ public class EndGameCheckerTest extends FigureMoveTest {
     public void init15() {
         whiteTeam.add(new King(Color.White, g1));
         whiteTeam.add(new Rook(Color.White, g7));
-        whiteTeam.add(new Queen(Color.White, e8));
+        whiteTeam.add(new Queen(Color.White, d7));
+        whiteTeam.add(new Bishop(Color.White, d6));
 
         blackTeam.add(new King(Color.Black, e8));
 
@@ -534,6 +608,251 @@ public class EndGameCheckerTest extends FigureMoveTest {
     public void t26() {
         init26();
         assertTrue(gameChecker.isCheckMate(Color.Black));
+    }
+
+//  ------------------------  isKingUnderAttack test  ----------------------------------------------
+    public void init31() {
+        whiteTeam.add(new Queen(Color.White, c6));
+        whiteTeam.add(new Queen(Color.White, e8));
+
+        blackTeam.add(new King(Color.Black, c7));
+
+        board = new Board(blackTeam, whiteTeam);
+        gameChecker = new EndGameChecker(board, whiteTeam, blackTeam);
+    }
+
+    @Test
+    public void t31() {
+        init31();
+        assertTrue(gameChecker.isKingUnderAttack(Color.Black));
+    }
+
+    public void init32() {
+        whiteTeam.add(new Queen(Color.White, c6));
+        whiteTeam.add(new Queen(Color.White, e8));
+
+        blackTeam.add(new King(Color.Black, b6));
+
+        board = new Board(blackTeam, whiteTeam);
+        gameChecker = new EndGameChecker(board, whiteTeam, blackTeam);
+    }
+
+    @Test
+    public void t32() {
+        init32();
+        assertTrue(gameChecker.isKingUnderAttack(Color.Black));
+    }
+
+    public void init33() {
+        whiteTeam.add(new Queen(Color.White, c6));
+        whiteTeam.add(new Queen(Color.White, e8));
+
+        blackTeam.add(new King(Color.Black, b6));
+        blackTeam.add(new Pawn(Color.Black, b7));
+
+        board = new Board(blackTeam, whiteTeam);
+        gameChecker = new EndGameChecker(board, whiteTeam, blackTeam);
+    }
+
+    @Test
+    public void t33() {
+        init33();
+        assertTrue(gameChecker.isKingUnderAttack(Color.Black));
+    }
+
+    public void init34() {
+        whiteTeam.add(new King(Color.White, e2));
+        whiteTeam.add(new Pawn(Color.White, f6));
+
+        blackTeam.add(new King(Color.Black, e7));
+        blackTeam.add(new Pawn(Color.Black, d3));
+
+        board = new Board(blackTeam, whiteTeam);
+        gameChecker = new EndGameChecker(board, whiteTeam, blackTeam);
+    }
+
+    @Test
+    public void t34() {
+        init34();
+        assertTrue(gameChecker.isKingUnderAttack(Color.Black));
+    }
+
+    @Test
+    public void t35() {
+        init34();
+        assertTrue(gameChecker.isKingUnderAttack(Color.White));
+    }
+
+    public void init36() {
+        whiteTeam.add(new King(Color.White, e2));
+
+        blackTeam.add(new Queen(Color.Black, h2));
+
+        board = new Board(blackTeam, whiteTeam);
+        gameChecker = new EndGameChecker(board, whiteTeam, blackTeam);
+    }
+
+    @Test
+    public void t36() {
+        init36();
+        assertTrue(gameChecker.isKingUnderAttack(Color.White));
+    }
+
+    public void init37() {
+        whiteTeam.add(new Pawn(Color.White, e3));
+        whiteTeam.add(new Pawn(Color.White, f4));
+
+        blackTeam.add(new Queen(Color.Black, e4));
+
+        board = new Board(blackTeam, whiteTeam);
+        gameChecker = new EndGameChecker(board, whiteTeam, blackTeam);
+    }
+
+    @Test
+    public void t37() {
+        init37();
+        int cagesUnderAttack = 0;
+        for (Position position : allPositions) {
+            if (gameChecker.isPositionUnderAttackByEnemyTeam(Color.White, position)) {
+                cagesUnderAttack++;
+            }
+        }
+        assertEquals(cagesUnderAttack, 23);
+    }
+
+    public void init38() {
+        whiteTeam.add(new King(Color.White, g1));
+        whiteTeam.add(new Rook(Color.White, g7));
+        whiteTeam.add(new Queen(Color.White, d7));
+        whiteTeam.add(new Bishop(Color.White, g6));
+
+        blackTeam.add(new King(Color.Black, e8));
+        blackTeam.add(new Pawn(Color.Black, f8));
+        blackTeam.add(new Pawn(Color.Black, d8));
+
+        board = new Board(blackTeam, whiteTeam);
+        gameChecker = new EndGameChecker(board, whiteTeam, blackTeam);
+    }
+
+    @Test
+    public void t38() {
+        init38();
+        assertTrue(gameChecker.isCheckMate(Color.Black));
+    }
+
+    public void init39() {
+        whiteTeam.add(new King(Color.White, g1));
+        whiteTeam.add(new Rook(Color.White, f8));
+        whiteTeam.add(new Rook(Color.White, h5));
+        whiteTeam.add(new Bishop(Color.White, f6));
+
+        blackTeam.add(new King(Color.Black, h8));
+
+        board = new Board(blackTeam, whiteTeam);
+        gameChecker = new EndGameChecker(board, whiteTeam, blackTeam);
+    }
+
+    @Test
+    public void t39() {
+        init39();
+        assertTrue(gameChecker.isCheckMate(Color.Black));
+    }
+
+    public void init40() {
+        blackTeam.add(new Knight(Color.Black, g7));
+
+        board = new Board(blackTeam, whiteTeam);
+        gameChecker = new EndGameChecker(board, whiteTeam, blackTeam);
+    }
+
+    @Test
+    public void t40() {
+        init40();
+        int cagesUnderAttack = 0;
+        for (Position position : allPositions) {
+            if (gameChecker.isPositionUnderAttackByEnemyTeam(Color.White, position)) {
+                cagesUnderAttack++;
+            }
+        }
+        assertEquals(cagesUnderAttack, 4);
+    }
+
+    public void init41() {
+        blackTeam.add(new Knight(Color.Black, g8));
+
+        board = new Board(blackTeam, whiteTeam);
+        gameChecker = new EndGameChecker(board, whiteTeam, blackTeam);
+    }
+
+    @Test
+    public void t41() {
+        init41();
+        int cagesUnderAttack = 0;
+        for (Position position : allPositions) {
+            if (gameChecker.isPositionUnderAttackByEnemyTeam(Color.White, position)) {
+                cagesUnderAttack++;
+            }
+        }
+        assertEquals(cagesUnderAttack, 3);
+    }
+
+    public void init42() {
+        blackTeam.add(new Knight(Color.Black, e5));
+
+        board = new Board(blackTeam, whiteTeam);
+        gameChecker = new EndGameChecker(board, whiteTeam, blackTeam);
+    }
+
+    @Test
+    public void t42() {
+        init42();
+        int cagesUnderAttack = 0;
+        for (Position position : allPositions) {
+            if (gameChecker.isPositionUnderAttackByEnemyTeam(Color.White, position)) {
+                cagesUnderAttack++;
+            }
+        }
+        assertEquals(cagesUnderAttack, 8);
+    }
+
+    public void init43() {
+        whiteTeam.add(new Rook(Color.White, h8));
+
+        board = new Board(blackTeam, whiteTeam);
+        gameChecker = new EndGameChecker(board, whiteTeam, blackTeam);
+    }
+
+    @Test
+    public void t43() {
+        init43();
+        int cagesUnderAttack = 0;
+        for (Position position : allPositions) {
+            if (gameChecker.isPositionUnderAttackByEnemyTeam(Color.Black, position)) {
+                cagesUnderAttack++;
+            }
+        }
+        assertEquals(cagesUnderAttack, 14);
+    }
+
+    public void init44() {
+        whiteTeam.add(new Rook(Color.White, h8));
+
+        blackTeam.add(new Pawn(Color.Black, h6));
+
+        board = new Board(blackTeam, whiteTeam);
+        gameChecker = new EndGameChecker(board, whiteTeam, blackTeam);
+    }
+
+    @Test
+    public void t44() {
+        init44();
+        int cagesUnderAttack = 0;
+        for (Position position : allPositions) {
+            if (gameChecker.isPositionUnderAttackByEnemyTeam(Color.Black, position)) {
+                cagesUnderAttack++;
+            }
+        }
+        assertEquals(cagesUnderAttack, 9);
     }
 
 }

@@ -22,6 +22,7 @@ import com.example.customchess.engine.misc.Color;
 import com.example.customchess.engine.misc.Verticals;
 import com.example.customchess.engine.movements.BoardPosition;
 import com.example.customchess.engine.movements.Movable;
+import com.example.customchess.engine.movements.Movement;
 import com.example.customchess.engine.movements.Position;
 
 import java.util.LinkedList;
@@ -101,29 +102,34 @@ public class OneDeviceGame implements Game {
     }
 
     public void promotion(String choice) {
-        ChessPiece piece;
+        Piece promotedPiece;
         Color team = ((ChessPiece) movementStack.peek().start).color;
+        List<Piece> promTeam = team.equals(Color.White) ? whiteTeam : blackTeam;
         Position destination = movementStack.peek().movement.getDestination();
 
         switch (choice) {
             case "Queen":
-                piece = new Queen(team, destination);
+                promotedPiece = new Queen(team, destination);
                 break;
             case "Bishop":
-                piece = new Bishop(team, destination);
+                promotedPiece = new Bishop(team, destination);
                 break;
             case "Rook":
-                piece = new Rook(team, destination);
+                promotedPiece = new Rook(team, destination);
                 break;
             default:
-                piece = new Knight(team, destination);
+                promotedPiece = new Knight(team, destination);
                 break;
         }
 
-        board.promoteTo(destination, piece);
+        removePieceFromTeam(board.findBy(destination));
+        promTeam.add(promotedPiece);
+        board.promoteTo(destination, promotedPiece);
     }
 
     private void removePieceFromTeam(Piece piece) {
+        if (piece == null)
+            return;
         List<Piece> team = piece.getColor().equals(Color.White) ? whiteTeam : blackTeam;
         team.remove(piece);
     }
@@ -134,6 +140,7 @@ public class OneDeviceGame implements Game {
         Piece startFigure = board.findBy(movement.getStart());
         Piece destinationFigure = board.findBy(movement.getDestination());  // can be null
         MovementHistory currentMovementHeader = new MovementHistory(movement, startFigure, destinationFigure);
+        Piece backUpPiece = null;
 
         try {
             if (currentPlayer.isCorrectPlayerMove((ChessPiece) startFigure)) {
@@ -142,47 +149,51 @@ public class OneDeviceGame implements Game {
 
                 } catch (MoveOnEmptyCageException mec) {
                     board.swapFigures(start, destination);
-                    startFigure.move(destination);
                     throw mec;
                 } catch (BeatFigureException bfe) {
                     board.beatFigure(start, destination);
-                    startFigure.move(destination);
+                    backUpPiece = destinationFigure;
                     removePieceFromTeam(destinationFigure);
                     throw bfe;
                 } catch (CastlingException ce) {
                     board.castling(start, destination);
-                    startFigure.move(destination);  // king's move
-                    BoardPosition.isShortSchemeCastling(start);
-                    // rook's move
                     throw ce;
                 } catch (PawnOnThePassException ppe) {
+                    Piece beatenPawn = board.findBy(destination.getPawnBeatenOnPassPosition((startFigure.getColor())));
+                    backUpPiece = beatenPawn;
+                    removePieceFromTeam(beatenPawn);
                     board.pawnOnThePass(start, destination);
-                    startFigure.move(destination);
-                    // remove figure from list
                     throw ppe;
                 } catch (PromotionException pe) {
                     board.promotion(start, destination);
-                    startFigure.move(destination);
+                    backUpPiece = destinationFigure;
                     removePieceFromTeam(destinationFigure);
                     throw pe;
                 }
             }
-// TODO: 30.01.21 maybe create MoveException
+
         } catch (MoveOnEmptyCageException
                 | BeatFigureException
                 | CastlingException
-                | PawnOnThePassException
-                | PromotionException ce) {
+                | PromotionException
+                | PawnOnThePassException ce) {
             if (gameAnalyser.isKingUnderAttack(currentPlayer.getColor())) {
+                restoreInTeamAndOnBoard(backUpPiece);
                 board.restorePreviousTurn(currentMovementHeader);
                 throw new CheckKingException(currentPlayer.getColor() + " King under check");
             }
             currentPlayer.changePlayer();
             movementStack.push(currentMovementHeader);
+            throw ce;
         } catch (NullPointerException npe) {
             throw new FigureNotChosenException("Figure was not chosen");
         }
     }
 
-
+    private void restoreInTeamAndOnBoard(Piece piece) {
+        if (piece == null) return;
+        List<Piece> team = piece.getColor().equals(Color.White) ? whiteTeam : blackTeam;
+        team.add(piece);
+        board.restoreRemovedFigure(piece);
+    }
 }
