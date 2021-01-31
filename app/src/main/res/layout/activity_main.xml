@@ -40,7 +40,7 @@
                 android:layout_marginEnd="1dp" />
 
             <fragment
-                android:id="@+id/fragment"
+                android:id="@+id/chess_board_frag"
                 android:name="com.example.customchess.ui.ChessBoardFragment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -70,37 +70,23 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/promotion_figures"
-        android:visibility="invisible"
-        app:layout_constraintVertical_bias="0.9"
+        app:layout_constraintVertical_bias="0.07"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageButton
+        <Button
+            android:id="@+id/save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/white_bishop"
-            android:id="@+id/bishop"/>
+            android:text="save game" />
 
-        <ImageButton
+        <Button
+            android:id="@+id/load"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/black_queen"
-            android:id="@+id/queen"/>
-
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/white_rook"
-            android:id="@+id/rook"/>
-
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/black_knight"
-            android:id="@+id/knight"/>
+            android:text="load" />
 
     </LinearLayout>
 

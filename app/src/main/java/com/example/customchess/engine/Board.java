@@ -129,10 +129,6 @@ public class Board {
     public Piece findBy(Position position) {
         int vertical = position.getVertical().ordinal();
         int horizontal = position.getHorizontal() - 1;
-        // todo remove if statement, 'cause it's redundant here
-        if (isCageEmpty(matrix[horizontal][vertical])) {
-            return null;
-        }
 
         return matrix[horizontal][vertical];
     }

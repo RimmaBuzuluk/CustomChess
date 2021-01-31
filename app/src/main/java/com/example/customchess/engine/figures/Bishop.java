@@ -42,9 +42,8 @@ public class Bishop extends ChessPiece {
     }
 
     @Override
-    public void move(Position newPosition) {
+    public void move() {
         firstMove = false;
-        currentPosition = newPosition;
     }
 
     @Override

@@ -11,7 +11,7 @@ public interface Piece {
     void tryToMove(Movable movement, OneDeviceGame board) throws ChessException;
     boolean isTrajectoryValid(Movable movement) throws ChessException;
     boolean isFightTrajectoryValid(Movable movement) throws ChessException;
-    void move(Position newPosition);
+    void move();
     Position getCurrentPosition();
     Color    getColor();
     void     setPosition(Position newPosition);

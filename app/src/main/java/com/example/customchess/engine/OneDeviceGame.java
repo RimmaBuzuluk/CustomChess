@@ -53,6 +53,26 @@ public class OneDeviceGame implements Game {
         gameAnalyser  = new EndGameChecker(board, whiteTeam, blackTeam);
     }
 
+    // for debug
+    public String getMovementsHistory() {
+        if ( movementStack.isEmpty() ) return "empty";
+        List<MovementHistory> correct = new LinkedList<>();
+
+        StringBuilder stringBuilder = new StringBuilder();
+        while ( ! movementStack.isEmpty()) {
+            correct.add(movementStack.pop());
+        }
+        int j = 1;
+        for (int i = correct.size() - 1; i >= 0; i--) {
+            stringBuilder.append(j++).append(". ").append(correct.get(i).movement).append("\n");
+        }
+        for (int i = correct.size() - 1; i >= 0; i--) {
+            movementStack.push(correct.get(i));
+        }
+
+        return stringBuilder.toString();
+    }
+
     private void initTeam(List<Piece> team, Color color) {
         int pawnRow = 1;
         int kingRow = 0;
@@ -182,6 +202,8 @@ public class OneDeviceGame implements Game {
                 board.restorePreviousTurn(currentMovementHeader);
                 throw new CheckKingException(currentPlayer.getColor() + " King under check");
             }
+            startFigure.move();
+            if (destinationFigure != null) destinationFigure.move();
             currentPlayer.changePlayer();
             movementStack.push(currentMovementHeader);
             throw ce;

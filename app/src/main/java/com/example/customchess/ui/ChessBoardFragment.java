@@ -1,6 +1,7 @@
 package com.example.customchess.ui;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -176,6 +177,10 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
 
         recyclerManager = new GridLayoutManager(this.getContext(), 8, GridLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(recyclerManager);
+    }
+
+    public String getHistory() {
+        return game.getMovementsHistory();
     }
 
     // maybe rewrite it

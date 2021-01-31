@@ -52,9 +52,8 @@ public class King extends ChessPiece {
     }
 
     @Override
-    public void move(Position newPosition) {
+    public void move() {
         firstMove = false;
-        currentPosition = newPosition;
     }
 
     @Override
@@ -80,7 +79,8 @@ public class King extends ChessPiece {
                 Position middle = getMiddleBetween(start, destination);
                 if ( ! gameAnalyser.isPositionUnderAttackByEnemyTeam(color, start)
                         && ! gameAnalyser.isPositionUnderAttackByEnemyTeam(color, destination)
-                        && ! gameAnalyser.isPositionUnderAttackByEnemyTeam(color, middle)) {
+                        && ! gameAnalyser.isPositionUnderAttackByEnemyTeam(color, middle)
+                        && board.isDistanceFree(movement)) {
                     throw new CastlingException("castling");
                 }
                 throw new CheckKingException(color + " King under attack : " + start);
