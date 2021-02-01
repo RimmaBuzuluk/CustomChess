@@ -39,9 +39,6 @@ public class OneDeviceGame implements Game {
     private List<Piece> whiteTeam;
     private EndGameChecker    gameAnalyser;
 
-    //  TODO
-    //   4. implement draw checker
-
     public OneDeviceGame() {
         movementStack = new Stack<>();
         currentPlayer = new WhitePlayer(this);
@@ -110,9 +107,9 @@ public class OneDeviceGame implements Game {
     }
 
     public void checkForPat() throws DrawException {
-//        if (gameAnalyser.checkForDraw(currentPlayer.getColor())) {
-//            throw new DrawException("Draw");
-//        }
+        if (gameAnalyser.checkForDraw(currentPlayer.getColor())) {
+            throw new DrawException("Draw");
+        }
     }
 
     public void checkForCheckMate() throws CheckMateException {

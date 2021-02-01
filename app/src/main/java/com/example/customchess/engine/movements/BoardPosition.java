@@ -91,6 +91,36 @@ public class BoardPosition implements Position {
         return cagesAround;
     }
 
+    public List<Position> getPositionsAroundKnight() {
+        List<Position> cagesAround = new ArrayList<>(9);
+        // for example original position is 'F3'
+        int originalVertical = vertical.ordinal();
+        int originalHorizontal = getHorizontal();
+        int[][] arr = new int[][]{
+                new int[]{originalVertical - 1, originalHorizontal - 2}, // G1
+                new int[]{originalVertical + 1, originalHorizontal - 2}, // E1
+                new int[]{originalVertical - 2, originalHorizontal - 1}, // H2
+                new int[]{originalVertical + 2, originalHorizontal - 1}, // D2
+
+                new int[]{originalVertical - 1, originalHorizontal + 2}, // G5
+                new int[]{originalVertical - 2, originalHorizontal + 1}, // H4
+                new int[]{originalVertical + 2, originalHorizontal + 1}, // D4
+                new int[]{originalVertical + 1, originalHorizontal + 2}, // E5
+        };
+
+        int currentVertical;
+        int currentHorizontal;
+        for (int[] ints : arr) {
+            currentVertical = ints[0];
+            currentHorizontal = ints[1];
+            if (currentVertical >= 0 && currentVertical <= 7
+                    && currentHorizontal >= 1 && currentHorizontal <= 8) {
+                cagesAround.add(new BoardPosition(currentVertical, currentHorizontal));
+            }
+        }
+        return cagesAround;
+    }
+
     @Override
     public Position getPawnBeatenOnPassPosition(Color attacking) {
         int originalHorizontal = getHorizontal();

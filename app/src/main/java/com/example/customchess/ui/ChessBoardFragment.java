@@ -25,6 +25,7 @@ import com.example.customchess.engine.exceptions.BeatFigureException;
 import com.example.customchess.engine.exceptions.CastlingException;
 import com.example.customchess.engine.exceptions.CheckMateException;
 import com.example.customchess.engine.exceptions.ChessException;
+import com.example.customchess.engine.exceptions.DrawException;
 import com.example.customchess.engine.exceptions.FigureNotChosenException;
 import com.example.customchess.engine.exceptions.MoveOnEmptyCageException;
 import com.example.customchess.engine.exceptions.OneTeamPiecesSelectedException;
@@ -147,7 +148,8 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
 
         try {
             game.checkForCheckMate();
-        } catch (CheckMateException e) {
+            game.checkForPat();
+        } catch (CheckMateException | DrawException e) {
             Toast.makeText(this.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
         }
 

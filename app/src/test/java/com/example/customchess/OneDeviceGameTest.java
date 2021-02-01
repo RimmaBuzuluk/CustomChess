@@ -6,9 +6,11 @@ import com.example.customchess.engine.exceptions.CastlingException;
 import com.example.customchess.engine.exceptions.CheckKingException;
 import com.example.customchess.engine.exceptions.CheckMateException;
 import com.example.customchess.engine.exceptions.ChessException;
+import com.example.customchess.engine.exceptions.DrawException;
 import com.example.customchess.engine.exceptions.MoveOnEmptyCageException;
 import com.example.customchess.engine.exceptions.PawnOnThePassException;
 import com.example.customchess.engine.exceptions.PromotionException;
+import com.example.customchess.engine.misc.Color;
 import com.example.customchess.engine.movements.Movement;
 
 import org.junit.Assert;
@@ -821,5 +823,74 @@ public class OneDeviceGameTest extends FigureMoveTest {
         System.out.println(  " ---------------  PASSED : " + ok +   "  --------------- ");
         assertEquals(fail, 1);
     }
+
+    public void gameInitShortestDraw() {
+        gameMovements.add(new Movement(e2, e3));
+        gameMovements.add(new Movement(a7, a5));
+
+        gameMovements.add(new Movement(d1, h5));
+        gameMovements.add(new Movement(a8, a6));
+
+        gameMovements.add(new Movement(h5, a5));
+        gameMovements.add(new Movement(h7, h5));
+
+        gameMovements.add(new Movement(a5, c7));
+        gameMovements.add(new Movement(a6, h6));
+
+        gameMovements.add(new Movement(h2, h4));
+        gameMovements.add(new Movement(f7, f6));
+
+        gameMovements.add(new Movement(c7, d7));
+        gameMovements.add(new Movement(e8, f7));
+
+        gameMovements.add(new Movement(d7, b7));
+        gameMovements.add(new Movement(d8, d3));
+
+        gameMovements.add(new Movement(b7, b8));
+        gameMovements.add(new Movement(d3, h7));
+
+        gameMovements.add(new Movement(b8, c8));
+        gameMovements.add(new Movement(f7, g6));
+
+        gameMovements.add(new Movement(c8, e6));
+    }
+
+    @Test
+    public void t10() {
+        gameInitShortestDraw();
+        int fail = 0;
+        int ok   = 0;
+        for (Movement movement : gameMovements) {
+            try {
+                testGame.canMakeMovement(movement);
+            } catch (PromotionException pe) {
+                testGame.promotion("Queen");
+                ok++;
+            } catch (MoveOnEmptyCageException
+                    | BeatFigureException
+                    | CastlingException
+                    | PawnOnThePassException ce) {
+                ok++;
+                System.out.println(movement + " IS OK");
+            } catch (ChessException ignored) {
+                fail++;
+                System.out.println(movement + " ---- FAILED");
+            }
+            try {
+                testGame.checkForCheckMate();
+            } catch (CheckMateException ignored) {
+                System.out.println(" ---------------  CHECKMATE  --------------- ");
+            }
+        }
+        System.out.println("\n ---------------  FAILS  : " + fail + "  --------------- ");
+        System.out.println(  " ---------------  PASSED : " + ok +   "  --------------- ");
+        try {
+            testGame.checkForPat();
+            Assert.fail();
+        } catch (DrawException e) {
+            System.out.println(" -------------------  DRAW  -------------------------- ");
+        }
+    }
+
 
 }

@@ -855,4 +855,109 @@ public class EndGameCheckerTest extends FigureMoveTest {
         assertEquals(cagesUnderAttack, 9);
     }
 
+//  ---------  DRAW CHECK  -------------------------------------------------------------------------
+
+    public void init45() {
+        whiteTeam.add(new Knight(Color.White, h8));
+        whiteTeam.add(new Pawn(Color.White, g6));
+        whiteTeam.add(new King(Color.White, a1));
+        whiteTeam.add(new Pawn(Color.White, f7));
+
+        board = new Board(blackTeam, whiteTeam);
+        gameChecker = new EndGameChecker(board, whiteTeam, blackTeam);
+    }
+
+    @Test
+    public void t45() {
+        init45();
+        assertFalse(gameChecker.canMakeAnyMove(new Knight(Color.White, h8)));
+    }
+
+    public void init46() {
+        whiteTeam.add(new Knight(Color.White, h8));
+        whiteTeam.add(new Pawn(Color.White, g6));
+        whiteTeam.add(new King(Color.White, a1));
+
+        blackTeam.add(new Pawn(Color.Black, f7));
+
+        board = new Board(blackTeam, whiteTeam);
+        gameChecker = new EndGameChecker(board, whiteTeam, blackTeam);
+    }
+
+    @Test
+    public void t46() {
+        init46();
+        assertTrue(gameChecker.canMakeAnyMove(new Knight(Color.White, h8)));
+    }
+
+    public void init47() {
+        whiteTeam.add(new King(Color.White, a1));
+        whiteTeam.add(new Knight(Color.White, h8));
+        whiteTeam.add(new Pawn(Color.White, g6));
+
+        board = new Board(blackTeam, whiteTeam);
+        gameChecker = new EndGameChecker(board, whiteTeam, blackTeam);
+    }
+
+    @Test
+    public void t47() {
+        init47();
+        assertTrue(gameChecker.canMakeAnyMove(new Knight(Color.White, h8)));
+    }
+
+    public void init48() {
+        blackTeam.add(new King(Color.Black, a1));
+        blackTeam.add(new Bishop(Color.Black, d1));
+        blackTeam.add(new Knight(Color.Black, h8));
+        blackTeam.add(new Pawn(Color.Black, f7));
+        blackTeam.add(new Pawn(Color.Black, g6));
+
+        whiteTeam.add(new Pawn(Color.White, g5));
+        whiteTeam.add(new Pawn(Color.White, f6));
+        whiteTeam.add(new Queen(Color.White, b3));
+        whiteTeam.add(new Rook(Color.White, h1));
+
+        board = new Board(blackTeam, whiteTeam);
+        gameChecker = new EndGameChecker(board, whiteTeam, blackTeam);
+    }
+
+    @Test
+    public void t48() {
+        init48();
+        assertTrue(gameChecker.checkForDraw(Color.Black));
+    }
+
+    public void init49() {
+        blackTeam.add(new King(Color.Black, a1));
+
+        whiteTeam.add(new Queen(Color.White, b3));
+
+        board = new Board(blackTeam, whiteTeam);
+        gameChecker = new EndGameChecker(board, whiteTeam, blackTeam);
+    }
+
+    @Test
+    public void t49() {
+        init49();
+        assertTrue(gameChecker.canMakeAnyMove(new King(Color.Black, a1)));
+    }
+
+    public void init50() {
+        blackTeam.add(new King(Color.Black, h3));
+
+        whiteTeam.add(new Queen(Color.White, f4));
+        whiteTeam.add(new Bishop(Color.White, e4));
+        whiteTeam.add(new King(Color.White, c3));
+
+        board = new Board(blackTeam, whiteTeam);
+        gameChecker = new EndGameChecker(board, whiteTeam, blackTeam);
+    }
+
+    @Test
+    public void t50() {
+        init50();
+        assertTrue(gameChecker.checkForDraw(Color.Black));
+    }
+
+
 }

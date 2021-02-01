@@ -1,13 +1,18 @@
 package com.example.customchess.engine;
 
 import com.example.customchess.engine.exceptions.ChessException;
+import com.example.customchess.engine.exceptions.DrawException;
+import com.example.customchess.engine.figures.ChessPiece;
 import com.example.customchess.engine.figures.King;
+import com.example.customchess.engine.figures.Knight;
 import com.example.customchess.engine.figures.Piece;
 import com.example.customchess.engine.misc.Color;
+import com.example.customchess.engine.movements.BoardPosition;
 import com.example.customchess.engine.movements.Movement;
 import com.example.customchess.engine.movements.Position;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -138,15 +143,12 @@ public class EndGameChecker {
                         && board.isDistanceFree(currentMovement)) {
                     backUpMove = new MovementHistory(currentMovement, king, board.findBy(cage));
                     board.swapFigures(kingPosition, cage);
-                    king.setPosition(cage);
                     if ( ! isKingUnderAttack(king.getColor())) {
                         answer = true;
                         board.restorePreviousTurn(backUpMove);
-                        king.setPosition(kingPosition);
                         break;
                     }
                     board.restorePreviousTurn(backUpMove);
-                    king.setPosition(kingPosition);
                 }
             } catch (ChessException ignored) {
 
@@ -177,15 +179,12 @@ public class EndGameChecker {
                             && board.isDistanceFree(currentMovement)) {
                         backUpMove = new MovementHistory(currentMovement, board.findBy(currentPosition), board.findBy(cage));
                         board.swapFigures(currentPosition, cage);
-                        piece.setPosition(cage);
                         if ( ! isKingUnderAttack(kingColor)) {
                             answer = true;
                             board.restorePreviousTurn(backUpMove);
-                            piece.setPosition(currentPosition);
                             break;
                         }
                         board.restorePreviousTurn(backUpMove);
-                        piece.setPosition(currentPosition);
                     }
                 } catch (ChessException e) {
                     // trajectory is incorrect
@@ -240,31 +239,59 @@ public class EndGameChecker {
         return teamColor.equals(Color.White) ? whiteTeam : blackTeam;
     }
 
-    //TODO: 29.01.21 implement it in correct way
+    public boolean checkForDraw(Color teamColor) {
+        List<Piece> team = getTeamBy(teamColor);
+        int figuresCannotMove = 0;
 
-//    public boolean checkForDraw(Color teamColor) {
-//        Hashtable<Position, ChessPiece> team = getTeamBy(teamColor);
-//        LinkedList<Position> cagesAround;
-//        int figuresCannotMove = 0;
-//        Position kingPos = null;
-//        ChessPiece king = null;
-//        ChessPiece currentPiece;
-//
-//        for (int i = 0; i < board.getBoardRange(); i++) {
-//            for (int j = 0; j < board.getBoardRange(); j++) {
-//                currentPiece = (ChessPiece) matrix[i][j];
-//                if (board.isCageEmpty(currentPiece)) {
-//                    continue;
-//                } if (currentPiece instanceof King & currentPiece.color.equals(teamColor)) {
-//                    king = currentPiece;
-//                    kingPos = new BoardPosition(j, i + 1);
-//                    break;
-//                }
-//            }
-//        }
-//
-//        return figuresCannotMove == team.size() && ! isKingUnderAttack(teamColor);
-//    }
+        for (Piece piece : team) {
+            if ( ! canMakeAnyMove(piece)) {
+                figuresCannotMove++;
+            }
+        }
+
+        return figuresCannotMove == team.size() && ! isKingUnderAttack(teamColor);
+    }
+
+    public boolean canMakeAnyMove(Piece piece) {
+        Movement movement;
+        int canMove = 0;
+        Piece king = getKingBy(piece.getColor());
+        assert king != null;
+        Position kingPos = king.getCurrentPosition();
+        Position currentPosition = piece.getCurrentPosition();
+        List<Position> cagesAround = piece instanceof Knight ?
+                currentPosition.getPositionsAroundKnight() :
+                currentPosition.getPositionsAround();
+
+        for (Position cageAround : cagesAround) {
+            try {
+                movement = new Movement(currentPosition, cageAround);
+
+                boolean canBeat = piece.isTrajectoryValid(movement)
+                        && board.isDistanceFree(movement)
+                        && ! board.isCageEmpty(board.findBy(cageAround))
+                        && ! piece.getColor().equals(board.findBy(cageAround).getColor());
+                boolean canMoveToEmptyCage = piece.isFightTrajectoryValid(movement)
+                        && board.isDistanceFree(movement)
+                        && board.isCageEmpty(board.findBy(cageAround));
+                MovementHistory backUpMove = new MovementHistory(movement, piece, board.findBy(cageAround));
+                if ( canBeat | canMoveToEmptyCage ) {
+                    if (canBeat) {
+                        board.beatFigure(currentPosition, cageAround);
+                    } else {
+                        board.swapFigures(currentPosition, cageAround);
+                    }
+                    if ( ! isKingUnderAttack(king.getColor())) {
+                        canMove++;
+                    }
+                    board.restorePreviousTurn(backUpMove);
+                }
+
+            } catch (ChessException ignored) { }
+        }
+
+        return canMove > 0;
+    }
 
     public List<Position> getEmptyPositionsAround(Position position) {
         List<Position> cagesAround = position.getPositionsAround();

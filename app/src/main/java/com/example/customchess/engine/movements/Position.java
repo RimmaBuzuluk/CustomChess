@@ -12,4 +12,5 @@ public interface Position {
     Position getPawnBeatenOnPassPosition(Color attacking);
     Position getRookPositionOnFlank();
     Position getRookPositionOnFlankAfterCastling();
+    List<Position> getPositionsAroundKnight();
 }
