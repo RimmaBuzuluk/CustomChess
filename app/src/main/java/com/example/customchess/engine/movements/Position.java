@@ -10,4 +10,6 @@ public interface Position {
     Integer getHorizontal();
     List<Position> getPositionsAround();
     Position getPawnBeatenOnPassPosition(Color attacking);
+    Position getRookPositionOnFlank();
+    Position getRookPositionOnFlankAfterCastling();
 }

@@ -14,6 +14,7 @@ import com.example.customchess.engine.misc.Color;
 import com.example.customchess.engine.misc.Verticals;
 import com.example.customchess.engine.movements.BoardPosition;
 import com.example.customchess.engine.movements.Movable;
+import com.example.customchess.engine.movements.Movement;
 import com.example.customchess.engine.movements.Position;
 
 public class King extends ChessPiece {
@@ -69,7 +70,8 @@ public class King extends ChessPiece {
             throw new OneTeamPiecesSelectedException("One team pieces are selected");
 
         } else if (board.isCageEmpty(destinationFigure)) {
-            ChessPiece cornerPiece = getCornerPieceOnFlank(board, destination);
+            Position cornerPiecePosition = getRookPositionOnFlank(destination);
+            ChessPiece cornerPiece = ((ChessPiece) board.findBy(cornerPiecePosition));
 
             if (start.getHorizontal().equals(destination.getHorizontal())
                     && Math.abs(start.getVertical().ordinal() - destination.getVertical().ordinal()) == 2
@@ -77,13 +79,14 @@ public class King extends ChessPiece {
                     && (cornerPiece.firstMove & startFigure.firstMove)) {
 
                 Position middle = getMiddleBetween(start, destination);
-                if ( ! gameAnalyser.isPositionUnderAttackByEnemyTeam(color, start)
-                        && ! gameAnalyser.isPositionUnderAttackByEnemyTeam(color, destination)
-                        && ! gameAnalyser.isPositionUnderAttackByEnemyTeam(color, middle)
-                        && board.isDistanceFree(movement)) {
+                if ( gameAnalyser.isPositionUnderAttackByEnemyTeam(color, start)
+                        || gameAnalyser.isPositionUnderAttackByEnemyTeam(color, destination)
+                        || gameAnalyser.isPositionUnderAttackByEnemyTeam(color, middle)) {
+                    throw new CheckKingException(color + " King under attack : " + start);
+                }
+                if (board.isDistanceFree(new Movement(start, cornerPiecePosition))) {
                     throw new CastlingException("castling");
                 }
-                throw new CheckKingException(color + " King under attack : " + start);
 
             } else if (isTrajectoryValid(movement)
                     & board.isDistanceFree(movement)) {
@@ -99,7 +102,7 @@ public class King extends ChessPiece {
         throw new InvalidMoveException("Invalid move\n" + movement.getStart() + " - " + movement.getDestination());
     }
 
-    private ChessPiece getCornerPieceOnFlank(Board board, Position onFlank) {
+    private Position getRookPositionOnFlank(Position onFlank) {
         Verticals vertical;
         if (onFlank.getVertical().ordinal() > 3) { // queen's flank
             vertical = Verticals.A;
@@ -107,7 +110,7 @@ public class King extends ChessPiece {
             vertical = Verticals.H;
         }
 
-        return (ChessPiece) board.findBy(new BoardPosition(vertical, onFlank.getHorizontal()));
+        return new BoardPosition(vertical, onFlank.getHorizontal());
     }
 
     private Position getMiddleBetween(Position start, Position destination) {

@@ -103,4 +103,28 @@ public class BoardPosition implements Position {
         }
         return beaten;
     }
+
+    @Override
+    public Position getRookPositionOnFlank() {
+        Verticals temp;
+        if (getVertical().ordinal() > 3) { // queen's flank
+            temp = Verticals.A;
+        } else {
+            temp = Verticals.H;
+        }
+
+        return new BoardPosition(temp, getHorizontal());
+    }
+
+    @Override
+    public Position getRookPositionOnFlankAfterCastling() {
+        Verticals temp;
+        if (getVertical().ordinal() > 3) { // queen's flank
+            temp = Verticals.D;
+        } else {
+            temp = Verticals.F;
+        }
+
+        return new BoardPosition(temp, getHorizontal());
+    }
 }

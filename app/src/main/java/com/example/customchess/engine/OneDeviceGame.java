@@ -160,6 +160,7 @@ public class OneDeviceGame implements Game {
         Piece startFigure = board.findBy(movement.getStart());
         Piece destinationFigure = board.findBy(movement.getDestination());  // can be null
         MovementHistory currentMovementHeader = new MovementHistory(movement, startFigure, destinationFigure);
+        MovementHistory backUpCastling = currentMovementHeader;
         Piece backUpPiece = null;
 
         try {
@@ -176,6 +177,11 @@ public class OneDeviceGame implements Game {
                     removePieceFromTeam(destinationFigure);
                     throw bfe;
                 } catch (CastlingException ce) {
+                    Position oldRookPosition = start.getRookPositionOnFlank();
+                    Position newRookPosition = oldRookPosition.getRookPositionOnFlankAfterCastling();
+                    backUpPiece = board.findBy(oldRookPosition);
+                    Piece afterCastling = board.findBy(newRookPosition);
+                    backUpCastling = new MovementHistory(new Movement(oldRookPosition, newRookPosition), backUpPiece, afterCastling);
                     board.castling(start, destination);
                     throw ce;
                 } catch (PawnOnThePassException ppe) {
@@ -200,6 +206,9 @@ public class OneDeviceGame implements Game {
             if (gameAnalyser.isKingUnderAttack(currentPlayer.getColor())) {
                 restoreInTeamAndOnBoard(backUpPiece);
                 board.restorePreviousTurn(currentMovementHeader);
+                if (ce instanceof CastlingException) {
+                    board.restorePreviousTurn(backUpCastling);
+                }
                 throw new CheckKingException(currentPlayer.getColor() + " King under check");
             }
             startFigure.move();

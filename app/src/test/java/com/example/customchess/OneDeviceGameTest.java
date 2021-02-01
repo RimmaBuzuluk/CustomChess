@@ -3,6 +3,7 @@ package com.example.customchess;
 import com.example.customchess.engine.OneDeviceGame;
 import com.example.customchess.engine.exceptions.BeatFigureException;
 import com.example.customchess.engine.exceptions.CastlingException;
+import com.example.customchess.engine.exceptions.CheckKingException;
 import com.example.customchess.engine.exceptions.CheckMateException;
 import com.example.customchess.engine.exceptions.ChessException;
 import com.example.customchess.engine.exceptions.MoveOnEmptyCageException;
@@ -216,17 +217,22 @@ public class OneDeviceGameTest extends FigureMoveTest {
     @Test
     public void t2() {
         BobbyFisherVSBorisSpassky();
+        int fail = 0;
+        int ok   = 0;
         for (Movement movement : gameMovements) {
             try {
                 testGame.canMakeMovement(movement);
             } catch (PromotionException pe) {
+                ok++;
                 testGame.promotion("Queen");
             } catch (MoveOnEmptyCageException
                     | BeatFigureException
                     | CastlingException
                     | PawnOnThePassException ce) {
+                ok++;
                 System.out.println(movement + " IS OK");
             } catch (ChessException ignored) {
+                fail++;
                 System.out.println(movement + " ---- FAILED");
             }
             try {
@@ -241,6 +247,8 @@ public class OneDeviceGameTest extends FigureMoveTest {
         } catch (CheckMateException e) {
             answer = true;
         }
+        System.out.println("\n ---------------  FAILS  : " + fail + "  --------------- ");
+        System.out.println(  " ---------------  PASSED : " + ok +   "  --------------- ");
         assertTrue(answer);
     }
 
@@ -265,22 +273,28 @@ public class OneDeviceGameTest extends FigureMoveTest {
         gameMovements.add(new Movement(c5, c4));
 
         gameMovements.add(new Movement(d2, d4));
+        gameMovements.add(new Movement(c4, d3)); // fail
     }
 
     @Test
     public void t3() {
         pawnOnPassWithCheck();
+        int fail = 0;
+        int ok   = 0;
         for (Movement movement : gameMovements) {
             try {
                 testGame.canMakeMovement(movement);
             } catch (PromotionException pe) {
+                ok++;
                 testGame.promotion("Queen");
             } catch (MoveOnEmptyCageException
                     | BeatFigureException
                     | CastlingException
                     | PawnOnThePassException ce) {
+                ok++;
                 System.out.println(movement + " IS OK");
             } catch (ChessException ignored) {
+                fail++;
                 System.out.println(movement + " ---- FAILED");
             }
             try {
@@ -289,10 +303,9 @@ public class OneDeviceGameTest extends FigureMoveTest {
                 System.out.println(" ---------------  CHECKMATE  --------------- ");
             }
         }
-        try {
-            testGame.canMakeMovement(new Movement(c4, d3));
-            Assert.fail();
-        } catch (ChessException ignored) { }
+        System.out.println("\n ---------------  FAILS  : " + fail + "  --------------- ");
+        System.out.println(  " ---------------  PASSED : " + ok +   "  --------------- ");
+        assertEquals(fail, 3);
     }
 
     public void gameStefanLevitskyVSFrankJamesMarshall1912() {
@@ -381,17 +394,22 @@ public class OneDeviceGameTest extends FigureMoveTest {
     @Test
     public void t4() {
         gameStefanLevitskyVSFrankJamesMarshall1912();
+        int fail = 0;
+        int ok   = 0;
         for (Movement movement : gameMovements) {
             try {
                 testGame.canMakeMovement(movement);
             } catch (PromotionException pe) {
                 testGame.promotion("Queen");
+                ok++;
             } catch (MoveOnEmptyCageException
                     | BeatFigureException
                     | CastlingException
                     | PawnOnThePassException ce) {
+                ok++;
                 System.out.println(movement + " IS OK");
             } catch (ChessException ignored) {
+                fail++;
                 System.out.println(movement + " ---- FAILED");
             }
             try {
@@ -406,6 +424,8 @@ public class OneDeviceGameTest extends FigureMoveTest {
         } catch (CheckMateException e) {
             answer = true;
         }
+        System.out.println("\n ---------------  FAILS  : " + fail + "  --------------- ");
+        System.out.println(  " ---------------  PASSED : " + ok +   "  --------------- ");
         assertTrue(answer);
     }
 
@@ -428,30 +448,38 @@ public class OneDeviceGameTest extends FigureMoveTest {
         gameMovements.add(new Movement(d2, e1));
         gameMovements.add(new Movement(c7, c5));
 
-        gameMovements.add(new Movement(f2, d3));
+        gameMovements.add(new Movement(f1, d3));
         gameMovements.add(new Movement(b7, b6));
 
         gameMovements.add(new Movement(g1, h3));
-        gameMovements.add(new Movement(b8, c3));
+        gameMovements.add(new Movement(b8, c6));
 
         gameMovements.add(new Movement(e1, g1));  // fail
-//        gameMovements.add(new Movement());
+
+        gameMovements.add(new Movement(d3, b5));
+
+        gameMovements.add(new Movement(c6, e5));  // fail
     }
 
     @Test
     public void t5() {
         pawnOnPassLogicCrashTest();
+        int fail = 0;
+        int ok   = 0;
         for (Movement movement : gameMovements) {
             try {
                 testGame.canMakeMovement(movement);
             } catch (PromotionException pe) {
                 testGame.promotion("Queen");
+                ok++;
             } catch (MoveOnEmptyCageException
                     | BeatFigureException
                     | CastlingException
                     | PawnOnThePassException ce) {
+                ok++;
                 System.out.println(movement + " IS OK");
             } catch (ChessException ignored) {
+                fail++;
                 System.out.println(movement + " ---- FAILED");
             }
             try {
@@ -466,7 +494,332 @@ public class OneDeviceGameTest extends FigureMoveTest {
         } catch (CheckMateException e) {
             answer = true;
         }
+        System.out.println("\n ---------------  FAILS  : " + fail + "  --------------- ");
+        System.out.println(  " ---------------  PASSED : " + ok +   "  --------------- ");
         assertFalse(answer);
+    }
+
+    @Test
+    public void t5p1() {
+        pawnOnPassLogicCrashTest();
+        int fail = 0;
+        int ok   = 0;
+        for (Movement movement : gameMovements) {
+            try {
+                testGame.canMakeMovement(movement);
+            } catch (PromotionException pe) {
+                testGame.promotion("Queen");
+                ok++;
+            } catch (MoveOnEmptyCageException
+                    | BeatFigureException
+                    | CastlingException
+                    | PawnOnThePassException ce) {
+                ok++;
+                System.out.println(movement + " IS OK");
+            } catch (ChessException ignored) {
+                fail++;
+                System.out.println(movement + " ---- FAILED");
+            }
+            try {
+                testGame.checkForCheckMate();
+            } catch (CheckMateException ignored) {
+                System.out.println(" ---------------  CHECKMATE  --------------- ");
+            }
+        }
+        System.out.println("\n ---------------  FAILS  : " + fail + "  --------------- ");
+        System.out.println(  " ---------------  PASSED : " + ok +   "  --------------- ");
+        assertEquals(fail, 4);
+    }
+
+    public void castlingLogicCrashTest1() {
+        gameMovements.add(new Movement(g2, g4)); // w
+        gameMovements.add(new Movement(d7, d5)); // b
+        gameMovements.add(new Movement(f1, h3)); // w
+        gameMovements.add(new Movement(c8, e6)); // b
+        gameMovements.add(new Movement(e1, g1)); // fail
+        gameMovements.add(new Movement(g1, f3)); // w
+        gameMovements.add(new Movement(e8, c8)); // fail
+        gameMovements.add(new Movement(d8, d6)); // b
+        gameMovements.add(new Movement(h3, f1)); // w
+        gameMovements.add(new Movement(e8, c8)); // fail
+        gameMovements.add(new Movement(b8, c6)); // b
+        gameMovements.add(new Movement(e1, g1)); // fail
+        gameMovements.add(new Movement(f1, h3)); // w
+        gameMovements.add(new Movement(d6, d8)); // b
+        gameMovements.add(new Movement(e1, g1)); // w
+        gameMovements.add(new Movement(e8, c8)); // fail
+        gameMovements.add(new Movement(d8, d6)); // b
+        gameMovements.add(new Movement(g4, g5)); // w
+        gameMovements.add(new Movement(e8, c8)); // b
+    }
+
+    @Test
+    public void t6() {
+        castlingLogicCrashTest1();
+        int fail = 0;
+        int ok   = 0;
+        for (Movement movement : gameMovements) {
+            try {
+                testGame.canMakeMovement(movement);
+            } catch (PromotionException pe) {
+                testGame.promotion("Queen");
+                ok++;
+            } catch (MoveOnEmptyCageException
+                    | BeatFigureException
+                    | CastlingException
+                    | PawnOnThePassException ce) {
+                ok++;
+                System.out.println(movement + " IS OK");
+            } catch (ChessException ignored) {
+                fail++;
+                System.out.println(movement + " ---- FAILED");
+            }
+            try {
+                testGame.checkForCheckMate();
+            } catch (CheckMateException ignored) {
+                System.out.println(" ---------------  CHECKMATE  --------------- ");
+            }
+        }
+        System.out.println("\n ---------------  FAILS  : " + fail + "  --------------- ");
+        System.out.println(  " ---------------  PASSED : " + ok +   "  --------------- ");
+        assertEquals(fail, 5);
+    }
+
+    public void castlingLogicCrashTest2() {
+        gameMovements.add(new Movement(g2, g4));
+        gameMovements.add(new Movement(g7, g5));
+
+        gameMovements.add(new Movement(f2, f4));
+        gameMovements.add(new Movement(f7, f5));
+
+        gameMovements.add(new Movement(g4, f5));
+        gameMovements.add(new Movement(e7, e6));
+
+        gameMovements.add(new Movement(f5, e6));
+        gameMovements.add(new Movement(g5, f4));
+
+        gameMovements.add(new Movement(e2, e3));
+        gameMovements.add(new Movement(d8, f6));
+
+        gameMovements.add(new Movement(e3, f4));
+        gameMovements.add(new Movement(f6, f4));
+
+        gameMovements.add(new Movement(f1, h3));
+        gameMovements.add(new Movement(f4, g4));
+
+        gameMovements.add(new Movement(g1, e2));
+        gameMovements.add(new Movement(d7, d5));
+        gameMovements.add(new Movement(e1, g1)); // fail
+        gameMovements.add(new Movement(e2, d4));
+        gameMovements.add(new Movement(g4, f4));
+
+        gameMovements.add(new Movement(e1, g1)); // fail
+        gameMovements.add(new Movement(e1, f1)); // fail
+
+        gameMovements.add(new Movement(d4, b5));
+        gameMovements.add(new Movement(f4, e4));
+
+        gameMovements.add(new Movement(e1, g1)); // fail
+
+        gameMovements.add(new Movement(d1, e2));
+        gameMovements.add(new Movement(c7, c5));
+
+        gameMovements.add(new Movement(e1, g1));
+        gameMovements.add(new Movement(e4, h4));
+
+        gameMovements.add(new Movement(b5, a3));
+        gameMovements.add(new Movement(b7, b5));
+
+        gameMovements.add(new Movement(e8, d8)); // fail
+
+        gameMovements.add(new Movement(a3, b5));
+        gameMovements.add(new Movement(e8, d8));
+    }
+
+    @Test
+    public void t7() {
+        castlingLogicCrashTest2();
+        int fail = 0;
+        int ok   = 0;
+        for (Movement movement : gameMovements) {
+            try {
+                testGame.canMakeMovement(movement);
+            } catch (PromotionException pe) {
+                testGame.promotion("Queen");
+                ok++;
+            } catch (MoveOnEmptyCageException
+                    | BeatFigureException
+                    | CastlingException
+                    | PawnOnThePassException ce) {
+                ok++;
+                System.out.println(movement + " IS OK");
+            } catch (ChessException ignored) {
+                fail++;
+                System.out.println(movement + " ---- FAILED");
+            }
+            try {
+                testGame.checkForCheckMate();
+            } catch (CheckMateException ignored) {
+                System.out.println(" ---------------  CHECKMATE  --------------- ");
+            }
+        }
+        System.out.println("\n ---------------  FAILS  : " + fail + "  --------------- ");
+        System.out.println(  " ---------------  PASSED : " + ok +   "  --------------- ");
+        assertEquals(fail, 5);
+    }
+
+    public void castlingLogicCrashTest3() {
+        gameMovements.add(new Movement(g2, g4));
+        gameMovements.add(new Movement(g7, g5));
+
+        gameMovements.add(new Movement(f2, f4));
+        gameMovements.add(new Movement(f7, f5));
+
+        gameMovements.add(new Movement(g4, f5));
+        gameMovements.add(new Movement(e7, e6));
+
+        gameMovements.add(new Movement(f5, e6));
+        gameMovements.add(new Movement(g5, f4));
+
+        gameMovements.add(new Movement(e2, e3));
+        gameMovements.add(new Movement(d8, f6));
+
+        gameMovements.add(new Movement(e3, f4));
+        gameMovements.add(new Movement(f6, f4));
+
+        gameMovements.add(new Movement(f1, h3));
+        gameMovements.add(new Movement(f4, g4));
+
+        gameMovements.add(new Movement(g1, e2));
+        gameMovements.add(new Movement(d7, d5));
+        gameMovements.add(new Movement(e1, g1)); // fail
+        gameMovements.add(new Movement(e2, d4));
+        gameMovements.add(new Movement(g4, f4));
+
+        gameMovements.add(new Movement(e1, g1)); // fail
+        gameMovements.add(new Movement(e1, f1)); // fail
+
+        gameMovements.add(new Movement(d4, b5));
+        gameMovements.add(new Movement(f4, e4));
+
+        gameMovements.add(new Movement(e1, g1)); // fail
+
+        gameMovements.add(new Movement(d1, e2));
+        gameMovements.add(new Movement(c7, c5));
+
+        gameMovements.add(new Movement(e1, g1));
+        gameMovements.add(new Movement(e4, h4));
+
+        gameMovements.add(new Movement(e2, e5));
+        gameMovements.add(new Movement(b8, a6));
+
+        gameMovements.add(new Movement(b5, c7));
+
+        gameMovements.add(new Movement(e8, d7)); // fail
+
+        gameMovements.add(new Movement(a6, c7));
+        gameMovements.add(new Movement(e5, d6));
+
+        gameMovements.add(new Movement(c8, e6));
+        gameMovements.add(new Movement(e8, c8)); // fail
+        gameMovements.add(new Movement(d2, d3));
+        gameMovements.add(new Movement(a7, a6));
+
+        gameMovements.add(new Movement(d6, c6));
+        gameMovements.add(new Movement(e8, c8)); // fail
+        gameMovements.add(new Movement(e6, d7));
+
+        gameMovements.add(new Movement(b2, b3));
+        gameMovements.add(new Movement(c7, b5));
+
+        gameMovements.add(new Movement(a2, a4));
+        gameMovements.add(new Movement(e8, c8)); // fail
+        gameMovements.add(new Movement(e8, d8));
+
+        gameMovements.add(new Movement(c6, a6));
+        gameMovements.add(new Movement(d8, e8));
+
+        gameMovements.add(new Movement(d3, d4));
+        gameMovements.add(new Movement(e8, c8)); // fail
+    }
+
+    @Test
+    public void t8() {
+        castlingLogicCrashTest3();
+        int fail = 0;
+        int ok   = 0;
+        for (Movement movement : gameMovements) {
+            try {
+                testGame.canMakeMovement(movement);
+            } catch (PromotionException pe) {
+                testGame.promotion("Queen");
+                ok++;
+            } catch (MoveOnEmptyCageException
+                    | BeatFigureException
+                    | CastlingException
+                    | PawnOnThePassException ce) {
+                ok++;
+                System.out.println(movement + " IS OK");
+            } catch (ChessException ignored) {
+                fail++;
+                System.out.println(movement + " ---- FAILED");
+            }
+            try {
+                testGame.checkForCheckMate();
+            } catch (CheckMateException ignored) {
+                System.out.println(" ---------------  CHECKMATE  --------------- ");
+            }
+        }
+        System.out.println("\n ---------------  FAILS  : " + fail + "  --------------- ");
+        System.out.println(  " ---------------  PASSED : " + ok +   "  --------------- ");
+        assertEquals(fail, 9);
+    }
+
+    public void castlingLogicCrashTest4() {
+        gameMovements.add(new Movement(f2, f4));
+        gameMovements.add(new Movement(f7, f6));
+
+        gameMovements.add(new Movement(f4, f5));
+        gameMovements.add(new Movement(e8, f7));
+
+        gameMovements.add(new Movement(e2, e4));
+        gameMovements.add(new Movement(g7, g5));
+
+        gameMovements.add(new Movement(f5, g6));
+        gameMovements.add(new Movement(d7, d5)); // fail
+        gameMovements.add(new Movement(f7, e8));
+    }
+
+    @Test
+    public void t9() {
+        castlingLogicCrashTest4();
+        int fail = 0;
+        int ok   = 0;
+        for (Movement movement : gameMovements) {
+            try {
+                testGame.canMakeMovement(movement);
+            } catch (PromotionException pe) {
+                testGame.promotion("Queen");
+                ok++;
+            } catch (MoveOnEmptyCageException
+                    | BeatFigureException
+                    | CastlingException
+                    | PawnOnThePassException ce) {
+                ok++;
+                System.out.println(movement + " IS OK");
+            } catch (ChessException ignored) {
+                fail++;
+                System.out.println(movement + " ---- FAILED");
+            }
+            try {
+                testGame.checkForCheckMate();
+            } catch (CheckMateException ignored) {
+                System.out.println(" ---------------  CHECKMATE  --------------- ");
+            }
+        }
+        System.out.println("\n ---------------  FAILS  : " + fail + "  --------------- ");
+        System.out.println(  " ---------------  PASSED : " + ok +   "  --------------- ");
+        assertEquals(fail, 1);
     }
 
 }
