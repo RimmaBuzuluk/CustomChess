@@ -188,16 +188,16 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
     // maybe rewrite it
     private Hashtable<Integer, Figure> getTeamImagesMap() {
         Hashtable<Integer, Figure> teamImages = new Hashtable<>(32);
-        Figure whitePawn = new Figure.Pawn(Color.White);
+        Figure whitePawn = new Figure.Pawn(Color.White).flip();
         Figure blackPawn = new Figure.Pawn(Color.Black);
-        Figure whiteRook = new Figure.Rook(Color.White);
+        Figure whiteRook = new Figure.Rook(Color.White).flip();
         Figure blackRook = new Figure.Rook(Color.Black);
-        Figure whiteKnight = new Figure.Knight(Color.White);
+        Figure whiteKnight = new Figure.Knight(Color.White).flip();
         Figure blackKnight = new Figure.Knight(Color.Black);
-        Figure whiteBishop = new Figure.Bishop(Color.White);
+        Figure whiteBishop = new Figure.Bishop(Color.White).flip();
         Figure blackBishop = new Figure.Bishop(Color.Black);
-        Figure whiteKing = new Figure.King(Color.White);
-        Figure whiteQueen = new Figure.Queen(Color.White);
+        Figure whiteKing = new Figure.King(Color.White).flip();
+        Figure whiteQueen = new Figure.Queen(Color.White).flip();
         Figure blackKing = new Figure.King(Color.Black);
         Figure blackQueen = new Figure.Queen(Color.Black);
 

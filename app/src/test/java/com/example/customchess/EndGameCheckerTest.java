@@ -959,5 +959,27 @@ public class EndGameCheckerTest extends FigureMoveTest {
         assertTrue(gameChecker.checkForDraw(Color.Black));
     }
 
+    public void init51() {
+        blackTeam.add(new King(Color.Black, h8));
+        blackTeam.add(new Bishop(Color.Black, d8));
+        blackTeam.add(new Pawn(Color.Black, b3));
+        blackTeam.add(new Pawn(Color.Black, c2));
+        blackTeam.add(new Knight(Color.Black, a1));
+
+        whiteTeam.add(new Rook(Color.White, a8));
+        whiteTeam.add(new Bishop(Color.White, c1));
+        whiteTeam.add(new King(Color.White, g6));
+        whiteTeam.add(new Pawn(Color.White, h7));
+        whiteTeam.add(new Pawn(Color.White, b2));
+
+        board = new Board(blackTeam, whiteTeam);
+        gameChecker = new EndGameChecker(board, whiteTeam, blackTeam);
+    }
+
+    @Test
+    public void t51() {
+        init51();
+        assertTrue(gameChecker.checkForDraw(Color.Black));
+    }
 
 }

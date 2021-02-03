@@ -2,6 +2,7 @@ package com.example.customchess.engine.figures;
 
 import com.example.customchess.engine.Board;
 import com.example.customchess.engine.EndGameChecker;
+import com.example.customchess.engine.MovementHistory;
 import com.example.customchess.engine.OneDeviceGame;
 import com.example.customchess.engine.exceptions.BeatFigureException;
 import com.example.customchess.engine.exceptions.CastlingException;
@@ -58,9 +59,7 @@ public class King extends ChessPiece {
     }
 
     @Override
-    public void tryToMove(Movable movement, OneDeviceGame game) throws ChessException {
-        Board board = game.getBoard();
-        EndGameChecker gameAnalyser = game.getGameAnalyser();
+    public void tryToMove(Movable movement, Board board, EndGameChecker gameAnalyser, MovementHistory lastMovement) throws ChessException {
         ChessPiece startFigure = (ChessPiece) board.findBy(movement.getStart());
         ChessPiece destinationFigure = (ChessPiece) board.findBy(movement.getDestination());
         Position start = movement.getStart();

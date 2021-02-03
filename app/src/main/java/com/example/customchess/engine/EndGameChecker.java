@@ -1,7 +1,14 @@
 package com.example.customchess.engine;
 
+import com.example.customchess.engine.exceptions.BeatFigureException;
+import com.example.customchess.engine.exceptions.CastlingException;
+import com.example.customchess.engine.exceptions.CheckKingException;
 import com.example.customchess.engine.exceptions.ChessException;
 import com.example.customchess.engine.exceptions.DrawException;
+import com.example.customchess.engine.exceptions.FigureNotChosenException;
+import com.example.customchess.engine.exceptions.MoveOnEmptyCageException;
+import com.example.customchess.engine.exceptions.PawnOnThePassException;
+import com.example.customchess.engine.exceptions.PromotionException;
 import com.example.customchess.engine.figures.ChessPiece;
 import com.example.customchess.engine.figures.King;
 import com.example.customchess.engine.figures.Knight;
@@ -257,7 +264,6 @@ public class EndGameChecker {
         int canMove = 0;
         Piece king = getKingBy(piece.getColor());
         assert king != null;
-        Position kingPos = king.getCurrentPosition();
         Position currentPosition = piece.getCurrentPosition();
         List<Position> cagesAround = piece instanceof Knight ?
                 currentPosition.getPositionsAroundKnight() :

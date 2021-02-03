@@ -1,6 +1,7 @@
 package com.example.customchess.engine.figures;
 
 import com.example.customchess.engine.Board;
+import com.example.customchess.engine.EndGameChecker;
 import com.example.customchess.engine.MovementHistory;
 import com.example.customchess.engine.OneDeviceGame;
 import com.example.customchess.engine.exceptions.BeatFigureException;
@@ -78,8 +79,7 @@ public class Pawn extends ChessPiece {
     }
 
     @Override
-    public void tryToMove(Movable movement, OneDeviceGame game) throws ChessException {
-        Board board = game.getBoard();
+    public void tryToMove(Movable movement, Board board, EndGameChecker gameAnalyser, MovementHistory lastMovement) throws ChessException {
         ChessPiece startFigure = (ChessPiece) board.findBy(movement.getStart());
         ChessPiece destinationFigure = (ChessPiece) board.findBy(movement.getDestination());
 
@@ -87,7 +87,7 @@ public class Pawn extends ChessPiece {
             throw new OneTeamPiecesSelectedException("One team pieces are selected");
 
         } else if (board.isCageEmpty(destinationFigure)) {
-            if (wasPawnOnThePass(game, movement)) {
+            if (wasPawnEnPassant(lastMovement, movement)) {
                 throw new PawnOnThePassException("Pawn on the pass");
 
             } else if (isTrajectoryValid(movement) & board.isDistanceFree(movement)) {
@@ -121,15 +121,8 @@ public class Pawn extends ChessPiece {
         return Math.abs(startLast.getHorizontal() - destinationLast.getHorizontal()) == 2;
     }
 
-    private boolean wasPawnOnThePass(OneDeviceGame game, Movable movement) {
-        MovementHistory lastMove = null;
-        try {
-            lastMove = game.getLastMovement();
-        } catch (RuntimeException ignored) { // I have no fucking idea why it needs RuntimeException, 'cause it throws NPE only
-            return false;
-        }
-
-        assert lastMove != null;
+    private boolean wasPawnEnPassant(MovementHistory lastMove, Movable movement) {
+        if (lastMove == null) return false;
         ChessPiece piece = (ChessPiece) lastMove.start;
         boolean isSameVertical = lastMove.movement.getDestination().getVertical().equals(movement.getDestination().getVertical());
         boolean isSameHorizontal = lastMove.movement.getDestination().getHorizontal().equals(movement.getStart().getHorizontal());

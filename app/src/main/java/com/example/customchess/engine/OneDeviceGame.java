@@ -94,16 +94,12 @@ public class OneDeviceGame implements Game {
         return board;
     }
 
-    public EndGameChecker getGameAnalyser() {
-        return gameAnalyser;
-    }
-
     public void setCurrentPlayer(Player player) {
         currentPlayer = player;
     }
 
     public MovementHistory getLastMovement() {
-        return movementStack.peek();
+        return ! movementStack.isEmpty() ? movementStack.peek() : null;
     }
 
     public void checkForPat() throws DrawException {
@@ -163,7 +159,7 @@ public class OneDeviceGame implements Game {
         try {
             if (currentPlayer.isCorrectPlayerMove((ChessPiece) startFigure)) {
                 try {
-                    startFigure.tryToMove(movement, this);
+                    startFigure.tryToMove(movement, board, gameAnalyser, getLastMovement());
 
                 } catch (MoveOnEmptyCageException mec) {
                     board.swapFigures(start, destination);
