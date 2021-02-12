@@ -75,10 +75,11 @@ public class Movement implements Movable {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         if (start != null) {
-            builder.append("start ").append(start.toString());
+            builder.append(start.toString());
         }
+        builder.append("-");
         if (destination != null) {
-            builder.append(" dest ").append(destination.toString());
+            builder.append(destination.toString());
         }
         return new String(builder);
     }

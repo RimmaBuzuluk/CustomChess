@@ -34,11 +34,11 @@ public class Board {
         Position newRookPlace;
 
         if ( BoardPosition.isShortSchemeCastling(destination) ) {
-            oldRookPlace = new BoardPosition(Verticals.H, horizontal);
+            oldRookPlace = new BoardPosition(Verticals.h, horizontal);
             newRookPlace = new BoardPosition(startVertical - 1, horizontal);
 
         } else {
-            oldRookPlace = new BoardPosition(Verticals.A, horizontal);
+            oldRookPlace = new BoardPosition(Verticals.a, horizontal);
             newRookPlace = new BoardPosition(startVertical + 1, horizontal);
         }
         findBy(oldRookPlace).setPosition(newRookPlace);

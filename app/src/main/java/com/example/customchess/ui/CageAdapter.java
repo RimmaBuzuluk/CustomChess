@@ -10,10 +10,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.customchess.R;
 import com.example.customchess.engine.movements.Position;
+import com.example.customchess.ui.board.BoardPlayerView;
 import com.example.customchess.ui.figures.Figure;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 public class CageAdapter extends RecyclerView.Adapter<CageAdapter.ViewHolder> {
 
@@ -22,12 +23,12 @@ public class CageAdapter extends RecyclerView.Adapter<CageAdapter.ViewHolder> {
     }
 
     private OnItemSelected  activity;
-    private ArrayList<Cage> cageList;
+    private List<Cage> cageList;
     private Hashtable<Integer, Figure> teamsImages;
 
-    public CageAdapter(OnItemSelected context, Hashtable<Integer, Figure> teamsImages, ArrayList<Cage> list) {
-        cageList = list;
-        this.teamsImages = teamsImages;
+    public CageAdapter(OnItemSelected context, BoardPlayerView boardPlayerView) {
+        this.cageList = boardPlayerView.getCages();
+        this.teamsImages = boardPlayerView.getTeamImages();
         try {
             this.activity = context;
         } catch (ClassCastException exception) {

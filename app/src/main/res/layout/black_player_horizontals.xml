@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
@@ -13,18 +12,14 @@
     <TextView style="@style/horizontal_board_layout"
         android:text="F"/>
 
-
     <TextView style="@style/horizontal_board_layout"
         android:text="E"/>
-
 
     <TextView style="@style/horizontal_board_layout"
         android:text="D"/>
 
-
     <TextView style="@style/horizontal_board_layout"
         android:text="C"/>
-
 
     <TextView style="@style/horizontal_board_layout"
         android:text="B"/>

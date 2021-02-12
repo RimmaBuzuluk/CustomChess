@@ -2,5 +2,5 @@ package com.example.customchess.engine.misc;
 
 public enum Verticals {
 
-    H, G, F, E, D, C, B, A
+    h, g, f, e, d, c, b, a
 }

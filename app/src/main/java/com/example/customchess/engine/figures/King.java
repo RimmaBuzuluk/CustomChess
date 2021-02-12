@@ -3,7 +3,6 @@ package com.example.customchess.engine.figures;
 import com.example.customchess.engine.Board;
 import com.example.customchess.engine.EndGameChecker;
 import com.example.customchess.engine.MovementHistory;
-import com.example.customchess.engine.OneDeviceGame;
 import com.example.customchess.engine.exceptions.BeatFigureException;
 import com.example.customchess.engine.exceptions.CastlingException;
 import com.example.customchess.engine.exceptions.CheckKingException;
@@ -104,19 +103,19 @@ public class King extends ChessPiece {
     private Position getRookPositionOnFlank(Position onFlank) {
         Verticals vertical;
         if (onFlank.getVertical().ordinal() > 3) { // queen's flank
-            vertical = Verticals.A;
+            vertical = Verticals.a;
         } else {
-            vertical = Verticals.H;
+            vertical = Verticals.h;
         }
 
         return new BoardPosition(vertical, onFlank.getHorizontal());
     }
 
     private Position getMiddleBetween(Position start, Position destination) {
-        Verticals vertical = Verticals.F;
+        Verticals vertical = Verticals.f;
         int diffVertical = start.getVertical().ordinal() - destination.getVertical().ordinal();
         if (diffVertical == -2) {
-            vertical = Verticals.D;
+            vertical = Verticals.d;
         }
 
         return new BoardPosition(vertical, start.getHorizontal());

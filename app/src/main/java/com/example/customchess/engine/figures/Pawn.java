@@ -3,13 +3,12 @@ package com.example.customchess.engine.figures;
 import com.example.customchess.engine.Board;
 import com.example.customchess.engine.EndGameChecker;
 import com.example.customchess.engine.MovementHistory;
-import com.example.customchess.engine.OneDeviceGame;
 import com.example.customchess.engine.exceptions.BeatFigureException;
 import com.example.customchess.engine.exceptions.ChessException;
 import com.example.customchess.engine.exceptions.InvalidMoveException;
 import com.example.customchess.engine.exceptions.MoveOnEmptyCageException;
 import com.example.customchess.engine.exceptions.OneTeamPiecesSelectedException;
-import com.example.customchess.engine.exceptions.PawnOnThePassException;
+import com.example.customchess.engine.exceptions.PawnEnPassantException;
 import com.example.customchess.engine.exceptions.PromotionException;
 import com.example.customchess.engine.misc.Color;
 import com.example.customchess.engine.movements.Movable;
@@ -88,7 +87,7 @@ public class Pawn extends ChessPiece {
 
         } else if (board.isCageEmpty(destinationFigure)) {
             if (wasPawnEnPassant(lastMovement, movement)) {
-                throw new PawnOnThePassException("Pawn on the pass");
+                throw new PawnEnPassantException("Pawn on the pass");
 
             } else if (isTrajectoryValid(movement) & board.isDistanceFree(movement)) {
                 if (isPromotionMove(movement)) {

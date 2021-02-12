@@ -33,7 +33,7 @@ public class BoardPosition implements Position {
     }
 
     public static boolean isShortSchemeCastling(Position destination) {
-        return destination.getVertical().equals(Verticals.G);
+        return destination.getVertical().equals(Verticals.g);
     }
 
     @Override
@@ -138,9 +138,9 @@ public class BoardPosition implements Position {
     public Position getRookPositionOnFlank() {
         Verticals temp;
         if (getVertical().ordinal() > 3) { // queen's flank
-            temp = Verticals.A;
+            temp = Verticals.a;
         } else {
-            temp = Verticals.H;
+            temp = Verticals.h;
         }
 
         return new BoardPosition(temp, getHorizontal());
@@ -150,9 +150,9 @@ public class BoardPosition implements Position {
     public Position getRookPositionOnFlankAfterCastling() {
         Verticals temp;
         if (getVertical().ordinal() > 3) { // queen's flank
-            temp = Verticals.D;
+            temp = Verticals.d;
         } else {
-            temp = Verticals.F;
+            temp = Verticals.f;
         }
 
         return new BoardPosition(temp, getHorizontal());

@@ -3,14 +3,12 @@ package com.example.customchess;
 import com.example.customchess.engine.OneDeviceGame;
 import com.example.customchess.engine.exceptions.BeatFigureException;
 import com.example.customchess.engine.exceptions.CastlingException;
-import com.example.customchess.engine.exceptions.CheckKingException;
 import com.example.customchess.engine.exceptions.CheckMateException;
 import com.example.customchess.engine.exceptions.ChessException;
 import com.example.customchess.engine.exceptions.DrawException;
 import com.example.customchess.engine.exceptions.MoveOnEmptyCageException;
-import com.example.customchess.engine.exceptions.PawnOnThePassException;
+import com.example.customchess.engine.exceptions.PawnEnPassantException;
 import com.example.customchess.engine.exceptions.PromotionException;
-import com.example.customchess.engine.misc.Color;
 import com.example.customchess.engine.movements.Movement;
 
 import org.junit.Assert;
@@ -45,7 +43,7 @@ public class OneDeviceGameTest extends FigureMoveTest {
         gameInit1();
         for (Movement movement : gameMovements) {
             try {
-                testGame.canMakeMovement(movement);
+                testGame.tryToMakeMovement(movement);
             } catch (ChessException ignored) { }
             try {
                 testGame.checkForCheckMate();
@@ -223,14 +221,14 @@ public class OneDeviceGameTest extends FigureMoveTest {
         int ok   = 0;
         for (Movement movement : gameMovements) {
             try {
-                testGame.canMakeMovement(movement);
+                testGame.tryToMakeMovement(movement);
             } catch (PromotionException pe) {
                 ok++;
                 testGame.promotion("Queen");
             } catch (MoveOnEmptyCageException
                     | BeatFigureException
                     | CastlingException
-                    | PawnOnThePassException ce) {
+                    | PawnEnPassantException ce) {
                 ok++;
                 System.out.println(movement + " IS OK");
             } catch (ChessException ignored) {
@@ -285,14 +283,14 @@ public class OneDeviceGameTest extends FigureMoveTest {
         int ok   = 0;
         for (Movement movement : gameMovements) {
             try {
-                testGame.canMakeMovement(movement);
+                testGame.tryToMakeMovement(movement);
             } catch (PromotionException pe) {
                 ok++;
                 testGame.promotion("Queen");
             } catch (MoveOnEmptyCageException
                     | BeatFigureException
                     | CastlingException
-                    | PawnOnThePassException ce) {
+                    | PawnEnPassantException ce) {
                 ok++;
                 System.out.println(movement + " IS OK");
             } catch (ChessException ignored) {
@@ -400,14 +398,14 @@ public class OneDeviceGameTest extends FigureMoveTest {
         int ok   = 0;
         for (Movement movement : gameMovements) {
             try {
-                testGame.canMakeMovement(movement);
+                testGame.tryToMakeMovement(movement);
             } catch (PromotionException pe) {
                 testGame.promotion("Queen");
                 ok++;
             } catch (MoveOnEmptyCageException
                     | BeatFigureException
                     | CastlingException
-                    | PawnOnThePassException ce) {
+                    | PawnEnPassantException ce) {
                 ok++;
                 System.out.println(movement + " IS OK");
             } catch (ChessException ignored) {
@@ -470,14 +468,14 @@ public class OneDeviceGameTest extends FigureMoveTest {
         int ok   = 0;
         for (Movement movement : gameMovements) {
             try {
-                testGame.canMakeMovement(movement);
+                testGame.tryToMakeMovement(movement);
             } catch (PromotionException pe) {
                 testGame.promotion("Queen");
                 ok++;
             } catch (MoveOnEmptyCageException
                     | BeatFigureException
                     | CastlingException
-                    | PawnOnThePassException ce) {
+                    | PawnEnPassantException ce) {
                 ok++;
                 System.out.println(movement + " IS OK");
             } catch (ChessException ignored) {
@@ -508,14 +506,14 @@ public class OneDeviceGameTest extends FigureMoveTest {
         int ok   = 0;
         for (Movement movement : gameMovements) {
             try {
-                testGame.canMakeMovement(movement);
+                testGame.tryToMakeMovement(movement);
             } catch (PromotionException pe) {
                 testGame.promotion("Queen");
                 ok++;
             } catch (MoveOnEmptyCageException
                     | BeatFigureException
                     | CastlingException
-                    | PawnOnThePassException ce) {
+                    | PawnEnPassantException ce) {
                 ok++;
                 System.out.println(movement + " IS OK");
             } catch (ChessException ignored) {
@@ -562,14 +560,14 @@ public class OneDeviceGameTest extends FigureMoveTest {
         int ok   = 0;
         for (Movement movement : gameMovements) {
             try {
-                testGame.canMakeMovement(movement);
+                testGame.tryToMakeMovement(movement);
             } catch (PromotionException pe) {
                 testGame.promotion("Queen");
                 ok++;
             } catch (MoveOnEmptyCageException
                     | BeatFigureException
                     | CastlingException
-                    | PawnOnThePassException ce) {
+                    | PawnEnPassantException ce) {
                 ok++;
                 System.out.println(movement + " IS OK");
             } catch (ChessException ignored) {
@@ -645,14 +643,14 @@ public class OneDeviceGameTest extends FigureMoveTest {
         int ok   = 0;
         for (Movement movement : gameMovements) {
             try {
-                testGame.canMakeMovement(movement);
+                testGame.tryToMakeMovement(movement);
             } catch (PromotionException pe) {
                 testGame.promotion("Queen");
                 ok++;
             } catch (MoveOnEmptyCageException
                     | BeatFigureException
                     | CastlingException
-                    | PawnOnThePassException ce) {
+                    | PawnEnPassantException ce) {
                 ok++;
                 System.out.println(movement + " IS OK");
             } catch (ChessException ignored) {
@@ -752,14 +750,14 @@ public class OneDeviceGameTest extends FigureMoveTest {
         int ok   = 0;
         for (Movement movement : gameMovements) {
             try {
-                testGame.canMakeMovement(movement);
+                testGame.tryToMakeMovement(movement);
             } catch (PromotionException pe) {
                 testGame.promotion("Queen");
                 ok++;
             } catch (MoveOnEmptyCageException
                     | BeatFigureException
                     | CastlingException
-                    | PawnOnThePassException ce) {
+                    | PawnEnPassantException ce) {
                 ok++;
                 System.out.println(movement + " IS OK");
             } catch (ChessException ignored) {
@@ -799,14 +797,14 @@ public class OneDeviceGameTest extends FigureMoveTest {
         int ok   = 0;
         for (Movement movement : gameMovements) {
             try {
-                testGame.canMakeMovement(movement);
+                testGame.tryToMakeMovement(movement);
             } catch (PromotionException pe) {
                 testGame.promotion("Queen");
                 ok++;
             } catch (MoveOnEmptyCageException
                     | BeatFigureException
                     | CastlingException
-                    | PawnOnThePassException ce) {
+                    | PawnEnPassantException ce) {
                 ok++;
                 System.out.println(movement + " IS OK");
             } catch (ChessException ignored) {
@@ -862,14 +860,14 @@ public class OneDeviceGameTest extends FigureMoveTest {
         int ok   = 0;
         for (Movement movement : gameMovements) {
             try {
-                testGame.canMakeMovement(movement);
+                testGame.tryToMakeMovement(movement);
             } catch (PromotionException pe) {
                 testGame.promotion("Queen");
                 ok++;
             } catch (MoveOnEmptyCageException
                     | BeatFigureException
                     | CastlingException
-                    | PawnOnThePassException ce) {
+                    | PawnEnPassantException ce) {
                 ok++;
                 System.out.println(movement + " IS OK");
             } catch (ChessException ignored) {

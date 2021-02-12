@@ -8,7 +8,7 @@ import com.example.customchess.engine.exceptions.ChessException;
 import com.example.customchess.engine.exceptions.DrawException;
 import com.example.customchess.engine.exceptions.FigureNotChosenException;
 import com.example.customchess.engine.exceptions.MoveOnEmptyCageException;
-import com.example.customchess.engine.exceptions.PawnOnThePassException;
+import com.example.customchess.engine.exceptions.PawnEnPassantException;
 import com.example.customchess.engine.exceptions.PromotionException;
 import com.example.customchess.engine.figures.Bishop;
 import com.example.customchess.engine.figures.ChessPiece;
@@ -77,21 +77,17 @@ public class OneDeviceGame implements Game {
             pawnRow = 6;
             kingRow = 7;
         }
-        team.add(new Rook(color, new BoardPosition(Verticals.H, kingRow + 1)));
-        team.add(new Rook(color, new BoardPosition(Verticals.A, kingRow + 1)));
-        team.add(new Knight(color, new BoardPosition(Verticals.G, kingRow + 1)));
-        team.add(new Knight(color, new BoardPosition(Verticals.B, kingRow + 1)));
-        team.add(new Bishop(color, new BoardPosition(Verticals.C, kingRow + 1)));
-        team.add(new Bishop(color, new BoardPosition(Verticals.F, kingRow + 1)));
-        team.add(new King(color, new BoardPosition(Verticals.E, kingRow + 1)));
-        team.add(new Queen(color, new BoardPosition(Verticals.D, kingRow + 1)));
+        team.add(new Rook(color, new BoardPosition(Verticals.h, kingRow + 1)));
+        team.add(new Rook(color, new BoardPosition(Verticals.a, kingRow + 1)));
+        team.add(new Knight(color, new BoardPosition(Verticals.g, kingRow + 1)));
+        team.add(new Knight(color, new BoardPosition(Verticals.b, kingRow + 1)));
+        team.add(new Bishop(color, new BoardPosition(Verticals.c, kingRow + 1)));
+        team.add(new Bishop(color, new BoardPosition(Verticals.f, kingRow + 1)));
+        team.add(new King(color, new BoardPosition(Verticals.e, kingRow + 1)));
+        team.add(new Queen(color, new BoardPosition(Verticals.d, kingRow + 1)));
         for (int vertical = 0; vertical < 8; vertical++) {
             team.add(new Pawn(color, new BoardPosition(vertical, pawnRow + 1)));
         }
-    }
-
-    public Board getBoard() {
-        return board;
     }
 
     public void setCurrentPlayer(Player player) {
@@ -102,18 +98,21 @@ public class OneDeviceGame implements Game {
         return ! movementStack.isEmpty() ? movementStack.peek() : null;
     }
 
+    @Override
     public void checkForPat() throws DrawException {
         if (gameAnalyser.checkForDraw(currentPlayer.getColor())) {
             throw new DrawException("Draw");
         }
     }
 
+    @Override
     public void checkForCheckMate() throws CheckMateException {
         if (gameAnalyser.isCheckMate(currentPlayer.getColor())) {
             throw new CheckMateException("Mate on the board\n" + currentPlayer.getColor() + " is fucked");
         }
     }
 
+    @Override
     public void promotion(String choice) {
         Piece promotedPiece;
         Color team = ((ChessPiece) movementStack.peek().start).color;
@@ -147,7 +146,8 @@ public class OneDeviceGame implements Game {
         team.remove(piece);
     }
 
-    public void canMakeMovement(Movable movement) throws ChessException {
+    @Override
+    public void tryToMakeMovement(Movable movement) throws ChessException {
         Position start = movement.getStart();
         Position destination = movement.getDestination();
         Piece startFigure = board.findBy(movement.getStart());
@@ -177,7 +177,7 @@ public class OneDeviceGame implements Game {
                     backUpCastling = new MovementHistory(new Movement(oldRookPosition, newRookPosition), backUpPiece, afterCastling);
                     board.castling(start, destination);
                     throw ce;
-                } catch (PawnOnThePassException ppe) {
+                } catch (PawnEnPassantException ppe) {
                     Piece beatenPawn = board.findBy(destination.getPawnBeatenOnPassPosition((startFigure.getColor())));
                     backUpPiece = beatenPawn;
                     removePieceFromTeam(beatenPawn);
@@ -195,7 +195,7 @@ public class OneDeviceGame implements Game {
                 | BeatFigureException
                 | CastlingException
                 | PromotionException
-                | PawnOnThePassException ce) {
+                | PawnEnPassantException ce) {
             if (gameAnalyser.isKingUnderAttack(currentPlayer.getColor())) {
                 restoreInTeamAndOnBoard(backUpPiece);
                 board.restorePreviousTurn(currentMovementHeader);

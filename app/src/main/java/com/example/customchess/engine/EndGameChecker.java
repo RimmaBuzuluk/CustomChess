@@ -1,25 +1,14 @@
 package com.example.customchess.engine;
 
-import com.example.customchess.engine.exceptions.BeatFigureException;
-import com.example.customchess.engine.exceptions.CastlingException;
-import com.example.customchess.engine.exceptions.CheckKingException;
 import com.example.customchess.engine.exceptions.ChessException;
-import com.example.customchess.engine.exceptions.DrawException;
-import com.example.customchess.engine.exceptions.FigureNotChosenException;
-import com.example.customchess.engine.exceptions.MoveOnEmptyCageException;
-import com.example.customchess.engine.exceptions.PawnOnThePassException;
-import com.example.customchess.engine.exceptions.PromotionException;
-import com.example.customchess.engine.figures.ChessPiece;
 import com.example.customchess.engine.figures.King;
 import com.example.customchess.engine.figures.Knight;
 import com.example.customchess.engine.figures.Piece;
 import com.example.customchess.engine.misc.Color;
-import com.example.customchess.engine.movements.BoardPosition;
 import com.example.customchess.engine.movements.Movement;
 import com.example.customchess.engine.movements.Position;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -246,6 +235,9 @@ public class EndGameChecker {
         return teamColor.equals(Color.White) ? whiteTeam : blackTeam;
     }
 
+    // todo move these 2 methods to DrawChecker class,
+    //  because it will be correct,
+    //  and now it works incorrect I assume
     public boolean checkForDraw(Color teamColor) {
         List<Piece> team = getTeamBy(teamColor);
         int figuresCannotMove = 0;
@@ -298,6 +290,7 @@ public class EndGameChecker {
 
         return canMove > 0;
     }
+    // --------------
 
     public List<Position> getEmptyPositionsAround(Position position) {
         List<Position> cagesAround = position.getPositionsAround();
