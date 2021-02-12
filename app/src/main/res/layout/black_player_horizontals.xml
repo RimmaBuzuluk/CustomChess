@@ -1,30 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.LinearLayoutCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
+    android:orientation="vertical"
     android:layout_height="wrap_content">
 
-    <TextView style="@style/horizontal_board_layout"
-        android:text="H"/>
+    <TextView style="@style/vertical_board_layout"
+        android:text="1"/>
 
-    <TextView style="@style/horizontal_board_layout"
-        android:text="G"/>
+    <TextView style="@style/vertical_board_layout"
+        android:text="2"/>
 
-    <TextView style="@style/horizontal_board_layout"
-        android:text="F"/>
+    <TextView style="@style/vertical_board_layout"
+        android:text="3"/>
 
-    <TextView style="@style/horizontal_board_layout"
-        android:text="E"/>
+    <TextView style="@style/vertical_board_layout"
+        android:text="4"/>
 
-    <TextView style="@style/horizontal_board_layout"
-        android:text="D"/>
+    <TextView style="@style/vertical_board_layout"
+        android:text="5"/>
 
-    <TextView style="@style/horizontal_board_layout"
-        android:text="C"/>
+    <TextView style="@style/vertical_board_layout"
+        android:text="6"/>
 
-    <TextView style="@style/horizontal_board_layout"
-        android:text="B"/>
+    <TextView style="@style/vertical_board_layout"
+        android:text="7"/>
 
-    <TextView style="@style/horizontal_board_layout"
-        android:text="A"/>
+    <TextView style="@style/vertical_board_layout"
+        android:text="8"/>
 
 </androidx.appcompat.widget.LinearLayoutCompat>

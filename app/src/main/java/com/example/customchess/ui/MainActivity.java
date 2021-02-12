@@ -30,7 +30,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         fragmentManager = getSupportFragmentManager();
-        chessBoardFragment = fragmentManager.findFragmentById(R.id.chess_board_frag);
+        chessBoardFragment = new ChessBoardFragment();
+        fragmentManager.beginTransaction()
+                .add(R.id.chess_board_frag, chessBoardFragment)
+                .commit();
+
         save = findViewById(R.id.save);
         load = findViewById(R.id.load);
 

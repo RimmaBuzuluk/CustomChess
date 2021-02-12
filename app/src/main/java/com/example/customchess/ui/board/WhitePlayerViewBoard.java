@@ -50,8 +50,8 @@ public class WhitePlayerViewBoard implements BoardPlayerView {
         teamImages.put(48, blackKnight);
         teamImages.put(16, blackBishop);
         teamImages.put(40, blackBishop);
-        teamImages.put(24, blackKing);
-        teamImages.put(32, blackQueen);
+        teamImages.put(24, blackQueen);
+        teamImages.put(32, blackKing);
         for (int i = 0; i < 8; ++i) {
             teamImages.put((1 + i * 8), blackPawn);
         }
@@ -61,8 +61,8 @@ public class WhitePlayerViewBoard implements BoardPlayerView {
         teamImages.put(55, whiteKnight);
         teamImages.put(23, whiteBishop);
         teamImages.put(47, whiteBishop);
-        teamImages.put(31, whiteKing);
-        teamImages.put(39, whiteQueen);
+        teamImages.put(31, whiteQueen);
+        teamImages.put(39, whiteKing);
         for (int i = 0; i < 8; ++i) {
             teamImages.put((6 + i * 8), whitePawn);
         }

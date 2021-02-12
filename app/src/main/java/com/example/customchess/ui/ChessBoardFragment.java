@@ -1,6 +1,5 @@
 package com.example.customchess.ui;
 
-import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
 
@@ -13,22 +12,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 
 import com.example.customchess.R;
 import com.example.customchess.engine.Game;
 import com.example.customchess.engine.OneDeviceGame;
-import com.example.customchess.engine.misc.Color;
-import com.example.customchess.engine.movements.BoardPosition;
 import com.example.customchess.engine.movements.Position;
-import com.example.customchess.engine.misc.Verticals;
 import com.example.customchess.ui.board.BlackPlayerViewBoard;
 import com.example.customchess.ui.board.BoardPlayerView;
 import com.example.customchess.ui.board.WhitePlayerViewBoard;
-import com.example.customchess.ui.figures.Figure;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
 
 
 public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSelected {
@@ -40,6 +32,10 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
     private BoardPlayerView boardPlayerView;
     private Game game;
     private MovementHandler movementHandler;
+    private ViewStub topVerticals;
+    private ViewStub bottomVerticals;
+    private ViewStub leftHorizontals;
+    private ViewStub rightHorizontals;
 
 
     public ChessBoardFragment() {
@@ -58,7 +54,12 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_chess_board, container, false);
+        view = inflater.inflate(R.layout.fragment_board, container, false);
+        topVerticals = view.findViewById(R.id.top_verticals);
+        bottomVerticals = view.findViewById(R.id.bottom_verticals);
+        leftHorizontals = view.findViewById(R.id.left_horizontals);
+        rightHorizontals = view.findViewById(R.id.right_horizontals);
+
         return view;
     }
 
@@ -70,7 +71,8 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
         recyclerView.setHasFixedSize(true);
         recyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
-        boardPlayerView = new BlackPlayerViewBoard(this.getContext());
+        // TODO: 13.02.21 magic is here
+        whiteView();
         recyclerAdapter = new CageAdapter(this, boardPlayerView);
         recyclerView.setAdapter(recyclerAdapter);
 
@@ -79,6 +81,30 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
 
         game = new OneDeviceGame();
         movementHandler = new MovementHandler(this, game, recyclerView);
+    }
+
+    private void whiteView() {
+        topVerticals.setLayoutResource(R.layout.white_player_verticals_flipped);
+        topVerticals.inflate();
+        bottomVerticals.setLayoutResource(R.layout.white_player_verticals);
+        bottomVerticals.inflate();
+        leftHorizontals.setLayoutResource(R.layout.white_player_horizontals);
+        leftHorizontals.inflate();
+        rightHorizontals.setLayoutResource(R.layout.white_player_horizontals_flipped);
+        rightHorizontals.inflate();
+        boardPlayerView = new WhitePlayerViewBoard(this.getContext());
+    }
+
+    private void blackView() {
+        topVerticals.setLayoutResource(R.layout.black_player_verticals_flipped);
+        topVerticals.inflate();
+        bottomVerticals.setLayoutResource(R.layout.black_player_verticals);
+        bottomVerticals.inflate();
+        leftHorizontals.setLayoutResource(R.layout.black_player_horizontals);
+        leftHorizontals.inflate();
+        rightHorizontals.setLayoutResource(R.layout.black_player_horizontals_flipped);
+        rightHorizontals.inflate();
+        boardPlayerView = new BlackPlayerViewBoard(this.getContext());
     }
 
     public String getHistory() {
