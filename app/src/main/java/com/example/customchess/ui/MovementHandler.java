@@ -10,11 +10,11 @@ import com.example.customchess.engine.exceptions.*;
 import com.example.customchess.engine.movements.Movable;
 import com.example.customchess.engine.movements.Movement;
 import com.example.customchess.engine.movements.Position;
+import com.example.customchess.ui.board.BlackPlayerViewBoard;
 import com.example.customchess.ui.board.BoardPlayerView;
 import com.example.customchess.ui.boardmove.MessagePosterOnUI;
 import com.example.customchess.ui.boardmove.UIMove;
 import com.example.customchess.ui.figures.Figure;
-
 
 
 public class MovementHandler {
@@ -56,6 +56,7 @@ public class MovementHandler {
                         handler.post(new OnUIThreadPoster(simpleMove, destination, startHolder, destinationHolder));
                     } catch (CastlingException ce) {
                         handler.post(new OnUIThreadPoster(castling, destination, startHolder, destinationHolder));
+                        handler.post(new MessagePosterOnUI(context.getContext(), ce.getMessage()));
                     } catch (OneTeamPiecesSelectedException | FigureNotChosenException otp) {
                         start = destination;
                         return;
@@ -125,13 +126,28 @@ public class MovementHandler {
                                 CageAdapter.ViewHolder startHolder, CageAdapter.ViewHolder destinationHolder) {
             CageAdapter.ViewHolder newRook;
             CageAdapter.ViewHolder oldRook;
-            if (destination.index < 24) {
-                newRook = findCage(start.index - 8);
-                oldRook = findCage(destination.index - 8);
+            int newRookPlaceIndex;
+            int oldRookPlaceIndex;
+
+            if (playerView instanceof BlackPlayerViewBoard) {
+                if (destination.index < 24) {
+                    newRookPlaceIndex = start.index - 8;
+                    oldRookPlaceIndex = destination.index - 8;
+                } else {
+                    newRookPlaceIndex = start.index + 8;
+                    oldRookPlaceIndex = destination.index + 16;
+                }
             } else {
-                newRook = findCage(start.index + 8);
-                oldRook = findCage(destination.index + 16);
+                if (destination.index < 24) {
+                    newRookPlaceIndex = start.index - 8;
+                    oldRookPlaceIndex = destination.index - 16;
+                } else {
+                    newRookPlaceIndex = start.index + 8;
+                    oldRookPlaceIndex = destination.index + 8;
+                }
             }
+            newRook = findCage(newRookPlaceIndex);
+            oldRook = findCage(oldRookPlaceIndex);
             newRook.draw(oldRook.getImageResource());
             destinationHolder.draw(startHolder.getImageResource());
             startHolder.hide();

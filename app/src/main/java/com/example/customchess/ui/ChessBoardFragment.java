@@ -81,7 +81,7 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
         recyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
         // TODO: 13.02.21 magic is here
-        blackView();
+        whiteView();
         topVerticals.inflate();
         bottomVerticals.inflate();
         leftHorizontals.inflate();
