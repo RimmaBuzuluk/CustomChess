@@ -69,8 +69,6 @@ public class Movement implements Movable {
         return distance;
     }
 
-    // todo delete at the end
-    // just for Toasts
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();

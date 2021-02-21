@@ -87,7 +87,7 @@ public class Pawn extends ChessPiece {
 
         } else if (board.isCageEmpty(destinationFigure)) {
             if (wasPawnEnPassant(lastMovement, movement)) {
-                throw new PawnEnPassantException("Pawn on the pass");
+                throw new PawnEnPassantException("en passant");
 
             } else if (isTrajectoryValid(movement) & board.isDistanceFree(movement)) {
                 if (isPromotionMove(movement)) {
