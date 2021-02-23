@@ -4,7 +4,8 @@ import com.example.customchess.ui.CageAdapter;
 import com.example.customchess.ui.MovementHandler;
 
 public interface UIMove {
-    void moveOnBoard(MovementHandler.TempPosition destination,
+    void moveOnBoard(MovementHandler.TempPosition start,
+                     MovementHandler.TempPosition destination,
                      CageAdapter.ViewHolder startHolder,
                      CageAdapter.ViewHolder destinationHolder);
 }

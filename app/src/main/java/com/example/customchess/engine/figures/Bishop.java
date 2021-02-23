@@ -2,8 +2,7 @@ package com.example.customchess.engine.figures;
 
 import com.example.customchess.engine.Board;
 import com.example.customchess.engine.EndGameChecker;
-import com.example.customchess.engine.MovementHistory;
-import com.example.customchess.engine.OneDeviceGame;
+import com.example.customchess.engine.movements.MovementHistory;
 import com.example.customchess.engine.exceptions.BeatFigureException;
 import com.example.customchess.engine.exceptions.ChessException;
 import com.example.customchess.engine.exceptions.InvalidMoveException;
@@ -50,7 +49,7 @@ public class Bishop extends ChessPiece {
 
     @Override
     public String toString() {
-        return "Bishop";
+        return "B";
     }
 
     @Override

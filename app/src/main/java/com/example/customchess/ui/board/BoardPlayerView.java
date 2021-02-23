@@ -9,4 +9,5 @@ import java.util.List;
 public interface BoardPlayerView {
     List<Cage> getCages();
     Hashtable<Integer, Figure> getTeamImages();
+    void flipWhiteTeam();
 }

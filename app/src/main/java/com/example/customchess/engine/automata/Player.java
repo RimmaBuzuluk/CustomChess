@@ -1,4 +1,4 @@
-package com.example.customchess.engine;
+package com.example.customchess.engine.automata;
 
 import com.example.customchess.engine.exceptions.InvalidOrderMoveException;
 import com.example.customchess.engine.figures.ChessPiece;

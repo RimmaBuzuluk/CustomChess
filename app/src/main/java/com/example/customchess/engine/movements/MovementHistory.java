@@ -1,4 +1,4 @@
-package com.example.customchess.engine;
+package com.example.customchess.engine.movements;
 
 import com.example.customchess.engine.figures.Piece;
 import com.example.customchess.engine.movements.Movable;

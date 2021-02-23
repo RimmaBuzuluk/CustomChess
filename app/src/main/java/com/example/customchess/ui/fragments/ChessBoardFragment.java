@@ -1,4 +1,4 @@
-package com.example.customchess.ui;
+package com.example.customchess.ui.fragments;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,9 @@ import com.example.customchess.R;
 import com.example.customchess.engine.Game;
 import com.example.customchess.engine.OneDeviceGame;
 import com.example.customchess.engine.movements.Position;
+import com.example.customchess.ui.CageAdapter;
+import com.example.customchess.ui.MovementHandler;
+import com.example.customchess.ui.Team;
 import com.example.customchess.ui.board.BlackPlayerViewBoard;
 import com.example.customchess.ui.board.BoardPlayerView;
 import com.example.customchess.ui.board.WhitePlayerViewBoard;
@@ -27,10 +31,13 @@ import java.util.Locale;
 
 
 public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSelected {
+    public interface Flipper { }
 
+    private Flipper flipper;
     private View view;
     private RecyclerView recyclerView;
-    private CageAdapter recyclerAdapter;
+    private Team         playerChosen;
+    private CageAdapter  recyclerAdapter;
     private RecyclerView.LayoutManager recyclerManager;
     private BoardPlayerView boardPlayerView;
     private Game game;
@@ -41,13 +48,18 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
     private ViewStub rightHorizontals;
 
 
-    public ChessBoardFragment() {
-        // requires empty constructor
+    public ChessBoardFragment(Team team) {
+        playerChosen = team;
     }
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
+        try {
+            flipper = (Flipper) context;
+        } catch (ClassCastException e) {
+            e.printStackTrace();
+        }
         Locale locale = new Locale("en");
         Locale.setDefault(locale);
         Configuration config = new Configuration();
@@ -58,6 +70,7 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
 
     @Override
     public void onItemClicked(final Position position, final int index, final int imageResourceId) {
+        // todo maybe add a thread pool
         movementHandler.handle(new MovementHandler.TempPosition(position, index, imageResourceId));
     }
 
@@ -80,8 +93,14 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
         recyclerView.setHasFixedSize(true);
         recyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
-        // TODO: 13.02.21 magic is here
-        whiteView();
+        if (playerChosen.equals(Team.White)) {
+            whiteView();
+        } else {
+            blackView();
+        }
+        if (flipper != null) {
+            boardPlayerView.flipWhiteTeam();
+        }
         topVerticals.inflate();
         bottomVerticals.inflate();
         leftHorizontals.inflate();

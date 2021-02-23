@@ -11,26 +11,21 @@ import com.example.customchess.ui.Cage;
 import com.example.customchess.ui.figures.Figure;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 public class BlackPlayerViewBoard implements BoardPlayerView {
 
     private Context context;
+    private Hashtable<Integer, Figure> teamImages;
 
     public BlackPlayerViewBoard(Context context) {
         this.context = context;
-    }
-
-    @Override
-    public List<Cage> getCages() {
-        return cagesInit();
-    }
-
-    @Override
-    public Hashtable<Integer, Figure> getTeamImages() {
-        Hashtable<Integer, Figure> teamImages = new Hashtable<>(32);
+        teamImages = new Hashtable<>(32);
         Figure whitePawn = new Figure.Pawn(Color.White);
         Figure blackPawn = new Figure.Pawn(Color.Black);
         Figure whiteRook = new Figure.Rook(Color.White);
@@ -66,8 +61,25 @@ public class BlackPlayerViewBoard implements BoardPlayerView {
         for (int i = 0; i < 8; ++i) {
             teamImages.put((6 + i * 8), blackPawn);
         }
+    }
 
+    @Override
+    public List<Cage> getCages() {
+        return cagesInit();
+    }
+
+    @Override
+    public Hashtable<Integer, Figure> getTeamImages() {
         return teamImages;
+    }
+
+    @Override
+    public void flipWhiteTeam() {
+        if (teamImages == null) return;
+        Collection<Figure> keys = teamImages.values();
+        for (Figure key : keys) {
+            key.flip();
+        }
     }
 
     public List<Cage> cagesInit() {

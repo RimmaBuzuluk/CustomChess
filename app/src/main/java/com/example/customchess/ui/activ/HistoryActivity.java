@@ -1,4 +1,4 @@
-package com.example.customchess.ui;
+package com.example.customchess.ui.activ;
 
 import android.content.Intent;
 import android.os.Bundle;

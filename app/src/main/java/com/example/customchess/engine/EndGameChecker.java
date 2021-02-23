@@ -6,6 +6,7 @@ import com.example.customchess.engine.figures.Knight;
 import com.example.customchess.engine.figures.Piece;
 import com.example.customchess.engine.misc.Color;
 import com.example.customchess.engine.movements.Movement;
+import com.example.customchess.engine.movements.MovementHistory;
 import com.example.customchess.engine.movements.Position;
 
 import java.util.ArrayList;

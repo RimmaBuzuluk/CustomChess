@@ -40,10 +40,15 @@ public class CageAdapter extends RecyclerView.Adapter<CageAdapter.ViewHolder> {
         private ImageButton piece;
         private int         imageResource;
         private Position    position;
+        private Figure      figure;
 
         public void hide() {
             imageResource = 0;
             piece.setImageResource(imageResource);
+        }
+
+        public Figure getFigure() {
+            return figure;
         }
 
         public int getImageResource() {
@@ -90,6 +95,7 @@ public class CageAdapter extends RecyclerView.Adapter<CageAdapter.ViewHolder> {
             int imageId = teamsImages.get(position).getImageId();
             holder.piece.setImageResource(imageId);
             holder.imageResource = imageId;
+            holder.figure = teamsImages.get(position);
         }
     }
 

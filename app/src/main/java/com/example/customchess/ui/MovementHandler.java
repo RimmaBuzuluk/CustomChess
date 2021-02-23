@@ -46,6 +46,7 @@ public class MovementHandler {
                 final Movable move = new Movement(start.position, destination.position);
                 CageAdapter.ViewHolder startHolder = findCage(start.index);
                 CageAdapter.ViewHolder destinationHolder = findCage(destination.index);
+                OnUIThreadPoster poster = null;
 
                 if (startHolder != null && destinationHolder != null) {
                     try {
@@ -53,27 +54,29 @@ public class MovementHandler {
 
                     } catch (MoveOnEmptyCageException
                             | BeatFigureException mee) {
-                        handler.post(new OnUIThreadPoster(simpleMove, destination, startHolder, destinationHolder));
+                        poster = new OnUIThreadPoster(simpleMove, start, destination, startHolder, destinationHolder);
                     } catch (CastlingException ce) {
-                        handler.post(new OnUIThreadPoster(castling, destination, startHolder, destinationHolder));
+                        poster = new OnUIThreadPoster(castling, start, destination, startHolder, destinationHolder);
                         handler.post(new MessagePosterOnUI(context.getContext(), ce.getMessage()));
                     } catch (OneTeamPiecesSelectedException | FigureNotChosenException otp) {
-                        start = destination;
+                        synchronized (start) {
+                            start = destination;
+                        }
                         return;
                     } catch (PawnEnPassantException ppe) {
-                        handler.post(new OnUIThreadPoster(enPassant, destination, startHolder, destinationHolder));
+                        poster = new OnUIThreadPoster(enPassant, start, destination, startHolder, destinationHolder);
                         handler.post(new MessagePosterOnUI(context.getContext(), ppe.getMessage()));
                     } catch (PromotionException pe) {
-                        handler.post(new OnUIThreadPoster(promotion, destination, startHolder, destinationHolder));
+                        poster = new OnUIThreadPoster(promotion, start, destination, startHolder, destinationHolder);
                     } catch (ChessException e) {
                         e.printStackTrace();
                         handler.post(new MessagePosterOnUI(context.getContext(), e.getMessage()));
                     }
                 }
+                if (poster != null) {
+                    handler.post(poster);
+                }
 
-                // todo
-                //  is it correct ?
-                //  check when network gaming is gonna testing
                 synchronized (game) {
                     try {
                         game.checkForCheckMate();
@@ -90,16 +93,21 @@ public class MovementHandler {
 
     private UIMove promotion = new UIMove() {
         @Override
-        public void moveOnBoard(TempPosition destination, CageAdapter.ViewHolder startHolder, CageAdapter.ViewHolder destinationHolder) {
-            startHolder.hide();
-            destinationHolder.draw(new Figure.Queen(destination.imageResource).getImageId());
-            game.promotion("Queen");
+        public void moveOnBoard(TempPosition start, TempPosition destination,
+                                CageAdapter.ViewHolder startHolder, CageAdapter.ViewHolder destinationHolder) {
+            synchronized (game) {
+                startHolder.hide();
+                Figure promoted = new Figure.Queen(start.imageResource);
+                destinationHolder.draw(promoted.getImageId());
+                game.promotion("Queen");
+            }
         }
     };
 
     private UIMove simpleMove = new UIMove() {
         @Override
-        public void moveOnBoard(TempPosition destination, CageAdapter.ViewHolder startHolder, CageAdapter.ViewHolder destinationHolder) {
+        public void moveOnBoard(TempPosition start, TempPosition destination,
+                                CageAdapter.ViewHolder startHolder, CageAdapter.ViewHolder destinationHolder) {
             startHolder.hide();
             destinationHolder.draw(start.imageResource);
         }
@@ -107,7 +115,8 @@ public class MovementHandler {
 
     private UIMove enPassant = new UIMove() {
         @Override
-        public void moveOnBoard(TempPosition destination, CageAdapter.ViewHolder startHolder, CageAdapter.ViewHolder destinationHolder) {
+        public void moveOnBoard(TempPosition start, TempPosition destination,
+                                CageAdapter.ViewHolder startHolder, CageAdapter.ViewHolder destinationHolder) {
             CageAdapter.ViewHolder passedPawn = findCage(destination.index + 1) ;
 
             if (start.index % 2 == 0) {
@@ -122,7 +131,7 @@ public class MovementHandler {
 
     private UIMove castling = new UIMove() {
         @Override
-        public void moveOnBoard(TempPosition destination,
+        public void moveOnBoard(TempPosition start, TempPosition destination,
                                 CageAdapter.ViewHolder startHolder, CageAdapter.ViewHolder destinationHolder) {
             CageAdapter.ViewHolder newRook;
             CageAdapter.ViewHolder oldRook;
@@ -162,12 +171,14 @@ public class MovementHandler {
     private static class OnUIThreadPoster implements Runnable {
         private UIMove strategy;
         private TempPosition destination;
+        private TempPosition start;
         private CageAdapter.ViewHolder startHolder;
         private CageAdapter.ViewHolder destinationHolder;
 
-        public OnUIThreadPoster(UIMove strategy, TempPosition destination,
+        public OnUIThreadPoster(UIMove strategy, TempPosition start, TempPosition destination,
                                 CageAdapter.ViewHolder startHolder, CageAdapter.ViewHolder destinationHolder) {
             this.strategy = strategy;
+            this.start = start;
             this.destination = destination;
             this.startHolder = startHolder;
             this.destinationHolder = destinationHolder;
@@ -175,7 +186,7 @@ public class MovementHandler {
 
         @Override
         public void run() {
-            strategy.moveOnBoard(destination, startHolder, destinationHolder);
+            strategy.moveOnBoard(start, destination, startHolder, destinationHolder);
         }
     }
 

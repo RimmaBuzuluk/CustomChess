@@ -6,6 +6,7 @@ import com.example.customchess.engine.misc.Verticals;
 import com.example.customchess.engine.movements.BoardPosition;
 import com.example.customchess.engine.movements.Movable;
 import com.example.customchess.engine.movements.Movement;
+import com.example.customchess.engine.movements.MovementHistory;
 import com.example.customchess.engine.movements.Position;
 
 import java.util.LinkedList;

@@ -1,7 +1,6 @@
-package com.example.customchess.engine;
+package com.example.customchess.engine.automata;
 
-import android.util.Log;
-
+import com.example.customchess.engine.OneDeviceGame;
 import com.example.customchess.engine.exceptions.InvalidOrderMoveException;
 import com.example.customchess.engine.figures.ChessPiece;
 import com.example.customchess.engine.misc.Color;
@@ -9,7 +8,7 @@ import com.example.customchess.engine.misc.Color;
 
 public class WhitePlayer implements Player {
 
-    private final OneDeviceGame  game;
+    private final OneDeviceGame game;
     private final Color          teamColor;
 
 
@@ -28,7 +27,6 @@ public class WhitePlayer implements Player {
 
     @Override
     public void changePlayer() {
-//        Log.d("move", "black's move");
         game.setCurrentPlayer(new BlackPlayer(game));
     }
 

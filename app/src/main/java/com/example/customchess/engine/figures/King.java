@@ -2,7 +2,7 @@ package com.example.customchess.engine.figures;
 
 import com.example.customchess.engine.Board;
 import com.example.customchess.engine.EndGameChecker;
-import com.example.customchess.engine.MovementHistory;
+import com.example.customchess.engine.movements.MovementHistory;
 import com.example.customchess.engine.exceptions.BeatFigureException;
 import com.example.customchess.engine.exceptions.CastlingException;
 import com.example.customchess.engine.exceptions.CheckKingException;
@@ -25,7 +25,7 @@ public class King extends ChessPiece {
 
     @Override
     public String toString() {
-        return "King";
+        return "K";
     }
 
     @Override

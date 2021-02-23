@@ -2,7 +2,7 @@ package com.example.customchess.engine.figures;
 
 import com.example.customchess.engine.Board;
 import com.example.customchess.engine.EndGameChecker;
-import com.example.customchess.engine.MovementHistory;
+import com.example.customchess.engine.movements.MovementHistory;
 import com.example.customchess.engine.exceptions.ChessException;
 import com.example.customchess.engine.misc.Color;
 import com.example.customchess.engine.movements.Movable;

@@ -1,5 +1,7 @@
 package com.example.customchess.engine;
 
+import com.example.customchess.engine.automata.Player;
+import com.example.customchess.engine.automata.WhitePlayer;
 import com.example.customchess.engine.exceptions.BeatFigureException;
 import com.example.customchess.engine.exceptions.CastlingException;
 import com.example.customchess.engine.exceptions.CheckKingException;
@@ -23,6 +25,7 @@ import com.example.customchess.engine.misc.Verticals;
 import com.example.customchess.engine.movements.BoardPosition;
 import com.example.customchess.engine.movements.Movable;
 import com.example.customchess.engine.movements.Movement;
+import com.example.customchess.engine.movements.MovementHistory;
 import com.example.customchess.engine.movements.Position;
 
 import java.util.LinkedList;
