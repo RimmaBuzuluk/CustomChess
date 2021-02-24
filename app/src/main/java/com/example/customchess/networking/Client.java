@@ -1,18 +1,11 @@
 package com.example.customchess.networking;
 
-import android.os.Messenger;
-
-import com.example.customchess.engine.Game;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+
 
 public class Client {
     private Socket socket;
@@ -53,7 +46,7 @@ public class Client {
         try {
 //            while (true) {
                 outputStream.writeUTF(packet);
-//                outputStream.flush();
+                outputStream.flush();
 //            }
 
         } catch (IOException e) {
@@ -67,12 +60,6 @@ public class Client {
 
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                inputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 
