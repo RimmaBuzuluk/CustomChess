@@ -48,8 +48,9 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
     private ViewStub rightHorizontals;
 
 
-    public ChessBoardFragment(Team team) {
+    public ChessBoardFragment(Team team, Game game) {
         playerChosen = team;
+        this.game = game;
     }
 
     @Override
@@ -112,7 +113,6 @@ public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSe
         recyclerManager = new GridLayoutManager(this.getContext(), 8, GridLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(recyclerManager);
 
-        game = new OneDeviceGame();
         movementHandler = new MovementHandler(this, game, recyclerView, boardPlayerView);
     }
 

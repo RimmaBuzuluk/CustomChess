@@ -3,11 +3,12 @@ package com.example.customchess.engine.movements;
 import com.example.customchess.engine.misc.Color;
 import com.example.customchess.engine.misc.Verticals;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class BoardPosition implements Position {
+public class BoardPosition implements Position, Serializable {
 
     private Verticals vertical;
     private String    horizontal;

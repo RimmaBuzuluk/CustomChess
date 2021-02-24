@@ -1,5 +1,6 @@
 package com.example.customchess.engine.automata;
 
+import com.example.customchess.engine.Game;
 import com.example.customchess.engine.OneDeviceGame;
 import com.example.customchess.engine.automata.Player;
 import com.example.customchess.engine.automata.WhitePlayer;
@@ -10,10 +11,10 @@ import com.example.customchess.engine.misc.Color;
 
 public class BlackPlayer implements Player {
 
-    private final OneDeviceGame game;
+    private final Game game;
     private final Color         teamColor;
 
-    public BlackPlayer(OneDeviceGame game) {
+    public BlackPlayer(Game game) {
         this.game = game;
         teamColor = Color.Black;
     }

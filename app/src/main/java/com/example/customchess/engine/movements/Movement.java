@@ -1,8 +1,10 @@
 package com.example.customchess.engine.movements;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 
-public class Movement implements Movable {
+
+public class Movement implements Movable, Serializable {
 
     private Position start;
     private Position destination;

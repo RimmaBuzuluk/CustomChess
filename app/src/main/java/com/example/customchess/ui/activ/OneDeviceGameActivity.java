@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.example.customchess.R;
+import com.example.customchess.engine.OneDeviceGame;
 import com.example.customchess.ui.Team;
 import com.example.customchess.ui.fragments.ChessBoardFragment;
 
@@ -34,7 +35,7 @@ public class OneDeviceGameActivity extends AppCompatActivity implements ChessBoa
         saveButton.setOnClickListener(saveListener);
         loadButton = findViewById(R.id.load);
         loadButton.setOnClickListener(loadListener);
-        boardFragment = new ChessBoardFragment(Team.Black);
+        boardFragment = new ChessBoardFragment(Team.Black, new OneDeviceGame());
 
         fragmentManager.beginTransaction()
                 .add(R.id.chess_board_frag, boardFragment)

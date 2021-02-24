@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.example.customchess.R;
+import com.example.customchess.engine.NetworkGame;
 import com.example.customchess.ui.Team;
 import com.example.customchess.ui.fragments.ChessBoardFragment;
 
@@ -34,7 +35,7 @@ public class NetworkGameActivity extends AppCompatActivity {
         saveButton.setOnClickListener(saveListener);
         loadButton = findViewById(R.id.load);
         loadButton.setOnClickListener(loadListener);
-        boardFragment = new ChessBoardFragment(Team.Black);
+        boardFragment = new ChessBoardFragment(Team.Black, new NetworkGame());
 
         fragmentManager.beginTransaction()
                 .add(R.id.chess_board_frag, boardFragment)
@@ -48,7 +49,7 @@ public class NetworkGameActivity extends AppCompatActivity {
             String movements = ((ChessBoardFragment) boardFragment).getHistory();
             SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putString("history", movements);
+            editor.putString("history1", movements);
             editor.apply();
         }
     };
@@ -57,9 +58,9 @@ public class NetworkGameActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-            String movements = sharedPref.getString("history", "");
+            String movements = sharedPref.getString("history1", "");
             Intent intent = new Intent(view.getContext(), HistoryActivity.class);
-            intent.putExtra("history", movements);
+            intent.putExtra("history1", movements);
             startActivity(intent);
         }
     };
