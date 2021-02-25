@@ -13,8 +13,6 @@ public class Client {
     private int    port;
     private DataInputStream inputStream;
     private DataOutputStream outputStream;
-    private Thread inputThread;
-    private Thread outputThread;
 
 
     public Client(String serverAddress, int port) {
@@ -22,10 +20,16 @@ public class Client {
         this.port = port;
     }
 
+    public boolean isConnected() {
+        return socket.isConnected();
+    }
+
     public boolean start() {
         connect();
+        if (socket == null) return false;
         try {
             outputStream = new DataOutputStream(socket.getOutputStream());
+            inputStream = new DataInputStream(socket.getInputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -44,23 +48,23 @@ public class Client {
 
     public void send(String packet) {
         try {
-//            while (true) {
-                outputStream.writeUTF(packet);
-                outputStream.flush();
-//            }
+            outputStream.writeUTF(packet);
+            outputStream.flush();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void receive() {
+    public String receive() {
+        String responsePacket = "";
         try {
-            inputStream = new DataInputStream(socket.getInputStream());
+            responsePacket = inputStream.readUTF();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return responsePacket;
     }
 
     private void connect() {

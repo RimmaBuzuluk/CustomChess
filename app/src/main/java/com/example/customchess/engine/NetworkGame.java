@@ -2,33 +2,13 @@ package com.example.customchess.engine;
 
 import com.example.customchess.engine.automata.Player;
 import com.example.customchess.engine.automata.WhitePlayer;
-import com.example.customchess.engine.exceptions.BeatFigureException;
-import com.example.customchess.engine.exceptions.CastlingException;
-import com.example.customchess.engine.exceptions.CheckKingException;
-import com.example.customchess.engine.exceptions.CheckMateException;
-import com.example.customchess.engine.exceptions.ChessException;
-import com.example.customchess.engine.exceptions.DrawException;
-import com.example.customchess.engine.exceptions.FigureNotChosenException;
-import com.example.customchess.engine.exceptions.MoveOnEmptyCageException;
-import com.example.customchess.engine.exceptions.PawnEnPassantException;
-import com.example.customchess.engine.exceptions.PromotionException;
-import com.example.customchess.engine.figures.Bishop;
-import com.example.customchess.engine.figures.ChessPiece;
-import com.example.customchess.engine.figures.King;
-import com.example.customchess.engine.figures.Knight;
-import com.example.customchess.engine.figures.Pawn;
-import com.example.customchess.engine.figures.Piece;
-import com.example.customchess.engine.figures.Queen;
-import com.example.customchess.engine.figures.Rook;
+import com.example.customchess.engine.exceptions.*;
+import com.example.customchess.engine.figures.*;
 import com.example.customchess.engine.misc.Color;
 import com.example.customchess.engine.misc.Verticals;
-import com.example.customchess.engine.movements.BoardPosition;
-import com.example.customchess.engine.movements.Movable;
-import com.example.customchess.engine.movements.Movement;
-import com.example.customchess.engine.movements.MovementHistory;
-import com.example.customchess.engine.movements.Position;
+import com.example.customchess.engine.movements.*;
+import com.example.customchess.engine.notations.ChessNotation;
 import com.example.customchess.engine.notations.InternationalNotation;
-import com.example.customchess.networking.ChessNetPacket;
 import com.example.customchess.networking.Client;
 
 import java.util.LinkedList;
@@ -43,6 +23,7 @@ public class NetworkGame implements Game {
     private List<Piece> whiteTeam;
     private EndGameChecker    gameAnalyser;
     private Client client;
+    private ChessNotation internationalNotation;
 
     public NetworkGame() {
         client = new Client("192.168.0.106", 3535);
@@ -54,12 +35,19 @@ public class NetworkGame implements Game {
         initTeam(whiteTeam, Color.White);
         board = new Board(blackTeam, whiteTeam);
         gameAnalyser  = new EndGameChecker(board, whiteTeam, blackTeam);
+        internationalNotation = new InternationalNotation();
         new Thread(new Runnable() {
             @Override
             public void run() {
                 client.start();
             }
         }).start();
+    }
+
+    public boolean hasConnection() {
+        synchronized (client) {
+            return client.isConnected();
+        }
     }
 
     // for debug
@@ -168,6 +156,12 @@ public class NetworkGame implements Game {
         MovementHistory backUpCastling = currentMovementHeader;
         Piece backUpPiece = null;
 
+        synchronized (client) {
+            if ( ! client.isConnected()) {
+                throw new ChessException("no connection");
+            }
+        }
+
         try {
             if (currentPlayer.isCorrectPlayerMove((ChessPiece) startFigure)) {
                 try {
@@ -217,7 +211,12 @@ public class NetworkGame implements Game {
                 throw new CheckKingException(currentPlayer.getColor() + " King under check");
             }
 
-            client.send(new InternationalNotation().transform(startFigure, movement));
+            client.send(internationalNotation.transform(startFigure, movement));
+            if ( client.receive().equals("error") ) {
+                board.restorePreviousTurn(currentMovementHeader);
+                restoreInTeamAndOnBoard(backUpPiece);
+                throw new ChessException("invalid move");
+            }
 
             startFigure.move();
             if (destinationFigure != null) destinationFigure.move();

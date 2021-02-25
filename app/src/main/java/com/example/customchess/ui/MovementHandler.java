@@ -1,6 +1,8 @@
 package com.example.customchess.ui;
 
 import android.os.Handler;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,10 +17,12 @@ import com.example.customchess.ui.board.BoardPlayerView;
 import com.example.customchess.ui.boardmove.MessagePosterOnUI;
 import com.example.customchess.ui.boardmove.UIMove;
 import com.example.customchess.ui.figures.Figure;
+import com.example.customchess.ui.fragments.ChessBoardFragment;
+import com.example.customchess.ui.fragments.PromotionDialogFragment;
 
 
-public class MovementHandler {
-
+public class MovementHandler implements PromotionDialogFragment.PromotionDialogListener {
+    private final Object lock = new Object();
     private Fragment context;
     private final Game game;
     private RecyclerView recyclerView;
@@ -91,16 +95,40 @@ public class MovementHandler {
         }, "ChessEngineBackgroundThread").start();
     }
 
+    @Override
+    public void applyChoice(String piece, MovementHandler.TempPosition start,
+                            CageAdapter.ViewHolder startHolder, CageAdapter.ViewHolder destinationHolder) {
+        synchronized (game) {
+            startHolder.hide();
+            Figure promoted;
+            switch (piece) {
+                case "Queen":
+                    promoted = new Figure.Queen(start.imageResource);
+                    break;
+                case "Knight":
+                    promoted = new Figure.Knight(start.imageResource);
+                    break;
+                case "Rook":
+                    promoted = new Figure.Rook(start.imageResource);
+                    break;
+                default:
+                    promoted = new Figure.Bishop(start.imageResource);
+                    break;
+            }
+            destinationHolder.draw(promoted.getImageId());
+            game.promotion(piece);
+        }
+        Toast.makeText(context.getContext(), piece, Toast.LENGTH_SHORT).show();
+    }
+
     private UIMove promotion = new UIMove() {
         @Override
         public void moveOnBoard(TempPosition start, TempPosition destination,
                                 CageAdapter.ViewHolder startHolder, CageAdapter.ViewHolder destinationHolder) {
-            synchronized (game) {
-                startHolder.hide();
-                Figure promoted = new Figure.Queen(start.imageResource);
-                destinationHolder.draw(promoted.getImageId());
-                game.promotion("Queen");
-            }
+            assert context.getFragmentManager() != null;
+            PromotionDialogFragment dialog = new PromotionDialogFragment(
+                    MovementHandler.this, startHolder, destinationHolder, start);
+            dialog.show(context.getFragmentManager(), "promotion dialog");
         }
     };
 

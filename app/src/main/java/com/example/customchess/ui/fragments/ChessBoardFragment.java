@@ -10,11 +10,11 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.widget.Toast;
 
 import com.example.customchess.R;
 import com.example.customchess.engine.Game;
@@ -30,7 +30,8 @@ import com.example.customchess.ui.board.WhitePlayerViewBoard;
 import java.util.Locale;
 
 
-public class ChessBoardFragment extends Fragment implements CageAdapter.OnItemSelected {
+public class ChessBoardFragment extends Fragment
+        implements CageAdapter.OnItemSelected {
     public interface Flipper { }
 
     private Flipper flipper;

@@ -1,11 +1,13 @@
 package com.example.customchess.ui.activ;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,9 +18,10 @@ import com.example.customchess.R;
 import com.example.customchess.engine.OneDeviceGame;
 import com.example.customchess.ui.Team;
 import com.example.customchess.ui.fragments.ChessBoardFragment;
+import com.example.customchess.ui.fragments.PromotionDialogFragment;
 
-public class OneDeviceGameActivity extends AppCompatActivity implements ChessBoardFragment.Flipper {
-
+public class OneDeviceGameActivity extends AppCompatActivity
+        implements ChessBoardFragment.Flipper {
     private FragmentManager fragmentManager;
     private Fragment boardFragment;
     private Button   saveButton;
