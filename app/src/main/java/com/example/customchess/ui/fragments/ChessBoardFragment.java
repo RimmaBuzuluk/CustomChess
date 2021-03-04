@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
-import android.widget.Toast;
 
 import com.example.customchess.R;
 import com.example.customchess.engine.Game;
@@ -22,10 +21,13 @@ import com.example.customchess.engine.OneDeviceGame;
 import com.example.customchess.engine.movements.Position;
 import com.example.customchess.ui.CageAdapter;
 import com.example.customchess.ui.MovementHandler;
+import com.example.customchess.ui.NetMovementHandler;
+import com.example.customchess.ui.OneDeviceMovementHandler;
 import com.example.customchess.ui.Team;
 import com.example.customchess.ui.board.BlackPlayerViewBoard;
 import com.example.customchess.ui.board.BoardPlayerView;
 import com.example.customchess.ui.board.WhitePlayerViewBoard;
+import com.example.customchess.ui.figures.TempPosition;
 
 import java.util.Locale;
 
@@ -49,7 +51,7 @@ public class ChessBoardFragment extends Fragment
     private ViewStub rightHorizontals;
 
 
-    public ChessBoardFragment(Team team, Game game) {
+    public ChessBoardFragment(@NonNull Team team, @NonNull Game game) {
         playerChosen = team;
         this.game = game;
     }
@@ -73,7 +75,7 @@ public class ChessBoardFragment extends Fragment
     @Override
     public void onItemClicked(final Position position, final int index, final int imageResourceId) {
         // todo maybe add a thread pool
-        movementHandler.handle(new MovementHandler.TempPosition(position, index, imageResourceId));
+        movementHandler.handle(new TempPosition(position, index, imageResourceId));
     }
 
     @Override
@@ -114,7 +116,11 @@ public class ChessBoardFragment extends Fragment
         recyclerManager = new GridLayoutManager(this.getContext(), 8, GridLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(recyclerManager);
 
-        movementHandler = new MovementHandler(this, game, recyclerView, boardPlayerView);
+        if (game instanceof OneDeviceGame) {
+            movementHandler = new OneDeviceMovementHandler(this, game, recyclerView, boardPlayerView);
+        } else {
+            movementHandler = new NetMovementHandler(this, game, recyclerView, boardPlayerView);
+        }
     }
 
     private void whiteView() {

@@ -7,32 +7,31 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 
 import com.example.customchess.R;
 import com.example.customchess.ui.CageAdapter;
-import com.example.customchess.ui.MovementHandler;
+import com.example.customchess.ui.OneDeviceMovementHandler;
+import com.example.customchess.ui.figures.TempPosition;
 
 public class PromotionDialogFragment extends DialogFragment implements View.OnClickListener {
     public interface PromotionDialogListener {
-        void applyChoice(String piece, MovementHandler.TempPosition start,
+        void applyChoice(String piece, TempPosition start,
                          CageAdapter.ViewHolder startHolder, CageAdapter.ViewHolder destinationHolder);
     }
 
     private PromotionDialogListener context;
     private CageAdapter.ViewHolder startHolder;
     private CageAdapter.ViewHolder destinationHolder;
-    private MovementHandler.TempPosition start;
+    private TempPosition start;
 
     public PromotionDialogFragment(PromotionDialogListener context,
                                    CageAdapter.ViewHolder startHolder,
                                    CageAdapter.ViewHolder destinationHolder,
-                                   MovementHandler.TempPosition start) {
+                                   TempPosition start) {
         this.startHolder = startHolder;
         this.destinationHolder = destinationHolder;
         this.start = start;

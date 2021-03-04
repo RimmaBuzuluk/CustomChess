@@ -1,34 +1,19 @@
 package com.example.customchess.ui;
 
-import android.os.Handler;
-import android.util.Log;
-import android.widget.Toast;
-
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.customchess.engine.Game;
-import com.example.customchess.engine.exceptions.*;
-import com.example.customchess.engine.movements.Movable;
-import com.example.customchess.engine.movements.Movement;
-import com.example.customchess.engine.movements.Position;
 import com.example.customchess.ui.board.BlackPlayerViewBoard;
 import com.example.customchess.ui.board.BoardPlayerView;
-import com.example.customchess.ui.boardmove.MessagePosterOnUI;
 import com.example.customchess.ui.boardmove.UIMove;
-import com.example.customchess.ui.figures.Figure;
-import com.example.customchess.ui.fragments.ChessBoardFragment;
-import com.example.customchess.ui.fragments.PromotionDialogFragment;
+import com.example.customchess.ui.figures.TempPosition;
 
-
-public class MovementHandler implements PromotionDialogFragment.PromotionDialogListener {
-    private final Object lock = new Object();
-    private Fragment context;
-    private final Game game;
-    private RecyclerView recyclerView;
-    private TempPosition start;
-    private BoardPlayerView playerView;
-
+public abstract class MovementHandler {
+    protected final Fragment context;
+    protected final Game game;
+    protected final RecyclerView recyclerView;
+    protected final BoardPlayerView playerView;
 
     public MovementHandler(Fragment context, Game game, RecyclerView recyclerView, BoardPlayerView playerView) {
         this.context = context;
@@ -37,102 +22,13 @@ public class MovementHandler implements PromotionDialogFragment.PromotionDialogL
         this.playerView = playerView;
     }
 
-    public void handle(final TempPosition destination) {
-        if (start == null) {
-            start = destination;
-            return;
-        }
-
-        final Handler handler = new Handler();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                final Movable move = new Movement(start.position, destination.position);
-                CageAdapter.ViewHolder startHolder = findCage(start.index);
-                CageAdapter.ViewHolder destinationHolder = findCage(destination.index);
-                OnUIThreadPoster poster = null;
-
-                if (startHolder != null && destinationHolder != null) {
-                    try {
-                        game.tryToMakeMovement(move);
-
-                    } catch (MoveOnEmptyCageException
-                            | BeatFigureException mee) {
-                        poster = new OnUIThreadPoster(simpleMove, start, destination, startHolder, destinationHolder);
-                    } catch (CastlingException ce) {
-                        poster = new OnUIThreadPoster(castling, start, destination, startHolder, destinationHolder);
-                        handler.post(new MessagePosterOnUI(context.getContext(), ce.getMessage()));
-                    } catch (OneTeamPiecesSelectedException | FigureNotChosenException otp) {
-                        synchronized (start) {
-                            start = destination;
-                        }
-                        return;
-                    } catch (PawnEnPassantException ppe) {
-                        poster = new OnUIThreadPoster(enPassant, start, destination, startHolder, destinationHolder);
-                        handler.post(new MessagePosterOnUI(context.getContext(), ppe.getMessage()));
-                    } catch (PromotionException pe) {
-                        poster = new OnUIThreadPoster(promotion, start, destination, startHolder, destinationHolder);
-                    } catch (ChessException e) {
-                        e.printStackTrace();
-                        handler.post(new MessagePosterOnUI(context.getContext(), e.getMessage()));
-                    }
-                }
-                if (poster != null) {
-                    handler.post(poster);
-                }
-
-                synchronized (game) {
-                    try {
-                        game.checkForCheckMate();
-                        game.checkForPat();
-                    } catch (CheckMateException | DrawException e) {
-                        handler.post(new MessagePosterOnUI(context.getContext(), e.getMessage()));
-                    }
-
-                    start = null;  // it looks disgusting
-                }
-            }
-        }, "ChessEngineBackgroundThread").start();
+    public CageAdapter.ViewHolder findCage(int index) {
+        return (CageAdapter.ViewHolder) recyclerView.findViewHolderForAdapterPosition(index);
     }
 
-    @Override
-    public void applyChoice(String piece, MovementHandler.TempPosition start,
-                            CageAdapter.ViewHolder startHolder, CageAdapter.ViewHolder destinationHolder) {
-        synchronized (game) {
-            startHolder.hide();
-            Figure promoted;
-            switch (piece) {
-                case "Queen":
-                    promoted = new Figure.Queen(start.imageResource);
-                    break;
-                case "Knight":
-                    promoted = new Figure.Knight(start.imageResource);
-                    break;
-                case "Rook":
-                    promoted = new Figure.Rook(start.imageResource);
-                    break;
-                default:
-                    promoted = new Figure.Bishop(start.imageResource);
-                    break;
-            }
-            destinationHolder.draw(promoted.getImageId());
-            game.promotion(piece);
-        }
-        Toast.makeText(context.getContext(), piece, Toast.LENGTH_SHORT).show();
-    }
+    public abstract void handle(TempPosition position);
 
-    private UIMove promotion = new UIMove() {
-        @Override
-        public void moveOnBoard(TempPosition start, TempPosition destination,
-                                CageAdapter.ViewHolder startHolder, CageAdapter.ViewHolder destinationHolder) {
-            assert context.getFragmentManager() != null;
-            PromotionDialogFragment dialog = new PromotionDialogFragment(
-                    MovementHandler.this, startHolder, destinationHolder, start);
-            dialog.show(context.getFragmentManager(), "promotion dialog");
-        }
-    };
-
-    private UIMove simpleMove = new UIMove() {
+    protected final UIMove simpleMove = new UIMove() {
         @Override
         public void moveOnBoard(TempPosition start, TempPosition destination,
                                 CageAdapter.ViewHolder startHolder, CageAdapter.ViewHolder destinationHolder) {
@@ -141,7 +37,7 @@ public class MovementHandler implements PromotionDialogFragment.PromotionDialogL
         }
     };
 
-    private UIMove enPassant = new UIMove() {
+    protected final UIMove enPassant = new UIMove() {
         @Override
         public void moveOnBoard(TempPosition start, TempPosition destination,
                                 CageAdapter.ViewHolder startHolder, CageAdapter.ViewHolder destinationHolder) {
@@ -157,7 +53,7 @@ public class MovementHandler implements PromotionDialogFragment.PromotionDialogL
         }
     };
 
-    private UIMove castling = new UIMove() {
+    protected final UIMove castling = new UIMove() {
         @Override
         public void moveOnBoard(TempPosition start, TempPosition destination,
                                 CageAdapter.ViewHolder startHolder, CageAdapter.ViewHolder destinationHolder) {
@@ -191,42 +87,4 @@ public class MovementHandler implements PromotionDialogFragment.PromotionDialogL
             oldRook.hide();
         }
     };
-
-    private CageAdapter.ViewHolder findCage(int index) {
-        return (CageAdapter.ViewHolder) recyclerView.findViewHolderForAdapterPosition(index);
-    }
-
-    private static class OnUIThreadPoster implements Runnable {
-        private UIMove strategy;
-        private TempPosition destination;
-        private TempPosition start;
-        private CageAdapter.ViewHolder startHolder;
-        private CageAdapter.ViewHolder destinationHolder;
-
-        public OnUIThreadPoster(UIMove strategy, TempPosition start, TempPosition destination,
-                                CageAdapter.ViewHolder startHolder, CageAdapter.ViewHolder destinationHolder) {
-            this.strategy = strategy;
-            this.start = start;
-            this.destination = destination;
-            this.startHolder = startHolder;
-            this.destinationHolder = destinationHolder;
-        }
-
-        @Override
-        public void run() {
-            strategy.moveOnBoard(start, destination, startHolder, destinationHolder);
-        }
-    }
-
-    public static class TempPosition {
-        private Position position;
-        private int index;
-        private int imageResource;
-
-        public TempPosition(Position position, int index, int imageResource) {
-            this.position = position;
-            this.index = index;
-            this.imageResource = imageResource;
-        }
-    }
 }

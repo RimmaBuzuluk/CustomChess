@@ -3,16 +3,18 @@ package com.example.customchess.networking;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
 
 public class Client {
+    private final String serverAddress;
+    private final int    port;
     private Socket socket;
-    private String serverAddress;
-    private int    port;
-    private DataInputStream inputStream;
-    private DataOutputStream outputStream;
+    private ObjectInputStream inputStream;
+    private ObjectOutputStream outputStream;
 
 
     public Client(String serverAddress, int port) {
@@ -28,8 +30,8 @@ public class Client {
         connect();
         if (socket == null) return false;
         try {
-            outputStream = new DataOutputStream(socket.getOutputStream());
-            inputStream = new DataInputStream(socket.getInputStream());
+            outputStream = new ObjectOutputStream(socket.getOutputStream());
+            inputStream = new ObjectInputStream(socket.getInputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -46,9 +48,9 @@ public class Client {
         }
     }
 
-    public void send(String packet) {
+    public void send(ChessNetMovementPacket packet) {
         try {
-            outputStream.writeUTF(packet);
+            outputStream.writeObject(packet);
             outputStream.flush();
 
         } catch (IOException e) {
@@ -56,12 +58,14 @@ public class Client {
         }
     }
 
-    public String receive() {
-        String responsePacket = "";
+    public ChessNetPacket receive() {
+        ChessNetPacket responsePacket = null;
         try {
-            responsePacket = inputStream.readUTF();
+            responsePacket = (ChessNetPacket) inputStream.readObject();
 
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException | ClassCastException e) {
             e.printStackTrace();
         }
         return responsePacket;

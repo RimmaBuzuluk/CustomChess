@@ -35,12 +35,12 @@ import java.util.Stack;
 
 public class OneDeviceGame implements Game {
 
-    private Board board;
+    private final Board board;
     private Player currentPlayer;
-    private Stack<MovementHistory> movementStack;
-    private List<Piece> blackTeam;
-    private List<Piece> whiteTeam;
-    private EndGameChecker    gameAnalyser;
+    private final Stack<MovementHistory> movementStack;
+    private final List<Piece> blackTeam;
+    private final List<Piece> whiteTeam;
+    private final EndGameChecker    gameAnalyser;
 
     public OneDeviceGame() {
         movementStack = new Stack<>();

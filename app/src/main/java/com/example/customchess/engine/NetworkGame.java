@@ -5,10 +5,13 @@ import com.example.customchess.engine.automata.WhitePlayer;
 import com.example.customchess.engine.exceptions.*;
 import com.example.customchess.engine.figures.*;
 import com.example.customchess.engine.misc.Color;
+import com.example.customchess.engine.misc.Pieces;
 import com.example.customchess.engine.misc.Verticals;
 import com.example.customchess.engine.movements.*;
 import com.example.customchess.engine.notations.ChessNotation;
 import com.example.customchess.engine.notations.InternationalNotation;
+import com.example.customchess.networking.ChessNetMovementPacket;
+import com.example.customchess.networking.ChessNetPacket;
 import com.example.customchess.networking.Client;
 
 import java.util.LinkedList;
@@ -16,17 +19,17 @@ import java.util.List;
 import java.util.Stack;
 
 public class NetworkGame implements Game {
-    private Board board;
+    private final Board board;
     private Player currentPlayer;
-    private Stack<MovementHistory> movementStack;
-    private List<Piece> blackTeam;
-    private List<Piece> whiteTeam;
-    private EndGameChecker    gameAnalyser;
-    private Client client;
+    private final Stack<MovementHistory> movementStack;
+    private final List<Piece> blackTeam;
+    private final List<Piece> whiteTeam;
+    private final EndGameChecker    gameAnalyser;
+    private final Client client;
     private ChessNotation internationalNotation;
 
     public NetworkGame() {
-        client = new Client("192.168.0.106", 3535);
+        client = new Client("192.168.188.224", 3535);
         movementStack = new Stack<>();
         currentPlayer = new WhitePlayer(this);
         whiteTeam = new LinkedList<>();
@@ -137,6 +140,8 @@ public class NetworkGame implements Game {
         removePieceFromTeam(board.findBy(destination));
         promTeam.add(promotedPiece);
         board.promoteTo(destination, promotedPiece);
+
+        // TODO: 04.03.21 send promotion to server
     }
 
     private void removePieceFromTeam(Piece piece) {
@@ -211,8 +216,9 @@ public class NetworkGame implements Game {
                 throw new CheckKingException(currentPlayer.getColor() + " King under check");
             }
 
-            client.send(internationalNotation.transform(startFigure, movement));
-            if ( client.receive().equals("error") ) {
+            client.send(new ChessNetMovementPacket(movement));
+            ChessNetPacket response = client.receive();
+            if ( ! response.isMovementLegal() ) {
                 board.restorePreviousTurn(currentMovementHeader);
                 restoreInTeamAndOnBoard(backUpPiece);
                 throw new ChessException("invalid move");
