@@ -11,13 +11,11 @@ import com.example.customchess.ui.figures.TempPosition;
 
 public abstract class MovementHandler {
     protected final Fragment context;
-    protected final Game game;
     protected final RecyclerView recyclerView;
     protected final BoardPlayerView playerView;
 
     public MovementHandler(Fragment context, Game game, RecyclerView recyclerView, BoardPlayerView playerView) {
         this.context = context;
-        this.game = game;
         this.recyclerView = recyclerView;
         this.playerView = playerView;
     }

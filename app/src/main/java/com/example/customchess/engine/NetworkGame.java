@@ -28,6 +28,11 @@ public class NetworkGame implements Game {
     private final Client client;
     private ChessNotation internationalNotation;
 
+    private MovementHistory currentMovementHeader;
+    private Piece startFigure;
+    private Piece destinationFigure;
+    private Piece backUpPiece;
+
     public NetworkGame() {
         client = new Client("192.168.188.224", 3535);
         movementStack = new Stack<>();
@@ -140,8 +145,6 @@ public class NetworkGame implements Game {
         removePieceFromTeam(board.findBy(destination));
         promTeam.add(promotedPiece);
         board.promoteTo(destination, promotedPiece);
-
-        // TODO: 04.03.21 send promotion to server
     }
 
     private void removePieceFromTeam(Piece piece) {
@@ -151,21 +154,37 @@ public class NetworkGame implements Game {
         team.remove(piece);
     }
 
+    public Movable getEnemyMove() throws ChessException {
+        ChessNetPacket enemyMove = client.receive();
+        if ( ! enemyMove.isMovementLegal() ) {
+            tryToMakeMovement(enemyMove.getMovement());
+            currentPlayer.changePlayer();
+        }
+        return enemyMove.getMovement();
+    }
+
+    public void approveMoveOnServer(Movable movement) throws ChessException {
+        client.send(new ChessNetMovementPacket(movement));
+        ChessNetPacket response = client.receive();
+        if ( ! response.isMovementLegal() ) {
+            board.restorePreviousTurn(currentMovementHeader);
+            restoreInTeamAndOnBoard(backUpPiece);
+            throw new ChessException("invalid move");
+        }
+        startFigure.move();
+        if (destinationFigure != null) destinationFigure.move();
+        currentPlayer.changePlayer();
+    }
+
     @Override
     public void tryToMakeMovement(Movable movement) throws ChessException {
         Position start = movement.getStart();
         Position destination = movement.getDestination();
-        Piece startFigure = board.findBy(movement.getStart());
-        Piece destinationFigure = board.findBy(movement.getDestination());  // can be null
-        MovementHistory currentMovementHeader = new MovementHistory(movement, startFigure, destinationFigure);
+        startFigure = board.findBy(movement.getStart());
+        destinationFigure = board.findBy(movement.getDestination());  // can be null
+        currentMovementHeader = new MovementHistory(movement, startFigure, destinationFigure);
         MovementHistory backUpCastling = currentMovementHeader;
-        Piece backUpPiece = null;
-
-        synchronized (client) {
-            if ( ! client.isConnected()) {
-                throw new ChessException("no connection");
-            }
-        }
+        backUpPiece = null;
 
         try {
             if (currentPlayer.isCorrectPlayerMove((ChessPiece) startFigure)) {
@@ -216,17 +235,6 @@ public class NetworkGame implements Game {
                 throw new CheckKingException(currentPlayer.getColor() + " King under check");
             }
 
-            client.send(new ChessNetMovementPacket(movement));
-            ChessNetPacket response = client.receive();
-            if ( ! response.isMovementLegal() ) {
-                board.restorePreviousTurn(currentMovementHeader);
-                restoreInTeamAndOnBoard(backUpPiece);
-                throw new ChessException("invalid move");
-            }
-
-            startFigure.move();
-            if (destinationFigure != null) destinationFigure.move();
-            currentPlayer.changePlayer();
             movementStack.push(currentMovementHeader);
             throw ce;
         } catch (NullPointerException npe) {

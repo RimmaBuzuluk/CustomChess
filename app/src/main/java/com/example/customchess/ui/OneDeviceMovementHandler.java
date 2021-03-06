@@ -23,9 +23,13 @@ import com.example.customchess.ui.fragments.PromotionDialogFragment;
 public class OneDeviceMovementHandler extends MovementHandler
         implements PromotionDialogFragment.PromotionDialogListener {
     private TempPosition start;
+    private final Game game;
+    private final Handler handler;
 
     public OneDeviceMovementHandler(Fragment context, Game game, RecyclerView recyclerView, BoardPlayerView playerView) {
         super(context, game, recyclerView, playerView);
+        this.game = game;
+        handler = new Handler();
     }
 
     @Override
@@ -35,7 +39,6 @@ public class OneDeviceMovementHandler extends MovementHandler
             return;
         }
 
-        final Handler handler = new Handler();
         new Thread(new Runnable() {
             @Override
             public void run() {

@@ -20,7 +20,6 @@ import com.example.customchess.engine.exceptions.PawnEnPassantException;
 import com.example.customchess.engine.exceptions.PromotionException;
 import com.example.customchess.engine.movements.Movable;
 import com.example.customchess.engine.movements.Movement;
-import com.example.customchess.ui.board.BlackPlayerViewBoard;
 import com.example.customchess.ui.board.BoardPlayerView;
 import com.example.customchess.ui.boardmove.MessagePosterOnUI;
 import com.example.customchess.ui.boardmove.UIMove;
@@ -30,10 +29,15 @@ import com.example.customchess.ui.fragments.PromotionDialogFragment;
 
 public class NetMovementHandler extends MovementHandler
         implements PromotionDialogFragment.PromotionDialogListener {
+    private final NetworkGame  game;
+    private final Handler handler;
     private TempPosition start;
+    private OnUIThreadPoster poster;
 
     public NetMovementHandler(Fragment context, Game game, RecyclerView recyclerView, BoardPlayerView playerView) {
         super(context, ((NetworkGame) game), recyclerView, playerView);
+        this.game = (NetworkGame) game;
+        handler = new Handler();
     }
 
     @Override
@@ -42,60 +46,103 @@ public class NetMovementHandler extends MovementHandler
             start = destination;
             return;
         }
-        final Handler handler = new Handler();
+        boolean isLegalMove = true;
+
         final Movable move = new Movement(start.position, destination.position);
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                CageAdapter.ViewHolder startHolder = findCage(start.index);
-                CageAdapter.ViewHolder destinationHolder = findCage(destination.index);
-                OnUIThreadPoster poster = null;
-                if (startHolder != null && destinationHolder != null) {
-                    try {
-                        game.tryToMakeMovement(move);
+        CageAdapter.ViewHolder startHolder = findCage(start.index);
+        CageAdapter.ViewHolder destinationHolder = findCage(destination.index);
+        if (startHolder != null && destinationHolder != null) {
+            try {
+                game.tryToMakeMovement(move);
 
-                    } catch (MoveOnEmptyCageException
-                            | BeatFigureException mee) {
-                        poster = new OnUIThreadPoster(simpleMove, start, destination, startHolder, destinationHolder);
-                    } catch (CastlingException ce) {
-                        poster = new OnUIThreadPoster(castling, start, destination, startHolder, destinationHolder);
-                        handler.post(new MessagePosterOnUI(context.getContext(), ce.getMessage()));
-                    } catch (OneTeamPiecesSelectedException | FigureNotChosenException otp) {
-                        start = destination;
-                        return;
-                    } catch (PawnEnPassantException ppe) {
-                        poster = new OnUIThreadPoster(enPassant, start, destination, startHolder, destinationHolder);
-                        handler.post(new MessagePosterOnUI(context.getContext(), ppe.getMessage()));
-                    } catch (PromotionException pe) {
-                        poster = new OnUIThreadPoster(promotion, start, destination, startHolder, destinationHolder);
+            } catch (MoveOnEmptyCageException
+                    | BeatFigureException mee) {
+                poster = new OnUIThreadPoster(simpleMove, start, destination, startHolder, destinationHolder);
+            } catch (CastlingException ce) {
+                poster = new OnUIThreadPoster(castling, start, destination, startHolder, destinationHolder);
+                handler.post(new MessagePosterOnUI(context.getContext(), ce.getMessage()));
+            } catch (OneTeamPiecesSelectedException | FigureNotChosenException otp) {
+                start = destination;
+                return;
+            } catch (PawnEnPassantException ppe) {
+                poster = new OnUIThreadPoster(enPassant, start, destination, startHolder, destinationHolder);
+                handler.post(new MessagePosterOnUI(context.getContext(), ppe.getMessage()));
+            } catch (PromotionException pe) {
+                poster = new OnUIThreadPoster(promotion, start, destination, startHolder, destinationHolder);
+            } catch (ChessException e) {
+                e.printStackTrace();
+                isLegalMove = false;
+                handler.post(new MessagePosterOnUI(context.getContext(), e.getMessage()));
+            }
+        }
+
+        try {
+            game.checkForCheckMate();
+            game.checkForPat();
+        } catch (CheckMateException | DrawException e) {
+            handler.post(new MessagePosterOnUI(context.getContext(), e.getMessage()));
+        }
+
+        start = null;
+
+        if (isLegalMove) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        game.approveMoveOnServer(move);
+                        if (poster != null) {
+                            handler.post(poster);
+                        }
                     } catch (ChessException e) {
                         e.printStackTrace();
-                        handler.post(new MessagePosterOnUI(context.getContext(), e.getMessage()));
+                    }
+                    try {
+                        Movable movement = game.getEnemyMove();
+                        movement.getDestination();
+                        if (poster != null) {
+                            handler.post(poster);
+                        }
+                    } catch (ChessException e) {
+                        e.printStackTrace();
                     }
                 }
-                if (poster != null) {
-                    handler.post(poster);
-                }
+            }).start();
+        }
+    }
 
-                try {
-                    game.checkForCheckMate();
-                    game.checkForPat();
-                } catch (CheckMateException | DrawException e) {
-                    handler.post(new MessagePosterOnUI(context.getContext(), e.getMessage()));
-                }
+    private void enemyMove(Movable move,
+                           TempPosition destination,
+                           CageAdapter.ViewHolder startHolder,
+                           CageAdapter.ViewHolder destinationHolder) {
+        try {
+            game.tryToMakeMovement(move);
 
-                start = null;
-            }
-        }).start();
-
+        } catch (MoveOnEmptyCageException
+                | BeatFigureException mee) {
+            poster = new OnUIThreadPoster(simpleMove, start, destination, startHolder, destinationHolder);
+        } catch (CastlingException ce) {
+            poster = new OnUIThreadPoster(castling, start, destination, startHolder, destinationHolder);
+            handler.post(new MessagePosterOnUI(context.getContext(), ce.getMessage()));
+        } catch (OneTeamPiecesSelectedException | FigureNotChosenException otp) {
+            start = destination;
+        } catch (PawnEnPassantException ppe) {
+            poster = new OnUIThreadPoster(enPassant, start, destination, startHolder, destinationHolder);
+            handler.post(new MessagePosterOnUI(context.getContext(), ppe.getMessage()));
+        } catch (PromotionException pe) {
+            poster = new OnUIThreadPoster(promotion, start, destination, startHolder, destinationHolder);
+        } catch (ChessException e) {
+            e.printStackTrace();
+            handler.post(new MessagePosterOnUI(context.getContext(), e.getMessage()));
+        }
     }
 
     @Override
     public void applyChoice(String piece, TempPosition start,
-                            CageAdapter.ViewHolder startHolder, CageAdapter.ViewHolder destinationHolder) {
+                            CageAdapter.ViewHolder startHolder,
+                            CageAdapter.ViewHolder destinationHolder) {
         synchronized (game) {
-            startHolder.hide();
             Figure promoted;
             switch (piece) {
                 case "Queen":
@@ -111,6 +158,7 @@ public class NetMovementHandler extends MovementHandler
                     promoted = new Figure.Bishop(start.imageResource);
                     break;
             }
+            startHolder.hide();
             destinationHolder.draw(promoted.getImageId());
             game.promotion(piece);
         }
