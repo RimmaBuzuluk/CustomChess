@@ -14,8 +14,8 @@ import com.example.customchess.engine.movements.Position;
 
 public class Queen extends ChessPiece {
 
-    public Queen(Color color, Position position) {
-        super(position, 9.0, color);
+    public Queen(Color color) {
+        super(9.0, color);
     }
 
     @Override

@@ -5,9 +5,8 @@ import java.util.LinkedList;
 
 
 public class Movement implements Movable, Serializable {
-
-    private Position start;
-    private Position destination;
+    private final Position start;
+    private final Position destination;
 
     public Movement(Position start, Position destination) {
         this.start = start;

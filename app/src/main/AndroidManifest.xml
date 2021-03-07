@@ -21,15 +21,18 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.activ.HistoryActivity">
+        <activity android:name=".ui.activ.HistoryActivity"
+            android:screenOrientation="portrait">
 
         </activity>
 
-        <activity android:name=".ui.activ.OneDeviceGameActivity">
+        <activity android:name=".ui.activ.OneDeviceGameActivity"
+            android:screenOrientation="portrait">
 
         </activity>
 
-        <activity android:name=".ui.activ.NetworkGameActivity">
+        <activity android:name=".ui.activ.NetworkGameActivity"
+            android:screenOrientation="portrait">
 
         </activity>
     </application>

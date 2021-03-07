@@ -14,8 +14,8 @@ import com.example.customchess.engine.movements.Position;
 
 public class Bishop extends ChessPiece {
 
-    public Bishop(Color color, Position position) {
-        super(position, 3.5, color);
+    public Bishop(Color color) {
+        super(3.5, color);
     }
 
     @Override

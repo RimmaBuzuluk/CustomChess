@@ -39,17 +39,19 @@ public class NetworkGame implements Game {
         currentPlayer = new WhitePlayer(this);
         whiteTeam = new LinkedList<>();
         blackTeam = new LinkedList<>();
-        initTeam(blackTeam, Color.Black);
-        initTeam(whiteTeam, Color.White);
-        board = new Board(blackTeam, whiteTeam);
-        gameAnalyser  = new EndGameChecker(board, whiteTeam, blackTeam);
-        internationalNotation = new InternationalNotation();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                client.start();
-            }
-        }).start();
+//        initTeam(blackTeam, Color.Black);
+//        initTeam(whiteTeam, Color.White);
+//        board = new Board(blackTeam, whiteTeam);
+        board = null;
+//        gameAnalyser  = new EndGameChecker(board, whiteTeam, blackTeam);
+        gameAnalyser = null;
+//        internationalNotation = new InternationalNotation();
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                client.start();
+//            }
+//        }).start();
     }
 
     public boolean hasConnection() {
@@ -85,17 +87,17 @@ public class NetworkGame implements Game {
             pawnRow = 6;
             kingRow = 7;
         }
-        team.add(new Rook(color, new BoardPosition(Verticals.h, kingRow + 1)));
-        team.add(new Rook(color, new BoardPosition(Verticals.a, kingRow + 1)));
-        team.add(new Knight(color, new BoardPosition(Verticals.g, kingRow + 1)));
-        team.add(new Knight(color, new BoardPosition(Verticals.b, kingRow + 1)));
-        team.add(new Bishop(color, new BoardPosition(Verticals.c, kingRow + 1)));
-        team.add(new Bishop(color, new BoardPosition(Verticals.f, kingRow + 1)));
-        team.add(new King(color, new BoardPosition(Verticals.e, kingRow + 1)));
-        team.add(new Queen(color, new BoardPosition(Verticals.d, kingRow + 1)));
-        for (int vertical = 0; vertical < 8; vertical++) {
-            team.add(new Pawn(color, new BoardPosition(vertical, pawnRow + 1)));
-        }
+//        team.add(new Rook(color, new BoardPosition(Verticals.h, kingRow + 1)));
+//        team.add(new Rook(color, new BoardPosition(Verticals.a, kingRow + 1)));
+//        team.add(new Knight(color, new BoardPosition(Verticals.g, kingRow + 1)));
+//        team.add(new Knight(color, new BoardPosition(Verticals.b, kingRow + 1)));
+//        team.add(new Bishop(color, new BoardPosition(Verticals.c, kingRow + 1)));
+//        team.add(new Bishop(color, new BoardPosition(Verticals.f, kingRow + 1)));
+//        team.add(new King(color, new BoardPosition(Verticals.e, kingRow + 1)));
+//        team.add(new Queen(color, new BoardPosition(Verticals.d, kingRow + 1)));
+//        for (int vertical = 0; vertical < 8; vertical++) {
+//            team.add(new Pawn(color, new BoardPosition(vertical, pawnRow + 1)));
+//        }
     }
 
     public void setCurrentPlayer(Player player) {
@@ -108,16 +110,16 @@ public class NetworkGame implements Game {
 
     @Override
     public void checkForPat() throws DrawException {
-        if (gameAnalyser.checkForDraw(currentPlayer.getColor())) {
-            throw new DrawException("Draw");
-        }
+//        if (gameAnalyser.checkForDraw(currentPlayer.getColor())) {
+//            throw new DrawException("Draw");
+//        }
     }
 
     @Override
     public void checkForCheckMate() throws CheckMateException {
-        if (gameAnalyser.isCheckMate(currentPlayer.getColor())) {
-            throw new CheckMateException("Mate on the board\n" + currentPlayer.getColor() + " is fucked");
-        }
+//        if (gameAnalyser.isCheckMate(currentPlayer.getColor())) {
+//            throw new CheckMateException("Mate on the board\n" + currentPlayer.getColor() + " is fucked");
+//        }
     }
 
     @Override
@@ -127,31 +129,22 @@ public class NetworkGame implements Game {
         List<Piece> promTeam = team.equals(Color.White) ? whiteTeam : blackTeam;
         Position destination = movementStack.peek().movement.getDestination();
 
-        switch (choice) {
-            case "Queen":
-                promotedPiece = new Queen(team, destination);
-                break;
-            case "Bishop":
-                promotedPiece = new Bishop(team, destination);
-                break;
-            case "Rook":
-                promotedPiece = new Rook(team, destination);
-                break;
-            default:
-                promotedPiece = new Knight(team, destination);
-                break;
-        }
+//        switch (choice) {
+//            case "Queen":
+//                promotedPiece = new Queen(team, destination);
+//                break;
+//            case "Bishop":
+//                promotedPiece = new Bishop(team, destination);
+//                break;
+//            case "Rook":
+//                promotedPiece = new Rook(team, destination);
+//                break;
+//            default:
+//                promotedPiece = new Knight(team, destination);
+//                break;
+//        }
 
-        removePieceFromTeam(board.findBy(destination));
-        promTeam.add(promotedPiece);
-        board.promoteTo(destination, promotedPiece);
-    }
-
-    private void removePieceFromTeam(Piece piece) {
-        if (piece == null)
-            return;
-        List<Piece> team = piece.getColor().equals(Color.White) ? whiteTeam : blackTeam;
-        team.remove(piece);
+//        board.promoteTo(destination, promotedPiece);
     }
 
     public Movable getEnemyMove() throws ChessException {
@@ -164,16 +157,7 @@ public class NetworkGame implements Game {
     }
 
     public void approveMoveOnServer(Movable movement) throws ChessException {
-        client.send(new ChessNetMovementPacket(movement));
-        ChessNetPacket response = client.receive();
-        if ( ! response.isMovementLegal() ) {
-            board.restorePreviousTurn(currentMovementHeader);
-            restoreInTeamAndOnBoard(backUpPiece);
-            throw new ChessException("invalid move");
-        }
-        startFigure.move();
-        if (destinationFigure != null) destinationFigure.move();
-        currentPlayer.changePlayer();
+
     }
 
     @Override
@@ -183,7 +167,6 @@ public class NetworkGame implements Game {
         startFigure = board.findBy(movement.getStart());
         destinationFigure = board.findBy(movement.getDestination());  // can be null
         currentMovementHeader = new MovementHistory(movement, startFigure, destinationFigure);
-        MovementHistory backUpCastling = currentMovementHeader;
         backUpPiece = null;
 
         try {
@@ -196,27 +179,15 @@ public class NetworkGame implements Game {
                     throw mec;
                 } catch (BeatFigureException bfe) {
                     board.beatFigure(start, destination);
-                    backUpPiece = destinationFigure;
-                    removePieceFromTeam(destinationFigure);
                     throw bfe;
                 } catch (CastlingException ce) {
-                    Position oldRookPosition = start.getRookPositionOnFlank();
-                    Position newRookPosition = oldRookPosition.getRookPositionOnFlankAfterCastling();
-                    backUpPiece = board.findBy(oldRookPosition);
-                    Piece afterCastling = board.findBy(newRookPosition);
-                    backUpCastling = new MovementHistory(new Movement(oldRookPosition, newRookPosition), backUpPiece, afterCastling);
                     board.castling(start, destination);
                     throw ce;
                 } catch (PawnEnPassantException ppe) {
-                    Piece beatenPawn = board.findBy(destination.getPawnBeatenOnPassPosition((startFigure.getColor())));
-                    backUpPiece = beatenPawn;
-                    removePieceFromTeam(beatenPawn);
                     board.pawnOnThePass(start, destination);
                     throw ppe;
                 } catch (PromotionException pe) {
                     board.promotion(start, destination);
-                    backUpPiece = destinationFigure;
-                    removePieceFromTeam(destinationFigure);
                     throw pe;
                 }
             }
@@ -227,11 +198,7 @@ public class NetworkGame implements Game {
                 | PromotionException
                 | PawnEnPassantException ce) {
             if (gameAnalyser.isKingUnderAttack(currentPlayer.getColor())) {
-                restoreInTeamAndOnBoard(backUpPiece);
                 board.restorePreviousTurn(currentMovementHeader);
-                if (ce instanceof CastlingException) {
-                    board.restorePreviousTurn(backUpCastling);
-                }
                 throw new CheckKingException(currentPlayer.getColor() + " King under check");
             }
 
@@ -240,12 +207,5 @@ public class NetworkGame implements Game {
         } catch (NullPointerException npe) {
             throw new FigureNotChosenException("Figure was not chosen");
         }
-    }
-
-    private void restoreInTeamAndOnBoard(Piece piece) {
-        if (piece == null) return;
-        List<Piece> team = piece.getColor().equals(Color.White) ? whiteTeam : blackTeam;
-        team.add(piece);
-        board.restoreRemovedFigure(piece);
     }
 }

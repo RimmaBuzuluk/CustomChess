@@ -9,9 +9,8 @@ import java.util.List;
 
 
 public class BoardPosition implements Position, Serializable {
-
-    private Verticals vertical;
-    private String    horizontal;
+    private final Verticals vertical;
+    private final String    horizontal;
 
     public BoardPosition(Verticals vertical, String horizontal) {
         this.vertical = vertical;

@@ -16,8 +16,8 @@ import com.example.customchess.engine.movements.Position;
 
 public class Pawn extends ChessPiece {
 
-    public Pawn(Color color, Position position) {
-        super(position, 1.0, color);
+    public Pawn(Color color) {
+        super(1.0, color);
     }
 
     @Override

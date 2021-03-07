@@ -14,7 +14,5 @@ public interface Piece {
     boolean isTrajectoryValid(Movable movement) throws ChessException;
     boolean isFightTrajectoryValid(Movable movement) throws ChessException;
     void move();
-    Position getCurrentPosition();
     Color    getColor();
-    void     setPosition(Position newPosition);
 }
